@@ -20,5 +20,3 @@ def get_pingdom_data():
             except requests.exceptions.RequestException:
                 pingdom_results[account] = None
     return(pingdom_results)
-
-print(get_pingdom_data())
