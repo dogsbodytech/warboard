@@ -1,2 +1,2 @@
-# warboard
+# Warboard
 The Dogsbody Technology Warboard
