@@ -1,5 +1,5 @@
-from config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 import requests, base64
+from config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 
 def get_pingdom_data():
     pingdom_results = {}
@@ -16,7 +16,7 @@ def get_pingdom_data():
                 if r.status_code != requests.codes.ok:
                     raise requests.exceptions.RequestException
                 else:
-                    pingdom_results[account] = r.json()
+                    pingdom_results[account] = r.json()['checks']
             except requests.exceptions.RequestException:
                 pingdom_results[account] = None
     return(pingdom_results)
