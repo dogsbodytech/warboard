@@ -12,6 +12,7 @@ def store_results():
     print(sirportly_data)
     print(pingdom_data)
     print(newrelic_data)
+    print(rcon.get('foo'))
 
 if __name__ == '__main__':
     store_results()

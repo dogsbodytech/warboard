@@ -1,4 +1,8 @@
 # These are the requirements for python, install them in the virtualenv with pip install -r requirements.txt
+# You will need to apt-get install python-virtualenv python-dev libffi-dev libssl-dev before installing these python modules
 redis
 flask
 requests
+pyOpenSSL
+ndg-httpsclient
+pyasn1
