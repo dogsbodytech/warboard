@@ -12,3 +12,6 @@ def store_results():
     print(sirportly_data)
     print(pingdom_data)
     print(newrelic_data)
+
+if __name__ == '__main__':
+    store_results()
