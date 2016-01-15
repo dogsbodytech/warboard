@@ -17,7 +17,7 @@ def store_sirportly_results():
             set_data(key, sirportly_data[key])
 
 def get_sirportly_results():
-    unassigned_tickets = get_data('unassigned_tickets')
+    unassigned_tickets = get_data('alexlast_green')
     print(unassigned_tickets)
 
 def store_pingdom_results():
