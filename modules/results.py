@@ -16,6 +16,10 @@ def store_sirportly_results():
         else:
             set_data(key, sirportly_data[key])
 
+def get_sirportly_results():
+    unassigned_tickets = get_data('unassigned_tickets')
+    print(unassigned_tickets)
+
 def store_pingdom_results():
     failed_pingdom = 0
     total_accounts = 0
@@ -50,5 +54,12 @@ def set_data(key, value):
     except redis.exceptions.ConnectionError:
         log_errors('Could not set '+key+' in Redis.')
 
+def get_data(key):
+    try:
+        rcon.get(key)
+    except redis.exceptions.ConnectionError:
+        log_errors('Could not get '+key+' from Redis.')
+
 if __name__ == '__main__':
-    store_newrelic_results()
+    store_sirportly_results()
+    get_sirportly_results()
