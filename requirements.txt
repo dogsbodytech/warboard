@@ -1,0 +1,4 @@
+# These are the requirements for python, install them in the virtualenv with pip install -r requirements.txt
+redis
+flask
+requests
