@@ -4,6 +4,7 @@ from pingdom import get_pingdom_data
 from newrelic import get_newrelic_data
 from sirportly import get_sirportly_data
 from misc import log_errors
+from config import sirportly_users
 
 rcon = redis_connect()
 
@@ -17,8 +18,14 @@ def store_sirportly_results():
             set_data(key, sirportly_data[key])
 
 def get_sirportly_results():
-    unassigned_tickets = get_data('unassigned_tickets')
-    print(unassigned_tickets)
+    sirportly_results = {}
+    sirportly_results['unassigned_tickets'] = get_data('unassigned_tickets')
+    sirportly_results['red_percent'] = get_data('red_percent')
+    sirportly_results['green_percent'] = get_data('green_percent')
+    sirportly_results['multiplier'] = get_data('multiplier')
+    sirportly_results['red_tickets'] = get_data('red_tickets')
+    sirportly_results['total_tickets'] = get_data('total_tickets')
+    return(sirportly_results)
 
 def store_pingdom_results():
     failed_pingdom = 0
@@ -58,8 +65,8 @@ def get_data(key):
     try:
         value = rcon.get(key)
     except redis.exceptions.ConnectionError:
-        value = None
         log_errors('Could not get '+key+' from Redis')
+        return(None)
     return(value)
 
 if __name__ == '__main__':
