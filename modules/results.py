@@ -31,13 +31,24 @@ def store_pingdom_results():
     set_data('failed_pingdom', failed_pingdom)
 
 def store_newrelic_results():
+    failed_newrelic = 0
+    total_accounts = 0
     newrelic_data = get_newrelic_data()
+    for account in newrelic_data:
+        if newrelic_data[account] != None:
+            set_data('newrelic_'+account, newrelic_data[account])
+        else:
+            failed_newrelic +=1
+            log_errors('Could not get newrelic data for '+account)
+        total_accounts+=1
+    set_data('total_newrelic_accounts', total_accounts)
+    set_data('failed_newrelic', failed_newrelic)
 
 def set_data(key, value):
     try:
         rcon.set(key, value)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not write '+key+' to Redis.')
+        log_errors('Could not set '+key+' in Redis.')
 
 if __name__ == '__main__':
-    store_pingdom_results()
+    store_newrelic_results()
