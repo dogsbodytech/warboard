@@ -17,7 +17,7 @@ def store_sirportly_results():
             set_data(key, sirportly_data[key])
 
 def get_sirportly_results():
-    unassigned_tickets = get_data('alexlast_green')
+    unassigned_tickets = get_data('unassigned_tickets')
     print(unassigned_tickets)
 
 def store_pingdom_results():
@@ -52,13 +52,15 @@ def set_data(key, value):
     try:
         rcon.set(key, value)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not set '+key+' in Redis.')
+        log_errors('Could not set '+key+' in Redis')
 
 def get_data(key):
     try:
-        rcon.get(key)
+        value = rcon.get(key)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not get '+key+' from Redis.')
+        value = None
+        log_errors('Could not get '+key+' from Redis')
+    return(value)
 
 if __name__ == '__main__':
     store_sirportly_results()
