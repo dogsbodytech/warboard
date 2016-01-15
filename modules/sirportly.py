@@ -33,7 +33,10 @@ def sirportly_ticket_multiplier(unassigned, user_data):
     ticket_counts = [unassigned]
     for user in sirportly_users:
         ticket_counts.append(user_data[user+'_total'])
-    multiplier = math.trunc(100/max(ticket_counts))
+    try:
+        multiplier = math.trunc(100/max(ticket_counts))
+    except ZeroDivisionError:
+        multiplier = 0
     if multiplier < 1:
         return(1)
     else:
