@@ -1,4 +1,4 @@
-import requests
+import requests, math
 from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter
 from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_unassigned_filter
 
@@ -23,3 +23,16 @@ def get_sirportly_data():
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
         sirportly_data['users'][user+'_green'] = sirportly_filter(sirportly_greenuser_filter, user)
+        sirportly_data['users'][user+'_total'] = sirportly_data['users'][user+'_green']+sirportly_data['users'][user+'_red']
+    sirportly_data['multiplier'] = sirportly_ticket_multiplier(sirportly_data['unassigned_tickets'], sirportly_data['users'])
+    return(sirportly_data)
+
+def sirportly_ticket_multiplier(unassigned, user_data):
+    ticket_counts = [unassigned]
+    for user in sirportly_users:
+        ticket_counts.append(user_data[user+'_total'])
+    multiplier = math.trunc(100/max(ticket_counts))
+    if multiplier < 1:
+        return(1)
+    else:
+        return(multiplier)
