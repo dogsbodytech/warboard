@@ -11,15 +11,16 @@ def store_results():
     #newrelic_data = get_newrelic_data()
     for key in sirportly_data:
         if key == 'users':
-            for key in sirportly_data['users']
+            for key in sirportly_data['users']:
                 try:
                     rcon.set(key, sirportly_data['users'][key])
                 except redis.exceptions.ConnectionError:
                     print('Could not connect to Redis!')
-        try:
-            rcon.set(key, sirportly_data['users'][key])
-        except redis.exceptions.ConnectionError:
-            print('Could not connect to Redis!')
+        else:
+            try:
+                rcon.set(key, sirportly_data['users'][key])
+            except redis.exceptions.ConnectionError:
+                print('Could not connect to Redis!')
 
 if __name__ == '__main__':
     store_results()
