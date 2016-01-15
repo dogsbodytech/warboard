@@ -19,7 +19,7 @@ def store_results():
                     print('Could not connect to Redis!')
         else:
             try:
-                rcon.set(key, sirportly_data['users'][key])
+                rcon.set(key, sirportly_data[key])
             except redis.exceptions.ConnectionError:
                 print('Could not connect to Redis!')
 
