@@ -1,4 +1,4 @@
-from redis import redis_connect
+from redis_con import redis_connect
 from pingdom import get_pingdom_data
 from newrelic import get_newrelic_data
 from sirportly import get_sirportly_data
