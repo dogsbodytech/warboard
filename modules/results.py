@@ -7,12 +7,19 @@ rcon = redis_connect()
 
 def store_results():
     sirportly_data = get_sirportly_data()
-    pingdom_data = get_pingdom_data()
-    newrelic_data = get_newrelic_data()
-    print(sirportly_data)
-    print(pingdom_data)
-    print(newrelic_data)
-    print(rcon.get('foo'))
+    #pingdom_data = get_pingdom_data()
+    #newrelic_data = get_newrelic_data()
+    for key in sirportly_data:
+        if key == 'users':
+            for key in sirportly_data['users']
+                try:
+                    rcon.set(key, sirportly_data['users'][key])
+                except redis.exceptions.ConnectionError:
+                    print('Could not connect to Redis!')
+        try:
+            rcon.set(key, sirportly_data['users'][key])
+        except redis.exceptions.ConnectionError:
+            print('Could not connect to Redis!')
 
 if __name__ == '__main__':
     store_results()
