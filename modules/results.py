@@ -1,3 +1,4 @@
+import redis # needed for exception catching
 from redis_con import redis_connect
 from pingdom import get_pingdom_data
 from newrelic import get_newrelic_data
