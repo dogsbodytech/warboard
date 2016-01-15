@@ -25,7 +25,10 @@ def get_sirportly_data():
         sirportly_data['users'][user+'_green'] = sirportly_filter(sirportly_greenuser_filter, user)
         sirportly_data['users'][user+'_total'] = sirportly_data['users'][user+'_green']+sirportly_data['users'][user+'_red']
     sirportly_data['multiplier'] = sirportly_ticket_multiplier(sirportly_data['unassigned_tickets'], sirportly_data['users'])
-    sirportly_data['red_percent'] = math.ceil(100*float(sirportly_data['red_tickets'])/float(sirportly_data['total_tickets']))
+    try:
+        sirportly_data['red_percent'] = math.ceil(100*float(sirportly_data['red_tickets'])/float(sirportly_data['total_tickets']))
+    except ZeroDivisionError:
+        sirportly_data['red_percent'] = 0
     sirportly_data['green_percent'] = 100-sirportly_data['red_percent']
     return(sirportly_data)
 
