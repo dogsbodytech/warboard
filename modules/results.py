@@ -3,7 +3,7 @@ from redis_con import redis_connect
 from pingdom import get_pingdom_data
 from newrelic import get_newrelic_data
 from sirportly import get_sirportly_data
-from misc import log_errors
+from misc import log_errors, chain_results
 from config import sirportly_users, pingdom_keys, newrelic_keys
 
 rcon = redis_connect()
@@ -46,9 +46,13 @@ def store_pingdom_results():
     set_data('failed_pingdom', failed_pingdom)
 
 def get_pingdom_results():
+    all_results = []
     pingdom_results = {}
     for account in pingdom_keys:
-        pingdom_results[account] = get_data('pingdom_'+account)
+        all_results.append(get_data('pingdom_'+account))
+    pingdom_results['total_pingdom_accounts'] = get_data('total_pingdom_accounts')
+    pingdom_results['failed_pingdom'] = get_data('failed_pingdom')
+    pingdom_results['checks'] = chain_results(all_results)
     return(pingdom_results)
 
 def store_newrelic_results():
@@ -66,9 +70,13 @@ def store_newrelic_results():
     set_data('failed_newrelic', failed_newrelic)
 
 def get_newrelic_results():
+    all_results = []
     newrelic_results = {}
     for account in newrelic_keys:
-        newrelic_results[account] = get_data('newrelic_'+account)
+        all_results.append(get_data('newrelic_'+account))
+    newrelic_results['total_newrelic_accounts'] = get_data('total_newrelic_accounts')
+    newrelic_results['failed_newrelic'] = get_data('failed_newrelic')
+    newrelic_results['checks'] = chain_results(all_results)
     return(newrelic_results)
 
 def set_data(key, value):
@@ -89,6 +97,5 @@ if __name__ == '__main__':
     store_pingdom_results()
     store_newrelic_results()
     store_sirportly_results()
-    print(get_sirportly_results())
-    print(get_pingdom_results())
-    print(get_newrelic_results())
+    print(get_newrelic_results)
+    print(get_sirportly_data)
