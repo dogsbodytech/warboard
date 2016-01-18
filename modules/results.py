@@ -26,9 +26,9 @@ def get_sirportly_results():
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
     for user in sirportly_users:
-        sirportly_results['users'][user_+'green'] = get_data(user_+'green')
-        sirportly_results['users'][user_+'red'] = get_data(user_+'red')
-        sirportly_results['users'][user_+'total'] = get_data(user_+'total')
+        sirportly_results['users'][user+'_green'] = get_data(user+'_green')
+        sirportly_results['users'][user+'_red'] = get_data(user+'_red')
+        sirportly_results['users'][user+'_total'] = get_data(user+'_total')
     return(sirportly_results)
 
 def store_pingdom_results():
