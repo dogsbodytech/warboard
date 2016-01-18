@@ -32,4 +32,4 @@ def get_data(key):
 
 if __name__ == '__main__':
     store_results()
-    print(get_results)
+    print(get_results())
