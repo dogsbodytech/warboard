@@ -18,13 +18,17 @@ def store_sirportly_results():
             set_data(key, sirportly_data[key])
 
 def get_sirportly_results():
-    sirportly_results = {}
+    sirportly_results = {'users': {}}
     sirportly_results['unassigned_tickets'] = get_data('unassigned_tickets')
     sirportly_results['red_percent'] = get_data('red_percent')
     sirportly_results['green_percent'] = get_data('green_percent')
     sirportly_results['multiplier'] = get_data('multiplier')
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
+    for user in sirportly_users:
+        sirportly_results['users'][user_+'green'] = get_data(user_+'green')
+        sirportly_results['users'][user_+'red'] = get_data(user_+'red')
+        sirportly_results['users'][user_+'total'] = get_data(user_+'total')
     return(sirportly_results)
 
 def store_pingdom_results():
