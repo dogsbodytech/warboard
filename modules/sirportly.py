@@ -1,4 +1,5 @@
 import requests, math
+from results import set_data, get_data
 from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter
 from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_unassigned_filter
 
@@ -44,3 +45,26 @@ def sirportly_ticket_multiplier(unassigned, user_data):
         return(1)
     else:
         return(multiplier)
+
+def store_sirportly_results():
+    sirportly_data = get_sirportly_data()
+    for key in sirportly_data:
+        if key == 'users':
+            for key in sirportly_data['users']:
+                set_data(key, sirportly_data['users'][key])
+        else:
+            set_data(key, sirportly_data[key])
+
+def get_sirportly_results():
+    sirportly_results = {'users': {}}
+    sirportly_results['unassigned_tickets'] = get_data('unassigned_tickets')
+    sirportly_results['red_percent'] = get_data('red_percent')
+    sirportly_results['green_percent'] = get_data('green_percent')
+    sirportly_results['multiplier'] = get_data('multiplier')
+    sirportly_results['red_tickets'] = get_data('red_tickets')
+    sirportly_results['total_tickets'] = get_data('total_tickets')
+    for user in sirportly_users:
+        sirportly_results['users'][user+'_green'] = get_data(user+'_green')
+        sirportly_results['users'][user+'_red'] = get_data(user+'_red')
+        sirportly_results['users'][user+'_total'] = get_data(user+'_total')
+    return(sirportly_results)
