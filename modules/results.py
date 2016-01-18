@@ -70,5 +70,7 @@ def get_data(key):
     return(value)
 
 if __name__ == '__main__':
+    store_pingdom_results()
+    store_newrelic_results()
     store_sirportly_results()
-    get_sirportly_results()
+    print(get_sirportly_results())
