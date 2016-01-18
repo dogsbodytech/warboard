@@ -1,5 +1,5 @@
 import requests, math
-from results import set_data, get_data
+from redis_functions import set_data, get_data
 from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter
 from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_unassigned_filter
 

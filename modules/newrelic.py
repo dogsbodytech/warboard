@@ -1,5 +1,5 @@
 import requests
-from results import set_data, get_data
+from redis_functions import set_data, get_data
 from misc import log_errors, chain_results
 from config import newrelic_keys, newrelic_timeout, newrelic_endpoint
 

@@ -1,5 +1,5 @@
 import requests, base64, math, json
-from results import set_data, get_data
+from redis_functions import set_data, get_data
 from misc import log_errors, chain_results
 from config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 
