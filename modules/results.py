@@ -97,5 +97,5 @@ if __name__ == '__main__':
     store_pingdom_results()
     store_newrelic_results()
     store_sirportly_results()
-    print(get_newrelic_results)
-    print(get_sirportly_data)
+    print(get_newrelic_results())
+    print(get_sirportly_data())
