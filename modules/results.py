@@ -4,7 +4,7 @@ from pingdom import get_pingdom_data
 from newrelic import get_newrelic_data
 from sirportly import get_sirportly_data
 from misc import log_errors
-from config import sirportly_users, pingdom_keys
+from config import sirportly_users, pingdom_keys, newrelic_keys
 
 rcon = redis_connect()
 
@@ -65,6 +65,12 @@ def store_newrelic_results():
     set_data('total_newrelic_accounts', total_accounts)
     set_data('failed_newrelic', failed_newrelic)
 
+def get_newrelic_results():
+    newrelic_results = {}
+    for account in newrelic_keys:
+        newrelic_results[account] = get_data('newrelic_'+account)
+    return(newrelic_results)
+
 def set_data(key, value):
     try:
         rcon.set(key, value)
@@ -85,3 +91,4 @@ if __name__ == '__main__':
     store_sirportly_results()
     print(get_sirportly_results())
     print(get_pingdom_results())
+    print(get_newrelic_results())
