@@ -14,4 +14,3 @@ def store_results():
 
 if __name__ == '__main__':
     store_results()
-    print(get_results())
