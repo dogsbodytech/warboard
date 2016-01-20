@@ -24,7 +24,7 @@ def store_calendar_items():
             current = get_data('calendar_'+item['start']['date'])
             if current == None:
                 set_data('calendar_'+item['start']['date'], item['summary'])
-            else:
+            elif item['summary'] not in current:
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
         except Exception as e: # Using this until support for times is added
             log_errors('Could not parse calendar items')
