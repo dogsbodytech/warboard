@@ -15,7 +15,7 @@ def warboard():
         sirportly_results=get_sirportly_results(),
         sirportly_users=sirportly_users,
         sirportly_user_order=sirportly_user_order,
-        calendar_items=get_calendar_items())
+        calendar_items=get_calendar_items()))
 
 if __name__ == '__main__':
     app.run(debug=True)
