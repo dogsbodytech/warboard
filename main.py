@@ -8,14 +8,14 @@ from modules.calendar_functions import get_calendar_items
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
-    def warboard():
-        return(render_template('warboard.html',
-               pingdom_results=get_pingdom_results(),
-               newrelic_results=get_newrelic_results(),
-               sirportly_results=get_sirportly_results(),
-               sirportly_users=sirportly_users,
-               sirportly_user_order=sirportly_user_order,
-               calendar_items=get_calendar_items())
+def warboard():
+    return(render_template('warboard.html',
+        pingdom_results=get_pingdom_results(),
+        newrelic_results=get_newrelic_results(),
+        sirportly_results=get_sirportly_results(),
+        sirportly_users=sirportly_users,
+        sirportly_user_order=sirportly_user_order,
+        calendar_items=get_calendar_items())
 
 if __name__ == '__main__':
     app.run(debug=True)
