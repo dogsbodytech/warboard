@@ -14,8 +14,5 @@ def store_results():
 if __name__ == '__main__':
     log_errors('Warboard backend daemon started!')
     while True:
-        try:
-            store_results()
-        except Exception as e:
-            log_errors('Warboard backend daemon failed!')
+        store_results()
         sleep(refresh_time())
