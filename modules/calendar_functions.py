@@ -7,13 +7,12 @@ from redis_functions import set_data, get_data, get_all_data
 calendar_split = '</li><li class="list-group-item list-group-item-info lead">' # This should only be changed when modifying the template
 
 def get_calendar_items():
-    calendar_items = {}
+    calendar_items = []
     calendar_keys = sorted(get_all_data('calendar_*'))
-    print calendar_keys
     for key in calendar_keys:
         old_date = key.replace('calendar_', '')
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
-        calendar_items[convert.strftime('%a %d %B')] = get_data(key)
+        calendar_items.append({convert.strftime('%a %d %B')]: get_data(key)})
     return(calendar_items)
 
 def store_calendar_items():
