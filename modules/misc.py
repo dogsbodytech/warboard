@@ -13,7 +13,7 @@ def chain_results(results):
 
 def parse_calendar():
     with open(calendar_export) as c_file:
-        c_data = json.loads(c_file)
+        c_data = json.load(c_file)
     c_data.close()
     for item in c_data['items']:
         old_date = item['start']['date']
