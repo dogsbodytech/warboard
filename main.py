@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, jsonify
-from misc import refresh_time
+from modules.misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order
 from modules.pingdom import get_pingdom_results
 from modules.newrelic import get_newrelic_results
