@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, jsonify
+from misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order
 from modules.pingdom import get_pingdom_results
 from modules.newrelic import get_newrelic_results
@@ -10,6 +11,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def warboard():
     return(render_template('warboard.html',
+        refresh_time=refresh_time,
         pingdom_results=get_pingdom_results(),
         newrelic_results=get_newrelic_results(),
         sirportly_results=get_sirportly_results(),
