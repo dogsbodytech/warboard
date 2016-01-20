@@ -119,10 +119,12 @@
       </table>
       <h1>Calendar</h1>
       {% for item in calendar_items %}
-        <h3>{{ item }}</h3>
+        {% for date in item %}
+        <h3>{{ date }}</h3>
         <ul class="list-group">
-        <li class="list-group-item list-group-item-info lead">{{ calendar_items[item]|safe }}</li>
+        <li class="list-group-item list-group-item-info lead">{{ item[date]|safe }}</li>
         </ul>
+        {% endfor %}
       {% endfor %}
     </div>
   </div>
