@@ -18,6 +18,7 @@
       <h1>Pingdom {{ pingdom_results['working_pingdom'] }}/{{ pingdom_results['total_pingdom_accounts'] }}</h1>
     {% else %}
       <h1>Pingdom</h1>
+    {% endif %}
       <div class="progress">
         <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ pingdom_results['down_percent'] }}%"></div>
         <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ pingdom_results['paused_percent'] }}%"></div>
@@ -51,6 +52,7 @@
       <h1>NewRelic {{ newrelic_results['working_newrelic'] }}/{{ newrelic_results['total_newrelic_accounts'] }}</h1>
     {% else %}
       <h1>NewRelic</h1>
+    {% endif %}
       <div class="progress">
         <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ newrelic_results['red_percent'] }}%"></div>
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ newrelic_results['orange_percent'] }}%"></div>
