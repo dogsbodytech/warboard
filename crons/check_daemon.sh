@@ -11,7 +11,7 @@ if [ -z "$2" ]; then
     exit 1
 fi
 
-check=`ps aux | grep "$1 $2" | grep -v "grep"`
+check=`ps aux | grep -v "grep\|check_daemon" | grep "$1 $2"`
 
 if [ $? != 0 ]; then
     echo "The Warboard daemon is not running! Restarting now..."
