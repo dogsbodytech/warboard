@@ -11,7 +11,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET'])
 def warboard():
     return(render_template('warboard.html',
-        refresh_time=refresh_time,
+        refresh_time=refresh_time(),
         pingdom_results=get_pingdom_results(),
         newrelic_results=get_newrelic_results(),
         sirportly_results=get_sirportly_results(),
@@ -19,5 +19,5 @@ def warboard():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
-if __name__ == '__main__':
+if __name__ == '__main__': # Used for testing on servers without an uwsgi/nginx setup
     app.run(host='0.0.0.0', debug=True)
