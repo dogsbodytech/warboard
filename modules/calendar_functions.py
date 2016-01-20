@@ -12,7 +12,7 @@ def get_calendar_items():
     for key in calendar_keys:
         old_date = key.replace('calendar_', '')
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
-        calendar_items.append({convert.strftime('%a %d %B')]: get_data(key)})
+        calendar_items.append({convert.strftime('%a %d %B'): get_data(key)})
     return(calendar_items)
 
 def store_calendar_items():
