@@ -38,7 +38,7 @@ def get_newrelic_results():
         all_results.append(result_json['servers'])
     newrelic_results['total_newrelic_accounts'] = get_data('total_newrelic_accounts')
     newrelic_results['failed_newrelic'] = get_data('failed_newrelic')
-    newrelic_results['working_newrelic'] = newrelic_results['total_newrelic_accounts']-newrelic_results['failed_newrelic']
+    newrelic_results['working_newrelic'] = int(newrelic_results['total_newrelic_accounts'])-int(newrelic_results['failed_newrelic'])
     newrelic_results['checks'] = chain_results(all_results)
     newrelic_results['total_checks'] = len(newrelic_results['checks'])
     newrelic_results['green'] = 0
