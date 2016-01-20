@@ -1,16 +1,17 @@
 import redis
-from misc import log_errors, parse_calendar
+from misc import log_errors, store_calendar_items, get_calendar_items
 from pingdom import get_pingdom_results, store_pingdom_results
 from newrelic import get_newrelic_results, store_newrelic_results
 from sirportly import get_sirportly_results, store_sirportly_results
 
 def get_results():
-    return(get_pingdom_results(), get_sirportly_results(), get_newrelic_results(), parse_calendar())
+    return(store_calendar_items())
 
 def store_results():
     store_pingdom_results()
     store_newrelic_results()
     store_sirportly_results()
+    #store_calendar_items()
 
 if __name__ == '__main__':
     store_results()
