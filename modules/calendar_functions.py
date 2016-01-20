@@ -8,7 +8,7 @@ calendar_split = '</li><li class="list-group-item list-group-item-info lead">' #
 
 def get_calendar_items():
     calendar_items = {}
-    calendar_keys = get_all_data('calendar_*')
+    calendar_keys = sorted(get_all_data('calendar_*'))
     for key in calendar_keys:
         old_date = key.replace('calendar_', '')
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
