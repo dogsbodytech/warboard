@@ -48,7 +48,7 @@ def get_pingdom_results():
     pingdom_results['pingdom_paused'] = 0
     pingdom_results['total_pingdom_accounts'] = get_data('total_pingdom_accounts')
     pingdom_results['failed_pingdom'] = get_data('failed_pingdom')
-    pingdom_results['working_pingdom'] = pingdom_results['total_pingdom_accounts']-pingdom_results['failed_pingdom']
+    pingdom_results['working_pingdom'] = int(pingdom_results['total_pingdom_accounts'])-int(pingdom_results['failed_pingdom'])
     pingdom_results['checks'] = chain_results(all_results)
     pingdom_results['total_checks'] = len(pingdom_results['checks'])
     for check in pingdom_results['checks']:
