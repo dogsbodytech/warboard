@@ -21,3 +21,11 @@ def get_data(key):
         log_errors('Could not get '+key+' from Redis')
         return(None)
     return(value)
+
+def get_all_data(key):
+    try:
+        value = redis_connect().keys(key)
+    except redis.exceptions.ConnectionError:
+        log_errors('Could not get '+key+' from Redis')
+        return(None)
+    return(value)
