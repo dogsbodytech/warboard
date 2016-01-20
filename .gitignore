@@ -2,3 +2,4 @@ venv/
 logs/
 modules/config.py
 *.pyc
+*.sock

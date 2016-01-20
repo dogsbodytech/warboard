@@ -19,5 +19,13 @@ def warboard():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
+@app.route('/stats', methods=['POST'])
+def stats():
+    if request.form['key'] == 'xyz':
+        return('')
+        #return(jsonify(status='ok', pingdomCount=totalPingdom, newrelicCount=totalNewrelic, resolvedTickets=resolvedTickets))
+    else:
+        return(jsonify(status='error', message='Invalid Key')), 403
+
 if __name__ == '__main__': # Used for testing on servers without an uwsgi/nginx setup
     app.run(host='0.0.0.0', debug=True)
