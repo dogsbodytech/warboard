@@ -3,6 +3,8 @@ from time import strftime
 from config import calendar_export
 from redis_functions import set_data, get_data
 
+calendar_split = '</li><li class="list-group-item list-group-item-info lead">' # This should only be changed when modifying the template
+
 def get_calendar_items():
     with open(calendar_export) as c_file:
         c_data = json.load(c_file)
@@ -19,4 +21,7 @@ def store_calendar_items():
     c_file.close()
     for item in c_data['items']:
         current = get_data('calendar_'+item['start']['date'])
-        print(current)
+        if current == None:
+            set_data(item['start']['date'], item['summary'])
+        else:
+            set_data(item['start']['date'], current+calendar_split+item['summary'])
