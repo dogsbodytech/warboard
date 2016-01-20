@@ -11,147 +11,116 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <!-- <div id="fixed-element" style="position:fixed; bottom:40px; right: 40px; z-index: 999">
-    <img src="/tools/static/images/DBtech.png" width="400" height="126" alt="Dogsbody Technology" />
-  </div> -->
   <div class="container-fluid">
   <div class="row">
     <div class="col-sm-4">
+    {% if pingdom_results['failed_pingdom'] > 0 %}
+      <h1>Pingdom {{ pingdom_results['working_pingdom'] }}/{{ pingdom_results['total_pingdom_accounts'] }}</h1>
+    {% else %}
       <h1>Pingdom</h1>
       <div class="progress">
-        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ down }}%"></div>
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ paused }}%"></div>
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ up }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ pingdom_results['down_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ pingdom_results['paused_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ pingdom_results['up_percent'] }}%"></div>
       </div>
       <table class="table">
         <thead>
           <tr class="lead"><th>Name</th><th>Type</th><th>Response</th></tr>
         </thead>
         <tbody>
-        {% for check in checks|sort(attribute='lastresponsetime')|reverse %}
+        {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
           {% if check['status'] == 'down' %}
-		  <tr class="danger lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
-		  {% endif %}
-		{% endfor %}
-		{% for check in checks|sort(attribute='lastresponsetime')|reverse %}
-		  {% if check['status'] == 'paused' %}
-		  <tr class="info lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
-		  {% endif %}
-		{% endfor %}
-		{% for check in checks|sort(attribute='lastresponsetime')|reverse %}
-		  {% if check['status'] == 'up' %}
-		  <tr class="success lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
-		  {% endif %}
-		{% endfor %}
+		        <tr class="danger lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		      {% endif %}
+		    {% endfor %}
+		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
+		      {% if check['status'] == 'paused' %}
+		        <tr class="info lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		      {% endif %}
+		    {% endfor %}
+		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
+		      {% if check['status'] == 'up' %}
+		        <tr class="success lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		      {% endif %}
+		    {% endfor %}
         </tbody>
       </table>
     </div>
     <div class="col-sm-5">
+    {% if newrelic_results['failed_newrelic'] > 0 %}
+      <h1>NewRelic {{ newrelic_results['working_newrelic'] }}/{{ newrelic_results['total_newrelic_accounts'] }}</h1>
+    {% else %}
       <h1>NewRelic</h1>
       <div class="progress">
-        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ red }}%"></div>
-        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ orange }}%"></div>
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ green }}%"></div>
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ blue }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ newrelic_results['red_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ newrelic_results['orange_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ newrelic_results['green_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ newrelic_results['blue_percent'] }}%"></div>
       </div>
       <table class="table">
         <thead>
           <tr class="lead"><th>Name</th><th>CPU</th><th>Memory</th><th>Disk IO</th><th>Disk Space</th></tr>
         </thead>
         <tbody>
-        {% for check in nrData|sort(attribute='links')|reverse %}
+        {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'red' %}
-		  <tr class="danger lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
-		  {% endif %}
-		{% endfor %}
-		{% for check in nrData|sort(attribute='links')|reverse %}
+		        <tr class="danger lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		      {% endif %}
+		    {% endfor %}
+		    {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'orange' %}
-		  <tr class="warning lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
-		  {% endif %}
-		{% endfor %}
-		{% for check in nrData|sort(attribute='links')|reverse %}
+		        <tr class="warning lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		      {% endif %}
+		    {% endfor %}
+		    {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
-		  <tr class="success lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
-		  {% endif %}
-		{% endfor %}
-		{% for check in nrData|sort(attribute='name') %}
-          {% if check['links'] == 'blue' %}
-		  <tr class="info lead"><td>{{ check['name'] }}</td><td></td><td></td><td></td><td></td></tr>
-		  {% endif %}
-		{% endfor %}
+		        <tr class="success lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		      {% endif %}
+		    {% endfor %}
+		    {% for check in newrelic_results['checks']|sort(attribute='name') %}
+          {% if check['health_status'] == 'blue' %}
+		        <tr class="info lead"><td>{{ check['name'] }}</td><td></td><td></td><td></td><td></td></tr>
+		      {% endif %}
+		    {% endfor %}
         </tbody>
       </table>
     </div>
     <div class="col-sm-3">
       <h1>Sirportly Queues</h1>
       <div class="progress">
-        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ redPercent }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ sirportly_results['red_percent'] }}%"></div>
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width:0%"></div>
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ greenPercent }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ sirportly_results['green_percent'] }}%"></div>
       </div>
       <table class="table table-bordered">
         <tbody>
           <tr class="lead">
-            <td class="col-sm-4">New <span class="pull-right">{{ unassigned }}</span></td>
+            <td class="col-sm-4">New <span class="pull-right">{{ sirportly_results['unassigned_tickets'] }}</span></td>
             <td class="col-sm-8">
               <div class="progress">
-                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ unassigned * multiplier }}%"></div>
+                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['unassigned_tickets'] * sirportly_results['multiplier'] }}%"></div>
               </div>
             </td>
           </tr>
+          {% for user in sirportly_user_order %}
           <tr class="lead">
-            <td class="col-sm-4">Dan <span class="pull-right">{{ danTotal }}</span></td>
+            <td class="col-sm-4">{{ sirportly_users[user] }}<span class="pull-right">{{ sirportly_results['users'][user+'_total'] }}</span></td>
             <td class="col-sm-8">
               <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ danRed * multiplier }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ danGreen * multiplier }}%"></div>
+                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ sirportly_results['users'][user+'_red'] * sirportly_results['multiplier'] }}%"></div>
+                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ sirportly_results['users'][user+'_green'] * sirportly_results['multiplier'] }}%"></div>
               </div>
             </td>
           </tr>
-          <tr class="lead">
-            <td class="col-sm-4">Alex <span class="pull-right">{{ alexTotal }}</span></td>
-            <td class="col-sm-8">
-              <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ alexRed * multiplier }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ alexGreen * multiplier }}%"></div>
-              </div>
-            </td>
-          </tr>
-          <tr class="lead">
-            <td class="col-sm-4">Rob <span class="pull-right">{{ robTotal }}</span></td>
-            <td class="col-sm-8">
-              <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ robRed * multiplier }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ robGreen * multiplier }}%"></div>
-              </div>
-            </td>
-          </tr>
-          <tr class="lead">
-            <td class="col-sm-4">Gary <span class="pull-right">{{ garyTotal }}</span></td>
-            <td class="col-sm-8">
-              <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ garyRed * multiplier }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ garyGreen * multiplier }}%"></div>
-              </div>
-            </td>
-          </tr>
-          <tr class="lead">
-            <td class="col-sm-4">Claire <span class="pull-right">{{ claireTotal }}</span></td>
-            <td class="col-sm-8">
-              <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ claireRed * multiplier }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ claireGreen * multiplier }}%"></div>
-              </div>
-            </td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
       <h1>Calendar</h1>
-      {% for item in calendarData %}
-      <h3>{{ item['start']['date'] }}</h3>
-      <ul class="list-group">
-        <li class="list-group-item list-group-item-info lead">{{ item['summary']|safe }}</li>
-      </ul>
+      {% for item in calendar_items %}
+        <h3>{{ item }}</h3>
+        <ul class="list-group">
+        <li class="list-group-item list-group-item-info lead">{{ calendar_items[item]|safe }}</li>
+        </ul>
       {% endfor %}
     </div>
   </div>

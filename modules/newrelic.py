@@ -38,6 +38,7 @@ def get_newrelic_results():
         all_results.append(result_json['servers'])
     newrelic_results['total_newrelic_accounts'] = get_data('total_newrelic_accounts')
     newrelic_results['failed_newrelic'] = get_data('failed_newrelic')
+    newrelic_results['working_newrelic'] = newrelic_results['total_newrelic_accounts']-newrelic_results['failed_newrelic']
     newrelic_results['checks'] = chain_results(all_results)
     newrelic_results['total_checks'] = len(newrelic_results['checks'])
     newrelic_results['green'] = 0
@@ -54,6 +55,7 @@ def get_newrelic_results():
             elif check['health_status'] == 'red':
                 newrelic_results['red'] +=1
         elif check['reporting'] == False:
+            check['health_status'] = 'blue'
             newrelic_results['blue'] +=1
     newrelic_results['red_percent'] = math.ceil(100*float(newrelic_results['red'])/float(newrelic_results['total_checks']))
     newrelic_results['green_percent'] = math.ceil(100*float(newrelic_results['green'])/float(newrelic_results['total_checks']))
