@@ -18,7 +18,7 @@ def parse_calendar():
     for item in c_data['items']:
         old_date = item['start']['date']
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
-        item['start']['date'] = stamp.strftime('%a %d %B')
+        item['start']['date'] = convert.strftime('%a %d %B')
     return(c_data['items'])
 
 def refresh_time():
