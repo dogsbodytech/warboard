@@ -14,7 +14,7 @@ def chain_results(results):
 def parse_calendar():
     with open(calendar_export) as c_file:
         c_data = json.load(c_file)
-    c_data.close()
+    c_file.close()
     for item in c_data['items']:
         old_date = item['start']['date']
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
