@@ -20,11 +20,14 @@ def store_calendar_items():
         c_data = json.load(c_file)
     c_file.close()
     for item in c_data['items']:
-        try:
-            current = get_data('calendar_'+item['start']['date'])
-            if current == None:
-                set_data('calendar_'+item['start']['date'], item['summary'])
-            elif item['summary'] not in current:
-                set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
-        except Exception as e: # Using this until support for times is added
-            log_errors('Could not parse calendar items')
+        if 'dateTime' in item['start']:
+            item['start']['date'] = item['start']['dateTime'].split['T'][0]
+            current_summary = item['summary']
+            start_time = datetime.datetime.strptime(item['start']['dateTime'].split['T'][1], '%H:%M:%SZ').strftime('%H:%M: ')
+            end_time = datetime.datetime.strptime(item['end']['dateTime'].split['T'][1], '%H:%M:%SZ').strftime('%H:%M: ')
+            item['summary'] = start_time+'-'+end_time+current_summary
+        current = get_data('calendar_'+item['start']['date'])
+        if current == None:
+            set_data('calendar_'+item['start']['date'], item['summary'])
+        elif item['summary'] not in current:
+            set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
