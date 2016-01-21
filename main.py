@@ -7,6 +7,7 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 app = Flask(__name__)
+app.debug = True
 
 @app.route('/', methods=['GET'])
 def warboard():
