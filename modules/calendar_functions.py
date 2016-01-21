@@ -25,7 +25,7 @@ def store_calendar_items():
             current_summary = item['summary']
             start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M')
             end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ')
-            item['summary'] = start_time+'-'+end_time+current_summary
+            item['summary'] = start_time+' - '+end_time+current_summary
         current = get_data('calendar_'+item['start']['date'])
         if current == None:
             set_data('calendar_'+item['start']['date'], item['summary'])
