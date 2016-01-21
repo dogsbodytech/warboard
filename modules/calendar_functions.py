@@ -17,17 +17,23 @@ def get_calendar_items():
 
 def store_calendar_items():
     with open(calendar_export) as c_file:
-        c_data = json.load(c_file)
+        try:
+            c_data = json.load(c_file)
+        except ValueError:
+            c_data = False
     c_file.close()
-    for item in c_data['items']:
-        if 'dateTime' in item['start']:
-            item['start']['date'] = item['start']['dateTime'].split('T')[0]
-            current_summary = item['summary']
-            start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M')
-            end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ')
-            item['summary'] = start_time+' - '+end_time+current_summary
-        current = get_data('calendar_'+item['start']['date'])
-        if current == None:
-            set_data('calendar_'+item['start']['date'], item['summary'])
-        elif item['summary'] not in current:
-            set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
+    if c_data != False:
+        for item in c_data['items']:
+            if 'dateTime' in item['start']:
+                item['start']['date'] = item['start']['dateTime'].split('T')[0]
+                current_summary = item['summary']
+                start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M')
+                end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ')
+                item['summary'] = start_time+' - '+end_time+current_summary
+            current = get_data('calendar_'+item['start']['date'])
+            if current == None:
+                set_data('calendar_'+item['start']['date'], item['summary'])
+            elif item['summary'] not in current:
+                set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
+    else:
+        log_errors('Could not parse calendar')
