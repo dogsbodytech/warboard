@@ -16,7 +16,6 @@ if [ -z "$3" ]; then
     exit 1
 fi
 
-
 check=`ps aux | grep -v "grep\|check_daemon" | grep "$1 $2"`
 
 if [ $? != 0 ]; then

@@ -29,3 +29,9 @@ def get_all_data(key):
         log_errors('Could not get '+key+' from Redis')
         return(None)
     return(value)
+
+def delete_data(key):
+    try:
+        redis_connect().delete(key)
+    except redis.exceptions.ConnectionError:
+        log_errors('Could delete '+key+' in Redis')

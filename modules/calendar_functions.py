@@ -2,7 +2,7 @@ import datetime, json
 from time import strftime
 from misc import log_errors
 from config import calendar_export
-from redis_functions import set_data, get_data, get_all_data
+from redis_functions import set_data, get_data, get_all_data, delete_data
 
 calendar_split = '</li><li class="list-group-item list-group-item-info lead">' # This should only be changed when modifying the template
 
@@ -14,6 +14,13 @@ def get_calendar_items():
         convert = datetime.datetime.strptime(old_date, '%Y-%m-%d')
         calendar_items.append({convert.strftime('%a %d %B'): get_data(key)})
     return(calendar_items)
+
+def prune_calendar_items():
+    calendar_keys = get_all_data('calendar_*')
+    for key in calendar_keys:
+        date = key.replace('calendar_', '')
+        if date < strftime('%Y-%m-%d'):
+            delete_data(key)
 
 def store_calendar_items():
     with open(calendar_export) as c_file:
