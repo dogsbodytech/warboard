@@ -11,10 +11,16 @@ if [ -z "$2" ]; then
     exit 1
 fi
 
+if [ -z "$3" ]; then
+    echo "ERROR: Please specify the full path to the warboard log file"
+    exit 1
+fi
+
+
 check=`ps aux | grep -v "grep\|check_daemon" | grep "$1 $2"`
 
 if [ $? != 0 ]; then
     echo "The Warboard daemon is not running! Restarting now..."
-    $1 $2 &
+    $1 $2 >> $3 &
     exit 1
 fi
