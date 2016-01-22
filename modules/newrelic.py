@@ -55,6 +55,7 @@ def get_newrelic_results():
             elif check['health_status'] == 'red':
                 newrelic_results['red'] +=1
         elif check['reporting'] == False:
+            check['orderby'] = 0
             check['health_status'] = 'blue'
             newrelic_results['blue'] +=1
     newrelic_results['red_percent'] = math.ceil(100*float(newrelic_results['red'])/float(newrelic_results['total_checks']))
