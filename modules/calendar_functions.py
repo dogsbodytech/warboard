@@ -15,11 +15,10 @@ def get_calendar_items():
         calendar_items.append({convert.strftime('%a %d %B'): get_data(key)})
     return(calendar_items)
 
-def prune_calendar_items():
+def prune_calendar_items(valid_keys):
     calendar_keys = get_all_data('calendar_*')
     for key in calendar_keys:
-        date = key.replace('calendar_', '')
-        if date < strftime('%Y-%m-%d'):
+        if key not in valid_keys:
             delete_data(key)
 
 def store_calendar_items():
@@ -30,6 +29,7 @@ def store_calendar_items():
             c_data = False
     c_file.close()
     if c_data != False:
+        valid_keys = []
         for item in c_data['items']:
             if 'dateTime' in item['start']:
                 item['start']['date'] = item['start']['dateTime'].split('T')[0]
@@ -42,5 +42,7 @@ def store_calendar_items():
                 set_data('calendar_'+item['start']['date'], item['summary'])
             elif item['summary'] not in current:
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
+            valid_keys.append('calendar_'+item)
+        prune_calendar_items(valid_keys)
     else:
         log_errors('Could not parse calendar')

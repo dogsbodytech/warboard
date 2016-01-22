@@ -10,7 +10,6 @@ def store_results():
     store_newrelic_results()
     store_sirportly_results()
     store_calendar_items() # This should be run hourly, will take a look at this
-    prune_calendar_items() # This needs to be run daily ""
 
 if __name__ == '__main__':
     log_errors('Warboard backend daemon started!')
