@@ -42,7 +42,7 @@ def store_calendar_items():
                 set_data('calendar_'+item['start']['date'], item['summary'])
             elif item['summary'] not in current:
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary'])
-            valid_keys.append('calendar_'+item)
+            valid_keys.append('calendar_'+item['start']['date'])
         prune_calendar_items(valid_keys)
     else:
         log_errors('Could not parse calendar')
