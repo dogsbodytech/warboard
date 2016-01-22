@@ -18,13 +18,13 @@ You will also need to setup some filters in sirportly and record their ID's in y
 
 **sirportly_unassigned_filter** (Matches all these conditions: Assigned user is not blank & Status type is not closed)
 
-sirportly_resolved_filter (Matches all these conditions: Status type is closed)
+**sirportly_resolved_filter** (Matches all these conditions: Status type is closed)
 
-sirportly_red_filter (Matches all these conditions: Status type is open, Priority is less than low, Status is not waiting for reply & Status is not internal)
+**sirportly_red_filter** (Matches all these conditions: Status type is open, Priority is less than low, Status is not waiting for reply & Status is not internal)
 
-sirportly_total_filter (Matches all these conditions: Status type is not closed & Priority is less than low)
+**sirportly_total_filter** (Matches all these conditions: Status type is not closed & Priority is less than low)
 
-sirportly_reduser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is new & status is
+**sirportly_reduser_filter** (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is new & status is
 waiting for staff)
 
-sirportly_greenuser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status waiting for reply & status is on hold)
+**sirportly_greenuser_filter** (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status waiting for reply & status is on hold)
