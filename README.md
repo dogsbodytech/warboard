@@ -8,13 +8,15 @@ The warboard requires you have redis-server, python, python-virtualenv, python-d
 
 Once you have these installed you can create a virtual environment and install the required python modules in the environment:
 
-```virtualenv venv```
+```
+virtualenv venv
+. venv/bin/activate
+pip install -r requirements.txt
+```
 
-```. venv/bin/activate```
+You will also need to setup some filters in sirportly and record their ID's in your config.py file, first of all copy the config.sample.py file to config.py.
 
-```pip install -r requirements.txt```
-
-You will also need to setup some filters in sirportly and record their ID's in your config.py file, first of all copy the config.sample.py file to config.py. The following filters are required:
+The following filters are required:
 
 - sirportly_unassigned_filter (Matches all these conditions: Assigned user is not blank & Status type is not closed)
 
