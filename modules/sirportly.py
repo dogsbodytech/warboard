@@ -59,7 +59,7 @@ def store_sirportly_results():
 def get_sirportly_results():
     sirportly_results = {'users': {}}
     sirportly_results['unassigned_tickets'] = int(get_data('unassigned_tickets'))
-    sirportly_results['resolved_tickets'] = get_data('resolved_tickets')
+    sirportly_results['resolved_tickets'] = int(get_data('resolved_tickets'))
     sirportly_results['red_percent'] = get_data('red_percent')
     sirportly_results['green_percent'] = get_data('green_percent')
     sirportly_results['multiplier'] = int(get_data('multiplier'))
