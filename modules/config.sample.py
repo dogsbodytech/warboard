@@ -58,3 +58,5 @@ calendar_export = '/home/user/calendar/export.json' # Full path to the calendar 
 warboard_log = '/home/warboard/logs/warboard.log'
 # The API key users should use when using the /stats function of the warboard
 warboard_stats_key = 'api_key'
+# How many green results should be returned for the Pingdom/NewRelic columns. This can help save on bandwidth/page load time
+warboard_result_count = 30

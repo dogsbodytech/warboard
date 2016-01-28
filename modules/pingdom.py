@@ -26,9 +26,9 @@ def get_pingdom_data():
 def store_pingdom_results():
     failed_pingdom = 0
     total_accounts = 0
-    pingdom_data = get_pingdom_data()
+    pingdom_data = get_pingdom_data() # Get all the pingdom data
     for account in pingdom_data:
-        if pingdom_data[account] != None:
+        if pingdom_data[account] != None: # If we get a don't get a None store it, otherwise log the error
             set_data('pingdom_'+account, pingdom_data[account])
         else:
             failed_pingdom +=1
@@ -41,7 +41,7 @@ def get_pingdom_results():
     all_results = []
     pingdom_results = {}
     for account in pingdom_keys:
-        result_json = json.loads(get_data('pingdom_'+account))
+        result_json = json.loads(get_data('pingdom_'+account)) # Load all the pingdom keys as json and store them in the all_results list
         all_results.append(result_json['checks'])
     pingdom_results['pingdom_up'] = 0
     pingdom_results['pingdom_down'] = 0
@@ -49,9 +49,9 @@ def get_pingdom_results():
     pingdom_results['total_pingdom_accounts'] = get_data('total_pingdom_accounts')
     pingdom_results['failed_pingdom'] = int(get_data('failed_pingdom'))
     pingdom_results['working_pingdom'] = int(pingdom_results['total_pingdom_accounts'])-int(pingdom_results['failed_pingdom'])
-    pingdom_results['checks'] = chain_results(all_results)
+    pingdom_results['checks'] = chain_results(all_results) # Chain all the results together to be returned for the warboard
     pingdom_results['total_checks'] = len(pingdom_results['checks'])
-    for check in pingdom_results['checks']:
+    for check in pingdom_results['checks']: # Categorize all the checks as up/down etc
         if check['status'] == 'up':
             pingdom_results['pingdom_up'] +=1
         elif check['status'] == 'down':

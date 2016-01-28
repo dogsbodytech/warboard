@@ -19,10 +19,10 @@ def get_newrelic_data():
 def store_newrelic_results():
     failed_newrelic = 0
     total_accounts = 0
-    newrelic_data = get_newrelic_data()
+    newrelic_data = get_newrelic_data() # Get all the newrelic checks
     for account in newrelic_data:
-        if newrelic_data[account] != None:
-            set_data('newrelic_'+account, newrelic_data[account])
+        if newrelic_data[account] != None: # Check we actually got some data for a check
+            set_data('newrelic_'+account, newrelic_data[account]) # Store it in redis
         else:
             failed_newrelic +=1
             log_errors('Could not get newrelic data for '+account)
@@ -34,18 +34,18 @@ def get_newrelic_results():
     all_results = []
     newrelic_results = {}
     for account in newrelic_keys:
-        result_json = json.loads(get_data('newrelic_'+account))
+        result_json = json.loads(get_data('newrelic_'+account)) # Pull the NR data from redis load it as json and append to a list
         all_results.append(result_json['servers'])
     newrelic_results['total_newrelic_accounts'] = get_data('total_newrelic_accounts')
     newrelic_results['failed_newrelic'] = int(get_data('failed_newrelic'))
     newrelic_results['working_newrelic'] = int(newrelic_results['total_newrelic_accounts'])-int(newrelic_results['failed_newrelic'])
-    newrelic_results['checks'] = chain_results(all_results)
+    newrelic_results['checks'] = chain_results(all_results) # Store all the nr results as 1 chained list
     newrelic_results['total_checks'] = len(newrelic_results['checks'])
     newrelic_results['green'] = 0
     newrelic_results['red'] = 0
     newrelic_results['orange'] = 0
     newrelic_results['blue'] = 0
-    for check in newrelic_results['checks']:
+    for check in newrelic_results['checks']: # Categorize all the checks as up/down and use the highest metric for each item as the thing we order by
         if check['reporting'] == True:
             check['orderby'] = max(check['summary']['cpu'], check['summary']['memory'], check['summary']['fullest_disk'], check['summary']['disk_io'])
             if check['health_status'] == 'green':

@@ -8,13 +8,13 @@ def redis_connect():
     # unless the redis module isn't installed.
     return(rcon)
 
-def set_data(key, value):
+def set_data(key, value): # Used to set keys in redis
     try:
         redis_connect().set(key, value)
     except redis.exceptions.ConnectionError:
         log_errors('Could not set '+key+' in Redis')
 
-def get_data(key):
+def get_data(key): # Used to get keys from redis
     try:
         value = redis_connect().get(key)
     except redis.exceptions.ConnectionError:
@@ -22,7 +22,7 @@ def get_data(key):
         return(None)
     return(value)
 
-def get_all_data(key):
+def get_all_data(key): # Used to get all keys with a pattern e.g pingdom_*
     try:
         value = redis_connect().keys(key)
     except redis.exceptions.ConnectionError:
@@ -30,7 +30,7 @@ def get_all_data(key):
         return(None)
     return(value)
 
-def delete_data(key):
+def delete_data(key): # Used to delete keys
     try:
         redis_connect().delete(key)
     except redis.exceptions.ConnectionError:
