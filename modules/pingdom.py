@@ -58,6 +58,9 @@ def get_pingdom_results():
             pingdom_results['pingdom_down'] +=1
         elif check['status'] == 'paused':
             pingdom_results['pingdom_paused'] +=1
+        elif check['status'] == 'unknown':
+            check['status'] = 'paused'
+            check['lastresponsetime'] = 0
     pingdom_results['down_percent'] = math.ceil(100*float(pingdom_results['pingdom_down'])/float(pingdom_results['total_checks']))
     pingdom_results['paused_percent'] = math.ceil(100*float(pingdom_results['pingdom_paused'])/float(pingdom_results['total_checks']))
     pingdom_results['up_percent'] = 100-pingdom_results['down_percent']-pingdom_results['paused_percent']
