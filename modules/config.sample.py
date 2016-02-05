@@ -60,3 +60,5 @@ warboard_log = '/home/warboard/logs/warboard.log'
 warboard_stats_key = 'api_key'
 # How many green results should be returned for the Pingdom/NewRelic columns. This can help save on bandwidth/page load time
 warboard_result_count = 30
+# The title used on the warboard
+warboard_title = 'Warboard'
