@@ -12,7 +12,7 @@ def store_results():
     store_calendar_items() # This should be run hourly, will take a look at this
 
 if __name__ == '__main__':
-    log_message('Warboard backend daemon started!', 'info')
+    log_messages('Warboard backend daemon started!', 'info')
     while True:
         store_results()
         sleep(refresh_time())
