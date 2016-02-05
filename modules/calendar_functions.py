@@ -1,6 +1,6 @@
 import datetime, json
 from time import strftime
-from misc import log_errors
+from misc import log_messages
 from config import calendar_export
 from redis_functions import set_data, get_data, get_all_data, delete_data
 
@@ -45,4 +45,4 @@ def store_calendar_items():
             valid_keys.append('calendar_'+item['start']['date'])
         prune_calendar_items(valid_keys)
     else:
-        log_errors('Could not parse calendar')
+        log_messages('Could not parse calendar', 'error')

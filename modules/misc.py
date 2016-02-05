@@ -1,12 +1,14 @@
-import itertools, datetime, json
-from time import strftime
+import itertools, datetime, json, logging
 from config import warboard_log
 
-def log_errors(error):
-    lf = open(warboard_log, 'a')
-    current_time = strftime("%d-%m-%Y %H:%M:%S: ")
-    lf.write(current_time+error+'\n')
-    lf.close()
+def log_messages(message, priority):
+    logging.basicConfig(filename=warboard_log, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
+    if priority == 'error':
+        logging.error(message)
+    elif priority == 'info':
+        logging.info(message)
+    elif priority == 'warning':
+        logging.warning(message)
 
 def chain_results(results):
     return(list(itertools.chain(*results))) # This chains all results together into one tuple

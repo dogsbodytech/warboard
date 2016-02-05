@@ -1,5 +1,5 @@
 import redis
-from misc import log_errors
+from misc import log_messages
 from config import redis_host, redis_port, redis_db
 
 def redis_connect():
@@ -12,13 +12,13 @@ def set_data(key, value): # Used to set keys in redis
     try:
         redis_connect().set(key, value)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not set '+key+' in Redis')
+        log_messages('Could not set '+key+' in Redis', 'error')
 
 def get_data(key): # Used to get keys from redis
     try:
         value = redis_connect().get(key)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not get '+key+' from Redis')
+        log_messages('Could not get '+key+' from Redis', 'error')
         return(None)
     return(value)
 
@@ -26,7 +26,7 @@ def get_all_data(key): # Used to get all keys with a pattern e.g pingdom_*
     try:
         value = redis_connect().keys(key)
     except redis.exceptions.ConnectionError:
-        log_errors('Could not get '+key+' from Redis')
+        log_messages('Could not get '+key+' from Redis', 'error')
         return(None)
     return(value)
 
@@ -34,4 +34,4 @@ def delete_data(key): # Used to delete keys
     try:
         redis_connect().delete(key)
     except redis.exceptions.ConnectionError:
-        log_errors('Could delete '+key+' in Redis')
+        log_messages('Could delete '+key+' in Redis', 'error')

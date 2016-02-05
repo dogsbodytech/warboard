@@ -1,6 +1,6 @@
 import requests, math, json
 from redis_functions import set_data, get_data
-from misc import log_errors, chain_results
+from misc import log_messages, chain_results
 from config import newrelic_keys, newrelic_timeout, newrelic_endpoint
 
 def get_newrelic_data():
@@ -25,7 +25,7 @@ def store_newrelic_results():
             set_data('newrelic_'+account, newrelic_data[account]) # Store it in redis
         else:
             failed_newrelic +=1
-            log_errors('Could not get newrelic data for '+account)
+            log_messages('Could not get newrelic data for '+account, 'error')
         total_accounts+=1
     set_data('total_newrelic_accounts', total_accounts)
     set_data('failed_newrelic', failed_newrelic)
