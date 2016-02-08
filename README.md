@@ -39,4 +39,9 @@ Once the config file has been correctly created all you will need to do is setup
 
 ```00 * * * * /home/warboard/app/venv/bin/python /home/warboard/app/modules/tasks.py hourly```
 
-This cron will check the backend daemon is running and start it if it's not, make sure the warboard users emails are being delivered somewhere so in a situation where the daemon is broken you will be notified. You can test the warboard in a dev environment by just running the main.py file in the virtual environment. In production nginx & uwsgi should be used.
+This cron will run the hourly tasks such as grabbing the latest calendar items from the Google Calendar export. You can test the warboard in a dev environment by just running the main.py file in the virtual environment. In production nginx & uwsgi should be used.
+
+##Starting the Daemon
+You will need to start the daemon that fetches all the data from the relevant API's. This must be done as the user specified in config.py. You can do this with the following command:
+
+```/home/warboard/app/venv/bin/python /home/warboard/app/daemon.py start|stop|restart```
