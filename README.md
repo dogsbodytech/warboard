@@ -37,6 +37,6 @@ The rest of the settings in the config file should also be filled out, the requi
 ##Setup
 Once the config file has been correctly created all you will need to do is setup a cron running as the warboard user. The cron should contain the following (change the paths if applicable):
 
-```*/15 * * * * /home/warboard/app/crons/check_daemon.sh /home/warboard/app/venv/bin/python /home/warboard/app/modules/daemon.py /home/warboard/app/logs/warboard.log```
+```00 * * * * /home/warboard/app/venv/bin/python /home/warboard/app/modules/tasks.py hourly```
 
 This cron will check the backend daemon is running and start it if it's not, make sure the warboard users emails are being delivered somewhere so in a situation where the daemon is broken you will be notified. You can test the warboard in a dev environment by just running the main.py file in the virtual environment. In production nginx & uwsgi should be used.

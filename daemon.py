@@ -28,6 +28,7 @@ if __name__ == '__main__':
             log_messages('Warboard backend daemon stopped!', 'info')
             daemon.stop()
         elif 'restart' == sys.argv[1]:
+            log_messages('Warboard backend daemon restarted!', 'info')
             daemon.restart()
         else:
             print('Invalid option!')
