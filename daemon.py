@@ -3,9 +3,9 @@ from time import sleep
 from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
-from pingdom import store_pingdom_results
-from newrelic import store_newrelic_results
-from sirportly import store_sirportly_results
+from modules.pingdom import store_pingdom_results
+from modules.newrelic import store_newrelic_results
+from modules.sirportly import store_sirportly_results
 
 class WarboardDaemon(Daemon):
     def run(self):
