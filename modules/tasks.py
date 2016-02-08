@@ -1,5 +1,6 @@
 import sys, getpass
 from config import warboard_user
+from misc import log_messages
 from calendar_functions import store_calendar_items
 
 def hourly_tasks():
