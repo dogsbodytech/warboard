@@ -31,7 +31,7 @@ if __name__ == '__main__':
             daemon.restart()
         else:
             print('Invalid option!')
-                exit(2)
+            exit(2)
     else:
         print('usage: start|stop|restart')
         exit(2)
