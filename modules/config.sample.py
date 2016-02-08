@@ -62,3 +62,7 @@ warboard_stats_key = 'api_key'
 warboard_result_count = 30
 # The title used on the warboard
 warboard_title = 'Warboard'
+# The file used to store the pid file by the Daemon
+warboard_pid_path = '/tmp/warboard_daemon.pid'
+# The user you will run the warboard as
+warboard_user = 'warboard'
