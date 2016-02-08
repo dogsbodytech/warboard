@@ -22,11 +22,11 @@ if __name__ == '__main__':
     daemon = WarboardDaemon(warboard_pid_path)
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
-            daemon.start()
             log_messages('Warboard backend daemon started!', 'info')
+            daemon.start()
         elif 'stop' == sys.argv[1]:
-            daemon.stop()
             log_messages('Warboard backend daemon stopped!', 'info')
+            daemon.stop()
         elif 'restart' == sys.argv[1]:
             daemon.restart()
         else:
