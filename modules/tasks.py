@@ -27,7 +27,7 @@ if __name__ == '__main__':
             log_messages('Weekly tasks executed', 'info')
         else:
             print('Invalid option!')
-                exit(2)
+            exit(2)
     else:
         print('Valid tasks: hourly|daily|weekly')
         exit(2)
