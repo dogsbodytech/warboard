@@ -1,4 +1,4 @@
-import sys, os
+import sys, getpass
 from config import warboard_user
 from calendar_functions import store_calendar_items
 
@@ -12,7 +12,7 @@ def weekly_tasks():
     return(False)
 
 if __name__ == '__main__':
-    if os.getusername() != warboard_user:
+    if getpass.getuser() != warboard_user:
         print('Please run the warboard with the correct user: '+warboard_user)
         exit(1)
     if len(sys.argv) == 2:

@@ -1,4 +1,4 @@
-import sys, os
+import sys, getpass
 from time import sleep
 from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
@@ -16,7 +16,7 @@ class WarboardDaemon(Daemon):
             sleep(refresh_time())
 
 if __name__ == '__main__':
-    if os.getusername() != warboard_user:
+    if getpass.getuser() != warboard_user:
         print('Please run the warboard with the correct user: '+warboard_user)
         exit(1)
     daemon = WarboardDaemon(warboard_pid_path)
