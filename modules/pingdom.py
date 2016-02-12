@@ -50,7 +50,6 @@ def get_pingdom_results():
     pingdom_results['failed_pingdom'] = int(get_data('failed_pingdom'))
     pingdom_results['working_pingdom'] = pingdom_results['total_pingdom_accounts']-pingdom_results['failed_pingdom']
     pingdom_results['working_percentage'] = int(float(pingdom_results['working_pingdom'])/float(pingdom_results['total_pingdom_accounts'])*100)
-    log_messages(pingdom_results['working_percentage'], 'info')
     pingdom_results['checks'] = chain_results(all_results) # Chain all the results together to be returned for the warboard
     pingdom_results['total_checks'] = len(pingdom_results['checks'])
     for check in pingdom_results['checks']: # Categorize all the checks as up/down etc
