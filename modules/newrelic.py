@@ -36,9 +36,10 @@ def get_newrelic_results():
     for account in newrelic_keys:
         result_json = json.loads(get_data('newrelic_'+account)) # Pull the NR data from redis load it as json and append to a list
         all_results.append(result_json['servers'])
-    newrelic_results['total_newrelic_accounts'] = get_data('total_newrelic_accounts')
+    newrelic_results['total_newrelic_accounts'] = int(get_data('total_newrelic_accounts'))
     newrelic_results['failed_newrelic'] = int(get_data('failed_newrelic'))
-    newrelic_results['working_newrelic'] = int(newrelic_results['total_newrelic_accounts'])-int(newrelic_results['failed_newrelic'])
+    newrelic_results['working_newrelic'] = newrelic_results['total_newrelic_accounts']-newrelic_results['failed_newrelic']
+    newrelic_results['working_percentage'] = int(float(newrelic_results['working_newrelic'])/float(newrelic_results['total_newrelic_accounts'])*100)
     newrelic_results['checks'] = chain_results(all_results) # Store all the nr results as 1 chained list
     newrelic_results['total_checks'] = len(newrelic_results['checks'])
     newrelic_results['green'] = 0
