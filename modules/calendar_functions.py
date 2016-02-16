@@ -34,8 +34,12 @@ def store_calendar_items():
             if 'dateTime' in item['start']: # Check if the datetime is set
                 item['start']['date'] = item['start']['dateTime'].split('T')[0] # Split the datetime to get the date and set the data parameter
                 current_summary = item['summary']
-                start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M') # Convert the start time to a nice date
-                end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ') # Convert the end time to a nice date
+                try:
+                    start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M') # Convert the start time to a nice date
+                    end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ') # Convert the end time to a nice date
+                except ValueError:
+                    start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%S+%H:%M').strftime('%H:%M')
+                    end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%S+%H:%M').strftime('%H:%M: ')                 
                 item['summary'] = start_time+' - '+end_time+current_summary # Add the start and end time to the summary
             current = get_data('calendar_'+item['start']['date']) # Check if an existing key exists for the date in question
             if current == None:
