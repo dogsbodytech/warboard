@@ -38,8 +38,8 @@ def store_calendar_items():
                     start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M') # Convert the start time to a nice date
                     end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%SZ').strftime('%H:%M: ') # Convert the end time to a nice date
                 except ValueError:
-                    start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%S%z').strftime('%H:%M') # To work with DST times
-                    end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%S%z').strftime('%H:%M: ')
+                    start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%S+01:00').strftime('%H:%M') # To work with DST times
+                    end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%S+01:00').strftime('%H:%M: ')
                 item['summary'] = start_time+' - '+end_time+current_summary # Add the start and end time to the summary
             current = get_data('calendar_'+item['start']['date']) # Check if an existing key exists for the date in question
             if current == None:
