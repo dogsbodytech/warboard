@@ -1,6 +1,8 @@
 # Warboard
 This is the warboard we use internally at Dogsbody Technology Ltd. The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine.
 
+![alt tag](https://raw.githubusercontent.com/dogsbodytech/warboard/master/static/images/warboard_medium_example.png)
+
 ##Requirements
 The warboard requires you have redis-server, python, python-virtualenv, python-dev, libffi-dev & libssl-dev installed:
 
