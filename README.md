@@ -1,5 +1,5 @@
 # Warboard
-This is the warboard we use internally at Dogsbody Technology Ltd. The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic & Sirportly as it's sources.
+This is the warboard we use internally at Dogsbody Technology Ltd. The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic & Sirportly as a sour
 
 ![Warboard Screenshot](https://raw.githubusercontent.com/dogsbodytech/warboard/master/static/images/warboard_medium_example.png)
 
@@ -35,15 +35,14 @@ waiting for staff)
 
 The rest of the settings in the config file should also be filled out, the required values should be pretty self explanatory with the examples in the sample config file. Support will be added in the future for enabling and disabling different parts of the Warboard (Pingdom, NewRelic, Sirportly etc).
 
+##Starting the Daemon
+Once the config file has been correctly created you will need to start the daemon that fetches all the data from the relevant API's. This must be done as the user specified in config.py. You can do this with the following command:
+
+```/home/warboard/app/venv/bin/python /home/warboard/app/daemon.py start|stop|restart```
 
 ##Setup
-Once the config file has been correctly created all you will need to do is setup a cron running as the warboard user. The cron should contain the following (change the paths if applicable):
+The only other thing you will need to do is setup a cron running as the warboard user. The cron should contain the following (change the paths if applicable):
 
 ```00 * * * * /home/warboard/app/venv/bin/python /home/warboard/app/modules/tasks.py hourly```
 
 This cron will run the hourly tasks such as grabbing the latest calendar items from the Google Calendar export. You can test the warboard in a dev environment by just running the main.py file in the virtual environment. In production nginx & uwsgi should be used.
-
-##Starting the Daemon
-You will need to start the daemon that fetches all the data from the relevant API's. This must be done as the user specified in config.py. You can do this with the following command:
-
-```/home/warboard/app/venv/bin/python /home/warboard/app/daemon.py start|stop|restart```
