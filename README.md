@@ -1,5 +1,5 @@
 # Warboard
-This is the warboard we use internally at Dogsbody Technology Ltd. The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine.
+This is the warboard we use internally at Dogsbody Technology Ltd. The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic & Sirportly as it's sources.
 
 ![Warboard Screenshot](https://raw.githubusercontent.com/dogsbodytech/warboard/master/static/images/warboard_medium_example.png)
 
