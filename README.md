@@ -8,9 +8,10 @@ The warboard requires you have redis-server, python, python-virtualenv, python-d
 
 ```sudo apt-get install redis-server python python-virtualenv python-dev libffi-dev libssl-dev```
 
-Once you have these installed you can create a virtual environment and install the required python modules in the environment:
+Once you have these installed you can create the log directory and a virtual environment and install the required python modules in the environment:
 
 ```
+mkdir logs
 virtualenv venv
 . venv/bin/activate
 pip install -r requirements.txt
