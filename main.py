@@ -7,7 +7,6 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 app = Flask(__name__)
-app.debug = True
 
 @app.route('/', methods=['GET'])
 def warboard():
@@ -23,14 +22,30 @@ def warboard():
 
 @app.route('/stats', methods=['POST'])
 def stats():
+    if 'key' not in request.form:
+        return(jsonify(status='error',
+            message='API Key required')), 401
     if request.form['key'] == warboard_stats_key:
+        nr_results = get_newrelic_results()
+        pd_results = get_pingdom_results()
+        sp_results = get_sirportly_results()
         return(jsonify(status='ok',
-            pingdom_count=get_pingdom_results()['total_checks'],
-            newrelic_count=get_newrelic_results()['total_checks'],
-            resolved_tickets=get_sirportly_results()['resolved_tickets']))
+            pingdom_count=pd_results['total_checks'],
+            newrelic_count=nr_results['total_checks'],
+            resolved_tickets=sp_results['resolved_tickets'],
+            unassigned_tickets=sp_results['unassigned_tickets'],
+            pingdom_up=pd_results['pingdom_up'],
+            pingdom_down=pd_results['pingdom_down'],
+            pingdom_paused=pd_results['pingdom_paused'],
+            pingdom_accounts=pd_results['total_pingdom_accounts'],
+            pingdom_failed=pd_results['failed_pingdom'],
+            pingdom_working=pd_results['working_pingdom'],
+            newrelic_accounts=nr_results['total_newrelic_accounts'],
+            newrelic_working=nr_results['working_newrelic'],
+            newrelic_failed=nr_results['failed_newrelic']))
     else:
         return(jsonify(status='error',
-            message='Invalid Key')), 403
+            message='Invalid Key')), 401
 
 if __name__ == '__main__': # Used for testing on servers without an uwsgi/nginx setup
-    app.run(host='0.0.0.0', debug=True)
+    app.run(debug=True)
