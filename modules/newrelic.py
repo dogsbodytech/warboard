@@ -47,6 +47,7 @@ def get_newrelic_results():
     newrelic_results['orange'] = 0
     newrelic_results['blue'] = 0
     for check in newrelic_results['checks']: # Categorize all the checks as up/down and use the highest metric for each item as the thing we order by
+        check['name'] = check['name'][:30] # Limit newrelic server names to 30 characters to not break the warboard layout
         if check['reporting'] == True:
             check['orderby'] = max(check['summary']['cpu'], check['summary']['memory'], check['summary']['fullest_disk'], check['summary']['disk_io'])
             if check['health_status'] == 'green':
