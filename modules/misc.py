@@ -1,6 +1,5 @@
 import itertools, datetime, json, logging
-from config import warboard_log, pingdom_keys, newrelic_keys
-from redis_functions import get_all_data, delete_data
+from config import warboard_log
 
 def log_messages(message, priority):
     logging.basicConfig(filename=warboard_log, level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
@@ -23,11 +22,3 @@ def refresh_time():
         return(15)
     else:
         return(60)
-
-def prune_old_keys():
-    for key in get_all_data('pingdom_*'):
-        if key not in pingdom_keys:
-            delete_data(key)
-    for key in get_all_data('newrelic_*'):
-        if key not in newrelic_keys:
-            delete_data(key)
