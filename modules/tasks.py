@@ -1,10 +1,11 @@
 import sys, getpass
 from config import warboard_user
-from misc import log_messages
+from misc import log_messages, prune_old_keys
 from calendar_functions import store_calendar_items
 
 def hourly_tasks():
     store_calendar_items()
+    prune_old_keys()
 
 def daily_tasks():
     return(False)
