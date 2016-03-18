@@ -48,10 +48,10 @@ The only other thing you will need to do is setup a cron running as the warboard
 
 This cron will run the hourly tasks such as grabbing the latest calendar items from the Google Calendar export. You can test the warboard in a dev environment by just running the main.py file in the virtual environment. In production nginx & uwsgi should be used.
 
-##Removing accounts
-When removing Pingdom/Newrelic accounts from the config file you will need to run the prune task, this requires you to reload uwsgi afterwards. This can be done with the following:
+##Configuration changes
+When making any changes to the config file, such as removing Pingdom/Newrelic accounts you are required to restart the daemon and reload uwsgi. This can be done with the following:
 
 ```
-/home/warboard/app/venv/bin/python /home/warboard/app/modules/tasks.py manual
 sudo service uwsgi reload
+/home/warboard/app/venv/bin/python /home/warboard/app/daemon.py restart
 ```

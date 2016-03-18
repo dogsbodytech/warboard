@@ -2,7 +2,6 @@ import sys, getpass
 from config import warboard_user
 from misc import log_messages
 from calendar_functions import store_calendar_items
-from prune_keys import prune_old_keys
 
 def hourly_tasks():
     store_calendar_items()
@@ -12,9 +11,6 @@ def daily_tasks():
 
 def weekly_tasks():
     return(False)
-
-def manual_tasks(): # These tasks require manual intervention such as reloading uwsgi
-    prune_old_keys()
 
 if __name__ == '__main__':
     if getpass.getuser() != warboard_user:
@@ -30,9 +26,6 @@ if __name__ == '__main__':
         elif 'weekly' == sys.argv[1]:
             weekly_tasks()
             log_messages('Weekly tasks executed', 'info')
-        elif 'manual' == sys.argv[1]:
-            manual_tasks()
-            log_messages('Manual tasks executed', 'info')
         else:
             print('Invalid option!')
             exit(2)

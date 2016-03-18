@@ -6,9 +6,11 @@ from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
 from modules.newrelic import store_newrelic_results
 from modules.sirportly import store_sirportly_results
+from modules.prune_keys import prune_old_keys
 
 class WarboardDaemon(Daemon):
     def run(self):
+        prune_old_keys()
         while True:
             store_pingdom_results()
             store_newrelic_results()
