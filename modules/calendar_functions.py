@@ -15,11 +15,11 @@ def get_calendar_items():
         calendar_items.append({convert.strftime('%a %d %B'): get_data(key)})
     return(calendar_items)
 
-def prune_calendar_items(valid_keys):
-    calendar_keys = get_all_data('calendar_*') # Get all the calendar keys from redis
+def prune_calendar_items():
+    # We are now pruning all calendar items when reloading the calendar file to remove old entries we don't want.
+    calendar_keys = get_all_data('calendar_*')
     for key in calendar_keys:
-        if key not in valid_keys: # Check if the dates in redis are in our calendar, if not it's been deleted or its a date that's passed
-            delete_data(key) # Remove old calendar keys
+        delete_data(key)
 
 def store_calendar_items():
     with open(calendar_export) as c_file:
@@ -29,7 +29,7 @@ def store_calendar_items():
             c_data = False
     c_file.close()
     if c_data != False:
-        valid_keys = []
+        prune_calendar_items()
         for item in c_data['items']:
             if 'dateTime' in item['start']: # Check if the datetime is set
                 item['start']['date'] = item['start']['dateTime'].split('T')[0] # Split the datetime to get the date and set the data parameter
@@ -46,7 +46,5 @@ def store_calendar_items():
                 set_data('calendar_'+item['start']['date'], item['summary']) # If a date doesn't exist create one
             elif item['summary'] not in current: # If a key exists but it's not the current summary it means we have two items for one date
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary']) # Append to the existing item
-            valid_keys.append('calendar_'+item['start']['date'])
-        prune_calendar_items(valid_keys)
     else:
         log_messages('Could not parse calendar', 'error')
