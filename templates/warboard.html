@@ -75,16 +75,16 @@
 		        <tr class="warning lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
-        {% for check in newrelic_results['checks']|sort(attribute='name') %}
-          {% if check['health_status'] == 'blue' %}
-            <tr class="info lead"><td>{{ check['name'] }}</td><td></td><td></td><td></td><td></td></tr>
-          {% endif %}
-        {% endfor %}
 		    {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
 		        <tr class="success lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
+        {% for check in newrelic_results['checks']|sort(attribute='name') %}
+          {% if check['health_status'] == 'blue' %}
+            <tr class="info lead"><td>{{ check['name'] }}</td><td></td><td></td><td></td><td></td></tr>
+          {% endif %}
+        {% endfor %}
         </tbody>
       </table>
     </div>
