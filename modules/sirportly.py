@@ -25,6 +25,7 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
         sirportly_data['users'][user+'_green'] = sirportly_filter(sirportly_greenuser_filter, user)
+        sirportly_data['users'][user+'_blue'] = 0
         sirportly_data['users'][user+'_total'] = sirportly_data['users'][user+'_green']+sirportly_data['users'][user+'_red']
     sirportly_data['multiplier'] = sirportly_ticket_multiplier(sirportly_data['unassigned_tickets'], sirportly_data['users'])
     try:
@@ -66,7 +67,8 @@ def get_sirportly_results(): # Get all the sirportly data to pass to the warboar
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
     for user in sirportly_users:
-        sirportly_results['users'][user+'_green'] = int(get_data(user+'_green'))
         sirportly_results['users'][user+'_red'] = int(get_data(user+'_red'))
+        sirportly_results['users'][user+'_green'] = int(get_data(user+'_green'))
+        sirportly_results['users'][user+'_blue'] = int(get_data(user+'_blue'))
         sirportly_results['users'][user+'_total'] = get_data(user+'_total')
     return(sirportly_results)
