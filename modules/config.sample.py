@@ -35,7 +35,8 @@ sirportly_resolved_filter = '4'
 sirportly_red_filter = '33'
 sirportly_total_filter = '27'
 sirportly_reduser_filter = '31'
-sirportly_greenuser_filter = '30'
+sirportly_greenuser_filter = '58'
+sirportly_blueuser_filter = '30'
 # The sirportly usernames with a nice name for display on the board
 sirportly_users = {'username1': 'User 1',
                    'username2': 'User 2',
