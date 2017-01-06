@@ -25,7 +25,7 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
         sirportly_data['users'][user+'_green'] = sirportly_filter(sirportly_greenuser_filter, user)
-        sirportly_data['users'][user+'_blue'] = 0
+        sirportly_data['users'][user+'_blue'] = sirportly_filter(sirportly_blueuser_filter, user)
         sirportly_data['users'][user+'_total'] = sirportly_data['users'][user+'_green']+sirportly_data['users'][user+'_red']
     sirportly_data['multiplier'] = sirportly_ticket_multiplier(sirportly_data['unassigned_tickets'], sirportly_data['users'])
     try:
