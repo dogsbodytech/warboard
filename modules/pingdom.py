@@ -61,6 +61,8 @@ def get_pingdom_results():
             pingdom_results['pingdom_down'] +=1
         elif check['status'] == 'paused':
             pingdom_results['pingdom_paused'] +=1
+            if not 'lastresponsetime' in check:
+                check['lastresponsetime'] = 0
         elif check['status'] == 'unknown':
             check['status'] = 'paused'
             check['lastresponsetime'] = 0
