@@ -15,7 +15,7 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account4': {'api_key': 'account3@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
 
-# NewRelic details
+# NewRelic Servers details
 newrelic_endpoint = 'https://api.newrelic.com/v2/servers.json'
 newrelic_timeout = 10 # How long the warboard should wait on the newrelic API
 # All you need for adding newrelic accounts is the API key.
@@ -25,6 +25,16 @@ newrelic_keys = {'account1': 'api_key',
                  'account3': 'api_key',
                  'account1|subcustomer': 'api_key',}
 
+# NewRelic Infrastructure details
+# get requests (infra_endpoint{account_number}infra_query) are made to the
+# NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
+insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
+infra_query = '/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%20FROM%20%20SystemSample'
+insights_timeout = 10
+insights_keys = {'account_name1':  {'account_number': 'number_here',
+                                    'api_key': 'key_here'},
+                 'account_name2':  {'account_number': 'number_here',
+                                    'api_key': 'key_here'}}
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
 sirportly_token = 'token_here'
