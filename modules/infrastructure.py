@@ -28,7 +28,7 @@ def get_infra_data():
 
 def store_infra_data():
     """
-    Calls get_infra_data and puts returned data into redis
+    Calls get_infra_data and puts the relavent structured data into redis
     """
     failed_infra = 0
     total_infra_accounts = 0
@@ -49,7 +49,7 @@ def store_infra_data():
 
 def get_infra_results():
     """
-    Pulls Infrastructure data from redis
+    Pulls Infrastructure data from redis and formats it to be displayed
     """
     all_infra_results = []
     infra_results = {}
