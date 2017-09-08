@@ -6,7 +6,7 @@ from config import insights_endpoint, infra_query, insights_timeout, insights_ke
 # this has a lot of shared code with the newrelic module, they could have
 # a common library but that would be more work than typing some of it out again
 
-def get_infra_data():
+def get_newrelic_infra_data():
     """
     Queries the NR Insights API to get Infrastructure data
     """
@@ -26,7 +26,7 @@ def get_infra_data():
 
     return infra_results
 
-def store_infra_data():
+def store_newrelic_infra_data():
     """
     Calls get_infra_data and puts the relavent structured data into redis
     """
@@ -47,7 +47,7 @@ def store_infra_data():
     set_data('total_infra_accounts', total_infra_accounts)
     set_data('failed_infra', failed_infra)
 
-def get_infra_results():
+def get_newrelic_infra_results():
     """
     Pulls Infrastructure data from redis and formats it to be displayed
     """

@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, jsonify
 from modules.misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title
 from modules.pingdom import get_pingdom_results
+from modules.resources import get resource_results
 from modules.newrelic import get_newrelic_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
@@ -14,7 +15,7 @@ def warboard():
         title=warboard_title,
         refresh_time=refresh_time(),
         pingdom_results=get_pingdom_results(),
-        newrelic_results=get_newrelic_results(),
+        resource_results=get_resource_results('servers', 'infra')
         sirportly_results=get_sirportly_results(),
         sirportly_users=sirportly_users,
         sirportly_user_order=sirportly_user_order,
