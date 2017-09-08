@@ -53,6 +53,7 @@ def get_pingdom_results():
     pingdom_results['checks'] = chain_results(all_results) # Chain all the results together to be returned for the warboard
     pingdom_results['total_checks'] = len(pingdom_results['checks'])
     for check in pingdom_results['checks']: # Categorize all the checks as up/down etc
+        check['name'] = check['name'][:36] # Limit pingdom server names to 36 characters to not break the warboard layout
         if check['type'] == 'httpcustom':
             check['type'] = 'custom'
         if check['status'] == 'up':
