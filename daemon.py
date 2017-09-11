@@ -4,7 +4,8 @@ from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
-from modules.newrelic import store_newrelic_results
+from modules.newrelic_servers import store_newrelic_servers_results
+from modules.newrelic_infrastructure import store_newrelic_infra_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
 
@@ -13,7 +14,8 @@ class WarboardDaemon(Daemon):
         prune_old_keys()
         while True:
             store_pingdom_results()
-            store_newrelic_results()
+            store_newrelic_servers_results()
+            store_newrelic_infra_data()
             store_sirportly_results()
             sleep(refresh_time())
 
