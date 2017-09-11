@@ -14,6 +14,7 @@ def store_newrelic_infra_data():
     infra_results['green'] = 0
     infra_results['blue'] = 0
     infra_results['failed_accounts'] = 0
+    infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
     for account in newrelic_insights_keys:
         account_results = []

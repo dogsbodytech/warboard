@@ -5,7 +5,7 @@ from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_ser
 
 def get_newrelic_servers_data():
     newrelic_results = {}
-    for account in newrelic_keys:
+    for account in newrelic_servers_keys:
         try:
             r = requests.get(newrelic_servers_endpoint, headers={'X-Api-Key': newrelic_servers_keys[account]}, timeout=newrelic_servers_timeout)
             if r.status_code != requests.codes.ok:
