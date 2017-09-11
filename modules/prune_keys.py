@@ -5,6 +5,6 @@ def prune_old_keys():
     for key in get_all_data('pingdom_*'):
         if key.split('pingdom_')[1] not in pingdom_keys:
             delete_data(key)
-    for key in get_all_data('newrelic_*'):
-        if key.split('newrelic_')[1] not in newrelic_keys:
+    for key in get_all_data('resources_newrelic_servers_*'):
+        if key.split('resources_newrelic_servers_')[1] not in newrelic_keys:
             delete_data(key)

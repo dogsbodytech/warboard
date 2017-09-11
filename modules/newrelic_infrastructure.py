@@ -2,7 +2,7 @@ import requests
 import json
 import time
 from misc import log_messages, chain_results
-from config import insights_endpoint, infra_query, insights_timeout, insights_keys
+from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys
 
 def store_newrelic_infra_data():
     """
@@ -15,11 +15,11 @@ def store_newrelic_infra_data():
     infra_results['blue'] = 0
     infra_results['failed_accounts'] = 0
     infra_results['successful_checks'] = 0
-    for account in insights_keys:
+    for account in newrelic_insights_keys:
         account_results = []
-        number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(insights_endpoint, insights_keys[account]['account_number'])
+        number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'])
         try:
-            r = requests.get(number_or_hosts_url, headers={'X-Query-Key': insights_keys[account]['api_key']}, timeout=insights_timeout)
+            r = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
             r.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_accounts'] += 1
@@ -28,9 +28,9 @@ def store_newrelic_infra_data():
 
         number_of_hosts_data = json.loads(r.text)
         number_of_hosts = number_of_hosts_data['results'][0]['uniqueCount']
-        metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(insights_endpoint, insights_keys[account]['account_number'], number_of_hosts)
+        metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'], number_of_hosts)
         try:
-            r = requests.get(metric_data_url, headers={'X-Query-Key': insights_keys[account]['api_key']}, timeout=insights_timeout)
+            r = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
             r.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_accounts'] += 1
@@ -100,7 +100,7 @@ def store_newrelic_infra_data():
 
         set_data('resources_newrelic_infra_'+account, account_results)
 
-    set_data('resources_newrelic_infrastructure', infra_results)
+    set_data('resources_success_newrelic_infrastructure', infra_results)
 
 def get_newrelic_infra_results():
     """
@@ -110,8 +110,8 @@ def get_newrelic_infra_results():
     """
     all_infra_results = []
     infra_results = {}
-    for account in insights_keys:
-        result_json = json.loads(get_data('infra_{}'.format(account)))
+    for account in newrelic_insights_keys:
+        result_json = json.loads(get_data('resources_newrelic_infra_{}'.format(account)))
         all_infra_results.append(result_json)
 
     # This is likely all broken and irrelevant
@@ -132,20 +132,12 @@ def get_newrelic_infra_results():
                 name = server['displayName']
 
             name = name[:30] # Limit NewRelic Infrastructure server names to 30 characters to not break the warboard layout
-            # not sure how this is handeling servers that are not reporting
-            #####I am leaving this here for a minute
-            check['orderby'] = max(check['summary']['cpu'], check['summary']['memory'], check['summary']['fullest_disk'], check['summary']['disk_io'])
-            if check['health_status'] == 'green':
-                newrelic_results['green'] +=1
-            elif check['health_status'] == 'orange':
-                newrelic_results['orange'] +=1
-            elif check['health_status'] == 'red':
-                newrelic_results['red'] +=1
+            ## this function needs to be written
 
-        elif check['reporting'] == False:
-            check['orderby'] = 0
-            check['health_status'] = 'blue'
-            newrelic_results['blue'] +=1
+            elif check['reporting'] == False:
+                check['orderby'] = 0
+                check['health_status'] = 'blue'
+                newrelic_results['blue'] +=1
 
     newrelic_results['red_percent'] = math.ceil(100*float(newrelic_results['red'])/float(newrelic_results['total_checks']))
     newrelic_results['green_percent'] = math.ceil(100*float(newrelic_results['green'])/float(newrelic_results['total_checks']))

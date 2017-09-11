@@ -1,9 +1,10 @@
 from newrelic_servers import get_newrelic_servers_results
 from newrelic_infrastructure import get_newrelic_infra_results
 from misc import chain_results
+from config import newrelic_servers_keys, newrelic_insights_keys
 from __future__ import division
 
-def get_resource_results(*args):
+def get_resource_results():
     """
     Called with arguments for each module that will be used, merges the lists
     returned by the modules into one list in the correct format for
@@ -22,7 +23,7 @@ def get_resource_results(*args):
     resource_results['total_accounts'] = 0
     resource_results['checks'] = []
 
-    if 'servers' in args:
+    if newrelic_servers_keys:
         newrelic_servers_results = get_newrelic_servers_results()
         resource_results['green'] += newrelic_servers_results['green']
         resource_results['red'] += newrelic_servers_results['red']
@@ -30,14 +31,14 @@ def get_resource_results(*args):
         resource_results['blue'] += newrelic_servers_results['blue']
         chain_results(resource_results['checks'], newrelic_servers_results['checks'])
 
-    if 'infra' in args:
+    if newrelic_insights_keys:
         newrelic_infra_results = get_newrelic_infra_results()
         resource_results['green'] += newrelic_infra_results['green']
         resource_results['red'] += newrelic_infra_results['red']
         resource_results['orange'] += newrelic_infra_results['orange']
         resource_results['blue'] += newrelic_infra_results['blue']
         chain_results(resource_results['checks'], newrelic_infra_results['checks'])
-    
+
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100
     resource_results['orange_percent'] = ( resource_results['red'] / total_results ) * 100

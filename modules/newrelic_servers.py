@@ -1,13 +1,13 @@
 import requests, math, json
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
-from config import newrelic_keys, newrelic_timeout, newrelic_endpoint
+from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
 
 def get_newrelic_servers_data():
     newrelic_results = {}
     for account in newrelic_keys:
         try:
-            r = requests.get(newrelic_endpoint, headers={'X-Api-Key': newrelic_keys[account]}, timeout=newrelic_timeout)
+            r = requests.get(newrelic_servers_endpoint, headers={'X-Api-Key': newrelic_servers_keys[account]}, timeout=newrelic_servers_timeout)
             if r.status_code != requests.codes.ok:
                 raise requests.exceptions.RequestException
             else:
@@ -33,7 +33,7 @@ def store_newrelic_servers_results():
 def get_newrelic_servers_results():
     all_results = []
     newrelic_results = {}
-    for account in newrelic_keys:
+    for account in newrelic_servers_keys:
         result_json = json.loads(get_data('resources_newrelic_servers_'+account)) # Pull the NR data from redis load it as json and append to a list
         all_results.append(result_json['servers'])
     newrelic_results['total_newrelic_accounts'] = int(get_data('resources_total_newrelic_servers_accounts'))

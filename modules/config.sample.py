@@ -16,11 +16,11 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
 
 # NewRelic Servers details
-newrelic_endpoint = 'https://api.newrelic.com/v2/servers.json'
-newrelic_timeout = 10 # How long the warboard should wait on the newrelic API
+newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
+newrelic_servers_timeout = 10 # How long the warboard should wait on the newrelic API
 # All you need for adding newrelic accounts is the API key.
 # You can split the account name with a pipe '|' for a subcustomer, support for this will be added in future versions. e.g account1|subcustomer
-newrelic_keys = {'account1': 'api_key',
+newrelic_servers_keys = {'account1': 'api_key',
                  'account2': 'api_key',
                  'account3': 'api_key',
                  'account1|subcustomer': 'api_key',}
@@ -28,9 +28,9 @@ newrelic_keys = {'account1': 'api_key',
 # NewRelic Infrastructure details
 # get requests (infra_endpoint{account_number}infra_query) are made to the
 # NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
-insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
-insights_timeout = 10
-insights_keys = {'account_name1':  {'account_number': 'number_here',
+newrelic_insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
+newrelic_insights_timeout = 10
+newrelic_insights_keys = {'account_name1':  {'account_number': 'number_here',
                                     'api_key': 'key_here'},
                  'account_name2':  {'account_number': 'number_here',
                                     'api_key': 'key_here'}}
