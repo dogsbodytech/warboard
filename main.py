@@ -15,7 +15,7 @@ def warboard():
         title=warboard_title,
         refresh_time=refresh_time(),
         pingdom_results=get_pingdom_results(),
-        resource_results=get_resource_results()
+        resource_results=get_resource_results(),
         sirportly_results=get_sirportly_results(),
         sirportly_users=sirportly_users,
         sirportly_user_order=sirportly_user_order,
