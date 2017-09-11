@@ -29,7 +29,6 @@ newrelic_keys = {'account1': 'api_key',
 # get requests (infra_endpoint{account_number}infra_query) are made to the
 # NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
 insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
-infra_query = '/query?nrql=SELECT%20%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20SINCE%2030%20seconds%20ago'
 insights_timeout = 10
 insights_keys = {'account_name1':  {'account_number': 'number_here',
                                     'api_key': 'key_here'},

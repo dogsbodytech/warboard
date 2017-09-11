@@ -17,10 +17,20 @@ def store_newrelic_infra_data():
     infra_results['successful_checks'] = 0
     for account in insights_keys:
         account_results = []
-        url = '{}{}{}'.format(insights_endpoint, insights_keys[account]['account_number'], infra_query)
-        infra_results[account] = None
+        number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(insights_endpoint, insights_keys[account]['account_number'])
         try:
-            r = requests.get(url, headers={'X-Query-Key': insights_keys[account]['api_key']}, timeout=insights_timeout)
+            r = requests.get(number_or_hosts_url, headers={'X-Query-Key': insights_keys[account]['api_key']}, timeout=insights_timeout)
+            r.raise_for_status()
+        except requests.exceptions.RequestException:
+            infra_results['failed_accounts'] += 1
+            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
+            continue
+
+        number_of_hosts_data = json.loads(r.text)
+        number_of_hosts = number_of_hosts_data['results'][0]['uniqueCount']
+        metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(insights_endpoint, insights_keys[account]['account_number'], number_of_hosts)
+        try:
+            r = requests.get(metric_data_url, headers={'X-Query-Key': insights_keys[account]['api_key']}, timeout=insights_timeout)
             r.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_accounts'] += 1
@@ -28,43 +38,22 @@ def store_newrelic_infra_data():
             continue
 
         account_infra_data = json.loads(r.text)
-
-        # The newrelic insights api returns multiple timestamps with thier own
-        # data for each api call, we are only interested in the latest one per
-        # host which will all be the same timestamp the next section gets that
-        # timestamp
-
-        # I would like to compare the timestamp to the system's time
-        # however I don't like the format newrelic gives them in and can't see
-        # they are handling timezones / decide how I would
-        latest_timestamp == 0
-        for num, host_data in enumerate(account_infra_data['results'][0]['events']):
-            if account_infra_data['results'][0]['events'][num]['timestamp'] >= latest_timestamp:
-                latest_timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
-
-        # This is only likely to occur when newrelic insights hasn't returned
-        # any host data but has still passed all of the headers I can get this
-        # by passing time of 1 seconds instead of 30 and suspect that if no
-        # servers are reporting in we would also do
-        # The response looks like:
-        """
-        u'{"results":[{"events":[]}],"performanceStats":{"fileReadCount":1,"decompressionCount":0,"decompressionCacheEnabledCount":0,"inspectedCount":8815,"omittedCount":0,"matchCount":0,"processCount":1,"rawBytes":1573552,"decompressedBytes":1573552,"ioBytes":1573552,"decompressionOutputBytes":0,"responseBodyBytes":161,"fileProcessingTime":1,"mergeTime":0,"ioTime":1,"decompressionTime":0,"decompressionCacheGetTime":0,"decompressionCachePutTime":0,"wallClockTime":8,"fullCacheHits":0,"partialCacheHits":0,"cacheMisses":0,"cacheSkipped":1,"maxInspectedCount":8815,"minInspectedCount":8815,"slowLaneFiles":0,"slowLaneFileProcessingTime":0,"slowLaneWaitTime":0,"sumSubqueryWeight":1.0,"sumFileProcessingTimePercentile":0.0,"subqueryWeightUpdates":0,"sumSubqueryWeightStartFileProcessingTime":13,"runningQueriesTotal":2,"ignoredFiles":0},"metadata":{"eventTypes":["SystemSample"],"eventType":"SystemSample","openEnded":true,"beginTime":"2017-09-08T16:43:15Z","endTime":"2017-09-08T16:43:16Z","beginTimeMillis":1504888995663,"endTimeMillis":1504888996663,"rawSince":"1 SECONDS AGO","rawUntil":"`now`","rawCompareWith":"","guid":"fd637d85-75dd-322a-3f4f-d6d4cfa7e5bf","routerGuid":"c0fd1652-bd5b-cb50-69e8-5674130dbcff","messages":[],"contents":[{"function":"events","limit":10,"columns":["displayName","fullHostname","cpuPercent","memoryUsedBytes","memoryTotalBytes","diskUtilizationPercent","diskUsedPercent","timestamp"],"order":{"column":"timestamp","descending":true}}]}}'
-        """
-        if latest_timestamp == 0:
-            infra_results['failed_accounts'] += 1
-            log_messages('Did not recieve NewRelic Infrastructure data for {} error'.format(account))
-            continue
-
-        # Filter down to only the latest timestamp
-        for num, host_data in enumerate(account_infra_data['results'][0]['events']):
-            if account_infra_data['results'][0]['events'][num]['timestamp'] != latest_timestamp:
-                continue
-
+        for host_data in account_infra_data['results'][0]['events']:
+            infra_results['total_checks'] += 1
             infrastructure_host = {}
             # name is the display name, if it is not set it is the hostname
             infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['fullHostname']
             if account_infra_data['results'][0]['events'][num]['displayName']:
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
+
+            # The warboard script will check this was in the last 5 minutes
+            # and react acordingly - set to blue order by 0
+            # It will make it's own api call to avoid using different timezones
+            # and converting from how newrelic want to format the time
+            infrastructure_host['timestamp'] = account_infra_data['results'][0]['events'][num]['timestamp']
+            # The warboard will need to have a list of hosts and check if they
+            # are no-longer present since this will be overwriting the key in
+            # redis when it gets a response for half of the hosts/accounts
 
             # data we are interested in needs to be in a format similar to
             # newrelic servers in order to easily be displayed along side it
@@ -78,8 +67,7 @@ def store_newrelic_infra_data():
             # and react acordingly - set to blue order by 0
             # The warboard will need to have a list of hosts and check if they
             # are no-longer present since this will be overwriting the key in
-            # when it gets a response for half of the hosts/accounts
-            infrastructure_host['latest_update'] = time.time()
+            # redis when it gets a response for half of the hosts/accounts
 
             # Setting the orderby using the same field as newrelic servers
             infrastructure_host['orderby'] = max(
@@ -110,9 +98,9 @@ def store_newrelic_infra_data():
             infra_results['successful_checks'] += 1
             account_results.append(infrastructure_host)
 
-        set_data('newrelic_infra_'+account, account_results)
+        set_data('resources_newrelic_infra_'+account, account_results)
 
-    set_data('newrelic_infrastructure', infra_results)
+    set_data('resources_newrelic_infrastructure', infra_results)
 
 def get_newrelic_infra_results():
     """
@@ -127,8 +115,8 @@ def get_newrelic_infra_results():
         all_infra_results.append(result_json)
 
     # This is likely all broken and irrelevant
-    infra_results['total_infra_accounts'] = int(get_data('total_infra_accounts'))
-    infra_results['failed_infra'] = int(get_data('failed_infra'))
+    infra_results['total_infra_accounts'] = int(get_data('resources_total_infra_accounts'))
+    infra_results['failed_infra'] = int(get_data('resources_failed_infra'))
     infra_results['working_infra'] = infra_results['total_infra_accounts']-infra_results['failed_infra']
     infra_results['working_percentage'] = int(float(infra_results['working_infra'])/float(infra_results['total_infra_accounts'])*100)
     infra_results['checks'] = chain_results(all_results) # Store all the NewRelic Infrastructure results as 1 chained list
