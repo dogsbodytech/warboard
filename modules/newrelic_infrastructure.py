@@ -1,6 +1,6 @@
 import requests
 import json
-import time
+from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys
 
