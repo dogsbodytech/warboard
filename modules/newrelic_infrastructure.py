@@ -39,7 +39,7 @@ def store_newrelic_infra_data():
             continue
 
         account_infra_data = json.loads(r.text)
-        for host_data in account_infra_data['results'][0]['events']:
+        for num, host_data in enumerate(account_infra_data['results'][0]['events']):
             infra_results['total_checks'] += 1
             infrastructure_host = {}
             # name is the display name, if it is not set it is the hostname
