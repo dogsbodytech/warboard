@@ -1,8 +1,8 @@
+from __future__ import division
 from newrelic_servers import get_newrelic_servers_results
 from newrelic_infrastructure import get_newrelic_infra_results
 from misc import chain_results
 from config import newrelic_servers_keys, newrelic_insights_keys
-from __future__ import division
 
 def get_resource_results():
     """
