@@ -134,7 +134,7 @@ def get_newrelic_infra_results():
             name = name[:30] # Limit NewRelic Infrastructure server names to 30 characters to not break the warboard layout
             ## this function needs to be written
 
-            elif check['reporting'] == False:
+            if check['reporting'] == False:
                 check['orderby'] = 0
                 check['health_status'] = 'blue'
                 newrelic_results['blue'] +=1
