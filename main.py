@@ -3,7 +3,6 @@ from modules.misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title
 from modules.pingdom import get_pingdom_results
 from modules.resources import get_resource_results
-from modules.newrelic import get_newrelic_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
@@ -21,6 +20,7 @@ def warboard():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
+"""
 @app.route('/stats', methods=['POST'])
 def stats():
     if 'key' not in request.form:
@@ -47,6 +47,7 @@ def stats():
     else:
         return(jsonify(status='error',
             message='Invalid Key')), 401
+"""
 
 if __name__ == '__main__': # Used for testing on servers without an uwsgi/nginx setup
     app.run(debug=True)
