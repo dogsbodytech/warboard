@@ -88,7 +88,7 @@ def store_newrelic_infra_data():
             elif infrastructure_host['orderby'] > 100:
                 infrastructure_host['health_status'] = 'orange'
                 infra_results['orange'] += 1
-            elif: infrastructure_host['orderby'] == 0:
+            elif infrastructure_host['orderby'] == 0:
                 infrastructure_host['health_status'] = 'blue'
                 infra_results['blue'] += 1
             else:
