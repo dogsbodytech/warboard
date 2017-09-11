@@ -97,7 +97,8 @@ def store_newrelic_infra_data():
                 infra_results['green'] += 1
 
             infra_results['successful_checks'] += 1
-            account_results.append(infrastructure_host)
+            json_infrastructure_host = json.dumps(infrastructure_host)
+            account_results.append(json_infrastructure_host)
 
         set_data('resources_newrelic_infra_'+account, account_results)
 
