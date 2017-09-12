@@ -14,10 +14,12 @@ def store_newrelic_infra_data():
     infra_results['green'] = 0
     infra_results['blue'] = 0
     infra_results['failed_accounts'] = 0
+    infra_results['total_accounts'] = 0
     infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
     for account in newrelic_insights_keys:
         account_results = []
+        infra_results['total_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'])
         try:
             r = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
@@ -43,6 +45,7 @@ def store_newrelic_infra_data():
             infra_results['total_checks'] += 1
             infrastructure_host = {}
             # name is the display name, if it is not set it is the hostname
+            # I will crop the name in the jinja filter
             infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['fullHostname']
             if account_infra_data['results'][0]['events'][num]['displayName']:
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
@@ -111,41 +114,16 @@ def get_newrelic_infra_results():
     function
     """
     all_infra_results = []
-    infra_results = {}
+    infra_results = get_data('resources_success_newrelic_infrastructure')
     for account in newrelic_insights_keys:
+        # I need to retrieve the list differently or store it dirrerently
         result_json = json.loads(get_data('resources_newrelic_infra_{}'.format(account)))
         all_infra_results.append(result_json)
+        # the code needs to check the age of the data to make sure it is not old
+        # it also needs to check for hosts that have vanished and deal with them
+        # they need to be blue with order by 0, it needs the way it is checking
+        # this to have a timeout of say a week in redis keys or I need to add a
+        # section to the prune keys file
 
-    # This is likely all broken and irrelevant
-    infra_results['total_infra_accounts'] = int(get_data('resources_total_infra_accounts'))
-    infra_results['failed_infra'] = int(get_data('resources_failed_infra'))
-    infra_results['working_infra'] = infra_results['total_infra_accounts']-infra_results['failed_infra']
-    infra_results['working_percentage'] = int(float(infra_results['working_infra'])/float(infra_results['total_infra_accounts'])*100)
     infra_results['checks'] = chain_results(all_results) # Store all the NewRelic Infrastructure results as 1 chained list
-    infra_results['total_checks'] = len(infra_results['checks'])
-    infra_results['green'] = 0
-    infra_results['red'] = 0
-    infra_results['orange'] = 0
-    infra_results['blue'] = 0
-    for customer in infra_results['checks']: # Categorize all the checks as up/down and use the highest metric for each item as the thing we order by
-        for server in customer['results'][0]['events']:
-            name = server['fullHostname']
-            if server['displayName'] != None:
-                name = server['displayName']
-
-            name = name[:30] # Limit NewRelic Infrastructure server names to 30 characters to not break the warboard layout
-            ## this function needs to be written
-
-            if check['reporting'] == False:
-                check['orderby'] = 0
-                check['health_status'] = 'blue'
-                newrelic_results['blue'] +=1
-
-    newrelic_results['red_percent'] = math.ceil(100*float(newrelic_results['red'])/float(newrelic_results['total_checks']))
-    newrelic_results['green_percent'] = math.ceil(100*float(newrelic_results['green'])/float(newrelic_results['total_checks']))
-    newrelic_results['orange_percent'] = math.ceil(100*float(newrelic_results['orange'])/float(newrelic_results['total_checks']))
-    newrelic_results['blue_percent'] = 100-newrelic_results['red_percent']-newrelic_results['green_percent']-newrelic_results['orange_percent']
-    if newrelic_results['blue_percent'] < 0:
-        newrelic_results['green_percent'] = newrelic_results['green_percent']-abs(newrelic_results['blue_percent'])
-
-    return(newrelic_results)
+    return infra_results
