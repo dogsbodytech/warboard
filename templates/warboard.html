@@ -67,22 +67,22 @@
         <tbody>
         {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'red' %}
-		        <tr class="danger lead"><td>{{ check['name'][:resources_max_name_length] }}</td><td>{{ check['summary']['cpu'][:resources_cpu_max_figures] }}%</td><td>{{ check['summary']['memory'][:resources_memory_max_figures] }}%</td><td>{{ check['summary']['disk_io'][:resources_disk_io_max_figures] }}%</td><td>{{ check['summary']['fullest_disk'][:resources_fullest_disk_max_figures] }}%</td></tr>
+		        <tr class="danger lead"><td>{{ str(check['name'])[:resources_max_name_length] }}</td><td>{{ str(check['summary']['cpu'])[:resources_cpu_max_figures] }}%</td><td>{{ str(check['summary']['memory'])[:resources_memory_max_figures] }}%</td><td>{{ str(check['summary']['disk_io'])[:resources_disk_io_max_figures] }}%</td><td>{{ str(check['summary']['fullest_disk'])[:resources_fullest_disk_max_figures] }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'orange' %}
-		        <tr class="warning lead"><td>{{ check['name'][:resources_max_name_length] }}</td><td>{{ check['summary']['cpu'][:resources_cpu_max_figures] }}%</td><td>{{ check['summary']['memory'][:resources_memory_max_figures] }}%</td><td>{{ check['summary']['disk_io'][:resources_disk_io_max_figures] }}%</td><td>{{ check['summary']['fullest_disk'][:resources_fullest_disk_max_figures] }}%</td></tr>
+		        <tr class="warning lead"><td>{{ str(check['name'])[:resources_max_name_length] }}</td><td>{{ str(check['summary']['cpu'])[:resources_cpu_max_figures] }}%</td><td>{{ str(check['summary']['memory'])[:resources_memory_max_figures] }}%</td><td>{{ str(check['summary']['disk_io'])[:resources_disk_io_max_figures] }}%</td><td>{{ str(check['summary']['fullest_disk'])[:resources_fullest_disk_max_figures] }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
-		        <tr class="success lead"><td>{{ check['name'][:resources_max_name_length] }}</td><td>{{ check['summary']['cpu'][:resources_cpu_max_figures] }}%</td><td>{{ check['summary']['memory'][:resources_memory_max_figures] }}%</td><td>{{ check['summary']['disk_io'][:resources_disk_io_max_figures] }}%</td><td>{{ check['summary']['fullest_disk'][:resources_fullest_disk_max_figures] }}%</td></tr>
+		        <tr class="success lead"><td>{{ str(check['name'])[:resources_max_name_length] }}</td><td>{{ str(check['summary']['cpu'])[:resources_cpu_max_figures] }}%</td><td>{{ str(check['summary']['memory'])[:resources_memory_max_figures] }}%</td><td>{{ str(check['summary']['disk_io'])[:resources_disk_io_max_figures] }}%</td><td>{{ str(check['summary']['fullest_disk'])[:resources_fullest_disk_max_figures] }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
         {% for check in resource_results['checks']|sort(attribute='name') %}
           {% if check['health_status'] == 'blue' %}
-            <tr class="info lead"><td>{{ check['name'][:resources_max_name_length] }}</td><td></td><td></td><td></td><td></td></tr>
+            <tr class="info lead"><td>{{ str(check['name'])[:resources_max_name_length] }}</td><td></td><td></td><td></td><td></td></tr>
           {% endif %}
         {% endfor %}
         </tbody>
