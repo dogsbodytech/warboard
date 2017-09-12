@@ -40,7 +40,7 @@ def get_resource_results():
         resource_results['orange'] += newrelic_infra_results['orange']
         resource_results['blue'] += newrelic_infra_results['blue']
         resource_results['checks'] += newrelic_servers_results['checks']
-        resource_results['failed_accounts'] += newrelic_servers_results['failed_infra']
+        resource_results['failed_accounts'] += newrelic_servers_results['failed_infra_accounts']
         resource_results['total_accounts'] += newrelic_servers_results['total_infra_accounts']
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
