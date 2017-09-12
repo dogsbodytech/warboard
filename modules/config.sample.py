@@ -14,6 +14,12 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account3': {'api_key': 'account3@example.org:password'},
                 'account4': {'api_key': 'account3@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
+# Resources general details
+resources_max_name_length = 30
+resources_cpu_max_figures = 3
+resources_memory_max_figures = 3
+resources_disk_io_max_figures = 3
+resources_fullest_disk_max_figures = 3
 
 # NewRelic Servers details
 newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
