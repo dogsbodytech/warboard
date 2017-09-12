@@ -115,7 +115,13 @@ def get_newrelic_infra_results():
     function
     """
     all_infra_results = []
-    infra_results = get_data('resources_success_newrelic_infrastructure')
+    infra_results_string = get_data('resources_success_newrelic_infrastructure')
+    # Not going to check resources_success_newrelic_infrastructure is present
+    # because if it isn't then we have a bigger problem, I want to put some
+    # error handling higher up so that when say infrastructure of sirportly
+    # is broken it alerts you but displays a big warning, for now I'll leave
+    # this as causing a 500 error since any other unseen issues will also do so
+    infra_results = ast.literal_eval(infra_results_string)
     for account in newrelic_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
         account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
@@ -123,7 +129,7 @@ def get_newrelic_infra_results():
             infra_results['failed_accounts'] += 1
             continue
 
-        account_checks_data_list = ast(account_checks_string)
+        account_checks_data_list = ast.literal_eval(account_checks_string)
         # the code needs to check the age of the data to make sure it is not old
         # it also needs to check for hosts that have vanished and deal with them
         # they need to be blue with order by 0, it needs the way it is checking
