@@ -17,10 +17,10 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
 
 # Resources general details
 resources_max_name_length = 30
-resources_cpu_max_figures = 3
-resources_memory_max_figures = 3
-resources_disk_io_max_figures = 3
-resources_fullest_disk_max_figures = 3
+resources_cpu_max_length = 4
+resources_memory_max_length = 4
+resources_disk_io_max_length = 4
+resources_fullest_disk_max_length = 4
 
 # NewRelic Servers details
 newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
