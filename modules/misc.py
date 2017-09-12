@@ -11,7 +11,7 @@ def log_messages(message, priority):
     elif priority == 'warning':
         logging.warning(message)
 
-def chain_results(*results):
+def chain_results(results):
     return(list(itertools.chain(*results))) # This chains all results together into one tuple
 
 def refresh_time():
