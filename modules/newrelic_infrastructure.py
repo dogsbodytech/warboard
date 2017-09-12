@@ -120,7 +120,7 @@ def get_newrelic_infra_results():
     # because if it isn't then we have a bigger problem, I want to put some
     # error handling higher up so that when say infrastructure of sirportly
     # is broken it alerts you but displays a big warning, for now I'll leave
-    # this as causing a 500 error since any other unseen issues will also do so
+    # this as causing a 500 error since any other unseen issues will also do
     infra_results = ast.literal_eval(infra_results_string)
     for account in newrelic_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
@@ -135,7 +135,7 @@ def get_newrelic_infra_results():
         # they need to be blue with order by 0, it needs the way it is checking
         # this to have a timeout of say a week in redis keys or I need to add a
         # section to the prune keys file
-        all_infra_results.append(result_json)
+        all_infra_results.append(account_checks_data_list)
 
-    infra_results['checks'] = chain_results(all_results) # Store all the NewRelic Infrastructure results as 1 chained list
+    infra_results['checks'] = chain_results(all_infra_results) # Store all the NewRelic Infrastructure results as 1 chained list
     return infra_results
