@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 from modules.misc import refresh_time
-from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, resources_cpu_max_figures, resources_memory_max_figures, resources_disk_io_max_figures, resources_fullest_disk_max_figures
+from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, resources_cpu_max_length, resources_memory_max_length, resources_disk_io_max_length, resources_fullest_disk_max_length
 from modules.pingdom import get_pingdom_results
 from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
@@ -16,10 +16,10 @@ def warboard():
         pingdom_results=get_pingdom_results(),
         resource_results=get_resource_results(),
         resources_max_name_length=resources_max_name_length,
-        resources_cpu_max_figures=resources_cpu_max_figures,
-        resources_memory_max_figures=resources_memory_max_figures,
-        resources_disk_io_max_figures=resources_disk_io_max_figures,
-        resources_fullest_disk_max_figures=resources_fullest_disk_max_figures,
+        resources_cpu_max_length=resources_cpu_max_length,
+        resources_memory_max_length=resources_memory_max_length,
+        resources_disk_io_max_length=resources_disk_io_max_length,
+        resources_fullest_disk_max_length=resources_fullest_disk_max_length,
         sirportly_results=get_sirportly_results(),
         sirportly_users=sirportly_users,
         sirportly_user_order=sirportly_user_order,
