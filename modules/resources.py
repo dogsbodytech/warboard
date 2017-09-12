@@ -19,6 +19,7 @@ def get_resource_results():
     resource_results['red'] = 0
     resource_results['orange'] = 0
     resource_results['blue'] = 0
+    resource_results['failed_accounts'] = 0
     resource_results['total_accounts'] = 0
     resource_results['checks'] = []
 
@@ -29,6 +30,8 @@ def get_resource_results():
         resource_results['orange'] += newrelic_servers_results['orange']
         resource_results['blue'] += newrelic_servers_results['blue']
         resource_results['checks'] = resource_results['checks'] + newrelic_servers_results['checks']
+        resource_results['failed_accounts'] += newrelic_servers_results['failed_newrelic']
+        resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_accounts']
 
 #    if newrelic_insights_keys:
 #        newrelic_infra_results = get_newrelic_infra_results()
@@ -45,7 +48,6 @@ def get_resource_results():
     # I want the percentage to always be 100 and green seems the most disposable and least affected by any rounding issues
     resource_results['green_percent'] = 100 - ( resource_results['red_percent'] + resource_results['orange_percent'] + resource_results['blue_percent'] )
 
-    newrelic_results['working_newrelic'] = newrelic_results['total_newrelic_accounts']-newrelic_results['failed_newrelic']
-    newrelic_results['working_percentage'] = int(float(newrelic_results['working_newrelic'])/float(newrelic_results['total_newrelic_accounts'])*100)
+    resource_results['working_percentage'] = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
 
     return resource_results
