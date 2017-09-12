@@ -1,5 +1,6 @@
 import requests
 import json
+import ast
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys
@@ -117,13 +118,18 @@ def get_newrelic_infra_results():
     infra_results = get_data('resources_success_newrelic_infrastructure')
     for account in newrelic_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
-        result_json = json.loads(get_data('resources_newrelic_infra_{}'.format(account)))
-        all_infra_results.append(result_json)
+        account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
+        if account_checks_string == None or account_checks_string == 'None' or type(account_checks_string) != str:
+            infra_results['failed_accounts'] += 1
+            continue
+
+        account_checks_data_list = ast(account_checks_string)
         # the code needs to check the age of the data to make sure it is not old
         # it also needs to check for hosts that have vanished and deal with them
         # they need to be blue with order by 0, it needs the way it is checking
         # this to have a timeout of say a week in redis keys or I need to add a
         # section to the prune keys file
+        all_infra_results.append(result_json)
 
     infra_results['checks'] = chain_results(all_results) # Store all the NewRelic Infrastructure results as 1 chained list
     return infra_results
