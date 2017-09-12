@@ -6,9 +6,8 @@ from config import newrelic_servers_keys, newrelic_insights_keys
 
 def get_resource_results():
     """
-    Called with arguments for each module that will be used, merges the lists
-    returned by the modules into one list in the correct format for
-    warboard.html to display monitored resources
+    Merges lists returned by resource modules into one list in the correct
+    format for warboard.html to display monitored resources
 
     {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
 
@@ -31,13 +30,13 @@ def get_resource_results():
         resource_results['blue'] += newrelic_servers_results['blue']
         chain_results(resource_results['checks'], newrelic_servers_results['checks'])
 
-    if newrelic_insights_keys:
-        newrelic_infra_results = get_newrelic_infra_results()
-        resource_results['green'] += newrelic_infra_results['green']
-        resource_results['red'] += newrelic_infra_results['red']
-        resource_results['orange'] += newrelic_infra_results['orange']
-        resource_results['blue'] += newrelic_infra_results['blue']
-        chain_results(resource_results['checks'], newrelic_infra_results['checks'])
+#    if newrelic_insights_keys:
+#        newrelic_infra_results = get_newrelic_infra_results()
+#        resource_results['green'] += newrelic_infra_results['green']
+#        resource_results['red'] += newrelic_infra_results['red']
+#        resource_results['orange'] += newrelic_infra_results['orange']
+#        resource_results['blue'] += newrelic_infra_results['blue']
+#        chain_results(resource_results['checks'], newrelic_infra_results['checks'])
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100
