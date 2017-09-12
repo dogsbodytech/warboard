@@ -6,6 +6,26 @@ from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
+## TODO:
+# Resources percentage bar is broken
+#
+# Check data from api is not out of date when retrieving it from redis
+#
+# Check for servers that are no longer reporting and thus have been removed
+# from redis but we should see them as not reporting, this will need a timeout
+# of say a week for when servers are removed
+#
+# Check if servers are alerting via the infrastructure api in order to assign
+# them the correct colour
+#
+# Truncate Pingdom names
+#
+# Double check that importing proper division hasn't subtly broken things
+#
+# I am justifying truncating percentages on the basis that rounding would be to
+# a certain number of decimal places not significant figures, this would be
+# a change from our current configuration
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
