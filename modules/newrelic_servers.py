@@ -19,18 +19,18 @@ def get_newrelic_servers_data():
     return(newrelic_results)
 
 def store_newrelic_servers_results():
-    failed_newrelic = 0
-    total_accounts = 0
+    failed_newrelic_servers_accounts = 0
+    total_newrelic_servers_accounts = 0
     newrelic_data = get_newrelic_servers_data() # Get all the newrelic checks
     for account in newrelic_data:
+        total_newrelic_servers_accounts+=1
         if newrelic_data[account] != None: # Check we actually got some data for a check
             set_data('resources_newrelic_servers_'+account, newrelic_data[account]) # Store it in redis
         else:
-            failed_newrelic +=1
+            failed_newrelic_servers_accounts +=1
             log_messages('Could not get newrelic servers data for '+account, 'error')
-        total_accounts+=1
-    set_data('resources_total_newrelic_servers_accounts', total_accounts)
-    set_data('resources_failed_newrelic_servers', failed_newrelic)
+    set_data('resources_total_newrelic_servers_accounts', total_newrelic_servers_accounts)
+    set_data('resources_failed_newrelic_servers', failed_newrelic_servers_accounts)
 
 def get_newrelic_servers_results():
     all_results = []
@@ -38,8 +38,8 @@ def get_newrelic_servers_results():
     for account in newrelic_servers_keys:
         result_json = json.loads(get_data('resources_newrelic_servers_'+account)) # Pull the NR data from redis load it as json and append to a list
         all_results.append(result_json['servers'])
-    newrelic_results['total_newrelic_accounts'] = int(get_data('resources_total_newrelic_servers_accounts'))
-    newrelic_results['failed_newrelic'] = int(get_data('resources_failed_newrelic_servers'))
+    newrelic_results['total_newrelic_servers_accounts'] = int(get_data('resources_total_newrelic_servers_accounts'))
+    newrelic_results['failed_newrelic_servers_accounts'] = int(get_data('resources_failed_newrelic_servers'))
     newrelic_results['checks'] = chain_results(all_results) # Store all the nr results as 1 chained list
     newrelic_results['total_checks'] = len(newrelic_results['checks'])
     newrelic_results['green'] = 0

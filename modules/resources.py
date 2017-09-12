@@ -30,8 +30,8 @@ def get_resource_results():
         resource_results['orange'] += newrelic_servers_results['orange']
         resource_results['blue'] += newrelic_servers_results['blue']
         resource_results['checks'] += newrelic_servers_results['checks']
-        resource_results['failed_accounts'] += newrelic_servers_results['failed_newrelic']
-        resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_accounts']
+        resource_results['failed_accounts'] += newrelic_servers_results['failed_newrelic_servers_accounts']
+        resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts']
 
     if newrelic_insights_keys:
         newrelic_infra_results = get_newrelic_infra_results()
@@ -39,9 +39,9 @@ def get_resource_results():
         resource_results['red'] += newrelic_infra_results['red']
         resource_results['orange'] += newrelic_infra_results['orange']
         resource_results['blue'] += newrelic_infra_results['blue']
-        resource_results['checks'] += newrelic_servers_results['checks']
-        resource_results['failed_accounts'] += newrelic_servers_results['failed_infra_accounts']
-        resource_results['total_accounts'] += newrelic_servers_results['total_infra_accounts']
+        resource_results['checks'] += newrelic_infra_results['checks']
+        resource_results['failed_accounts'] += newrelic_infra_results['failed_newrelic_infra_accounts']
+        resource_results['total_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts']
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100

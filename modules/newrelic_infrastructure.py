@@ -14,19 +14,19 @@ def store_newrelic_infra_data():
     infra_results['orange'] = 0
     infra_results['green'] = 0
     infra_results['blue'] = 0
-    infra_results['failed_infa_accounts'] = 0
-    infra_results['total_infa_accounts'] = 0
+    infra_results['failed_newrelic_infra_accounts'] = 0
+    infra_results['total_newrelic_infra_accounts'] = 0
     infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
     for account in newrelic_insights_keys:
         account_results = []
-        infra_results['total_infa_accounts'] += 1
+        infra_results['total_newrelic_infra_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'])
         try:
             r = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
             r.raise_for_status()
         except requests.exceptions.RequestException:
-            infra_results['failed_infa_accounts'] += 1
+            infra_results['failed_newrelic_infra_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
             continue
 
@@ -37,7 +37,7 @@ def store_newrelic_infra_data():
             r = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
             r.raise_for_status()
         except requests.exceptions.RequestException:
-            infra_results['failed_infa_accounts'] += 1
+            infra_results['failed_newrelic_infra_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
             continue
 
@@ -126,7 +126,7 @@ def get_newrelic_infra_results():
         # I need to retrieve the list differently or store it dirrerently
         account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
         if account_checks_string == None or account_checks_string == 'None' or type(account_checks_string) != str:
-            infra_results['failed_infa_accounts'] += 1
+            infra_results['failed_newrelic_infra_accounts'] += 1
             continue
 
         account_checks_data_list = ast.literal_eval(account_checks_string)
