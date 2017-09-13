@@ -37,10 +37,12 @@ newrelic_servers_keys = {'account1': 'api_key',
 # NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
 newrelic_insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
 newrelic_insights_timeout = 10
-newrelic_insights_keys = {'account_name1':  {'account_number': 'number_here',
-                                    'api_key': 'key_here'},
-                 'account_name2':  {'account_number': 'number_here',
-                                    'api_key': 'key_here'}}
+newrelic_insights_keys =   {'account_name1':  {'account_number': 'number_here', 'api_key': 'key_here'},
+                            'account_name2':  {'account_number': 'number_here', 'api_key': 'key_here'}}
+# Specify how many seconds old api data may be before the related server is
+# regarded as not reporting
+newrelic_infrastructure_max_data_age = 300
+
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
 sirportly_token = 'token_here'

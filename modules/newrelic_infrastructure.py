@@ -1,9 +1,12 @@
 import requests
 import json
 import ast
+import time
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
-from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys
+from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys, newrelic_infrastructure_max_data_age
+
+# This module assumes that newrelic insights returns the most recent data first
 
 def store_newrelic_infra_data():
     """
@@ -23,25 +26,31 @@ def store_newrelic_infra_data():
         infra_results['total_newrelic_infra_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'])
         try:
-            r = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
-            r.raise_for_status()
+            number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
+            number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
             continue
 
-        number_of_hosts_data = json.loads(r.text)
+        # It may be possible for 3 servers to be found, one of which has not
+        # reported for a long time and that when limiting by number of results
+        # two responses are recieved for one server, one for another and none
+        # for the third, the code doesn't currently check this and I expect it
+        # would pass both results through and cause duplicate rows on the
+        # warboard
+        number_of_hosts_data = json.loads(number_of_hosts_response.text)
         number_of_hosts = number_of_hosts_data['results'][0]['uniqueCount']
         metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'], number_of_hosts)
         try:
-            r = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
-            r.raise_for_status()
+            metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
+            metric_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
             continue
 
-        account_infra_data = json.loads(r.text)
+        account_infra_data = json.loads(metric_data_response.text)
         for num, host_data in enumerate(account_infra_data['results'][0]['events']):
             infra_results['total_checks'] += 1
             infrastructure_host = {}
@@ -124,6 +133,7 @@ def get_newrelic_infra_results():
     for account in newrelic_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
         account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
+        retrieved_data_time = time.time()
         if account_checks_string == None or account_checks_string == 'None' or type(account_checks_string) != str:
             infra_results['failed_newrelic_infra_accounts'] += 1
             continue
@@ -134,6 +144,13 @@ def get_newrelic_infra_results():
         # they need to be blue with order by 0, it needs the way it is checking
         # this to have a timeout of say a week in redis keys or I need to add a
         # section to the prune keys file
+
+        for host in account_checks_data_list['checks']:
+            if retrieved_data_time - ( host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
+                # Set servers that haven't reported within newrelic_infrastructure_max_data_age
+                # seconds to blue
+                host['health_status'] = 'blue'
+
         all_infra_results.append(account_checks_data_list)
 
     infra_results['checks'] = chain_results(all_infra_results) # Store all the NewRelic Infrastructure results as 1 chained list
