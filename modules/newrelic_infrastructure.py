@@ -162,6 +162,8 @@ def get_newrelic_infra_results():
         # section to the prune keys file
 
         for host in account_checks_data_list:
+            # NewRelic Insights returns the timestamp as milli-seconds since
+            # epoch, I am converting everything to seconds
             if retrieved_data_time - ( host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
                 # Set servers that haven't reported within newrelic_infrastructure_max_data_age
                 # seconds to blue and orderby to 0
