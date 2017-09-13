@@ -73,10 +73,10 @@ def store_newrelic_infra_data():
             # newrelic servers in order to easily be displayed along side it
             memory_percentage = None
             if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
-                memory = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100,
+                memory = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
 
             infrastructure_host['summary'] = {
-                'memory': memory_percentage
+                'memory': memory_percentage,
                 'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
                 'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
                 'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
