@@ -145,7 +145,7 @@ def get_newrelic_infra_results():
         # this to have a timeout of say a week in redis keys or I need to add a
         # section to the prune keys file
 
-        for host in account_checks_data_list['checks']:
+        for host in account_checks_data_list:
             if retrieved_data_time - ( host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
                 # Set servers that haven't reported within newrelic_infrastructure_max_data_age
                 # seconds to blue
