@@ -71,8 +71,12 @@ def store_newrelic_infra_data():
 
             # data we are interested in needs to be in a format similar to
             # newrelic servers in order to easily be displayed along side it
+            memory_percentage = None
+            if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
+                memory = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100,
+
             infrastructure_host['summary'] = {
-                'memory': ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100,
+                'memory': memory_percentage
                 'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
                 'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
                 'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
@@ -89,13 +93,24 @@ def store_newrelic_infra_data():
                     infrastructure_host['summary']['memory'],
                     infrastructure_host['summary']['fullest_disk'],
                     infrastructure_host['summary']['disk_io'])
+            if infrastructure_host['orderby'] == None:
+                infrastructure_host['orderby'] = 0
+                infrastructure_host['health_status'] = 'blue'
+                infra_results['blue'] += 1
+            else:
+                infrastructure_host['health_status'] = 'green'
+                infra_results['green'] += 1
 
+            # The next thing to do is to check alert status based on the
+            # infrastructure api and then assign health_status colour
+            #
             # Servers returns this, I can't see how to get it out of the
             # insights api to check if a server has exceeded warning and alert
             # thresholds we could make a call to the infrastructure api
             # however this is not a priority, for now all health_status's
             # are set based on order by where > 80 is red and > 60 is orange
             # this is disabled since we don't want it
+            """
             if infrastructure_host['orderby'] > 100:
                 infrastructure_host['health_status'] = 'red'
                 infra_results['red'] += 1
@@ -108,6 +123,7 @@ def store_newrelic_infra_data():
             else:
                 infrastructure_host['health_status'] = 'green'
                 infra_results['green'] += 1
+            """
 
             infra_results['successful_checks'] += 1
             account_results.append(infrastructure_host)
@@ -122,7 +138,7 @@ def get_newrelic_infra_results():
     and formats it ready to be merged with other resource modules by the calling
     function
     """
-    all_infra_results = []
+    all_infra_checks = []
     infra_results_string = get_data('resources_success_newrelic_infrastructure')
     # Not going to check resources_success_newrelic_infrastructure is present
     # because if it isn't then we have a bigger problem, I want to put some
@@ -148,10 +164,16 @@ def get_newrelic_infra_results():
         for host in account_checks_data_list:
             if retrieved_data_time - ( host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
                 # Set servers that haven't reported within newrelic_infrastructure_max_data_age
-                # seconds to blue
+                # seconds to blue and orderby to 0
+                # The number of each colour should be counted at the end
+                # rather than added to as we go since it would be easier to
+                # maintain
+                infra_results[host['health_status']] -= 1
+                infra_results['blue'] += 1
                 host['health_status'] = 'blue'
+                host['summary']['orderby'] = 0
 
-        all_infra_results.append(account_checks_data_list)
+        all_infra_checks.append(account_checks_data_list)
 
-    infra_results['checks'] = chain_results(all_infra_results) # Store all the NewRelic Infrastructure results as 1 chained list
+    infra_results['checks'] = chain_results(all_infra_checks) # Store all the NewRelic Infrastructure results as 1 chained list
     return infra_results
