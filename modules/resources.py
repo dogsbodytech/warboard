@@ -45,8 +45,8 @@ def get_resource_results():
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100
-    resource_results['orange_percent'] = ( resource_results['red'] / total_results ) * 100
-    resource_results['blue_percent'] = ( resource_results['red'] / total_results ) * 100
+    resource_results['orange_percent'] = ( resource_results['orange'] / total_results ) * 100
+    resource_results['blue_percent'] = ( resource_results['blue'] / total_results ) * 100
     # I want the percentage to always be 100 and green seems the most disposable and least affected by any rounding issues
     resource_results['green_percent'] = 100 - ( resource_results['red_percent'] + resource_results['orange_percent'] + resource_results['blue_percent'] )
 

@@ -7,8 +7,6 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 ## TODO:
-# Resources percentage bar is broken
-#
 # Check data from api is not out of date when retrieving it from redis
 #
 # Check for servers that are no longer reporting and thus have been removed
