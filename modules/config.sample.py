@@ -42,6 +42,11 @@ newrelic_insights_keys =   {'account_name1':  {'account_number': 'number_here', 
 # Specify how many seconds old api data may be before the related server is
 # regarded as not reporting
 newrelic_infrastructure_max_data_age = 300
+newrelic_infrastructure_endpoint = 'https://infra-api.newrelic.com/v2/alerts/conditions'
+newrelic_infrastructure_timeout = 10
+# Account name must match the account name used in the insights keys dict
+newrelic_infrastructure_keys = {'account_name1':  {'api_key': 'key_here'},
+                                'account_name2':  {'api_key': 'key_here'}}
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'

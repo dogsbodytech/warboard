@@ -4,7 +4,7 @@ import ast
 import time
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
-from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys, newrelic_infrastructure_max_data_age
+from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys, newrelic_infrastructure_max_data_age, newrelic_infrastructure_endpoint, newrelic_insights_timeout, newrelic_infrastructure_keys
 
 # This module assumes that newrelic insights returns the most recent data first
 
@@ -51,6 +51,25 @@ def store_newrelic_infra_data():
             continue
 
         account_infra_data = json.loads(metric_data_response.text)
+        # I reading the docs I want to use https://rpm.newrelic.com/api/explore/alerts_violations/list?only_open=true
+        # however the output format has an ID which I can't match to
+        # anything I can pull from the insights api and the name is the
+        # hostname with (/) appended, which makes no-sence and I don't want
+        # to assume is consistant
+        #
+        # Hence I will be using the infrastructure alerts api to get the
+        # alert conditions and ignoring the time that must be exceeded
+        # before warning since it would be too complex to implement
+        #
+        try:
+            alerts_data_response = requests.get(newrelic_infrastructure_endpoint, headers={'X-Api-Key': key}, newrelic_infrastructure_timeout)
+            alerts_data_response.raise_for_status()
+        except requests.exceptions.RequestException:
+            infra_results['failed_newrelic_infra_accounts'] += 1
+            log_messages('Could not get NewRelic Infrastructure Alerts data for {} error'.format(account))
+            continue
+
+        alerts_data = json.loads(alerts_data_response)['data']
         for num, host_data in enumerate(account_infra_data['results'][0]['events']):
             infra_results['total_checks'] += 1
             infrastructure_host = {}
@@ -59,6 +78,33 @@ def store_newrelic_infra_data():
             infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['fullHostname']
             if account_infra_data['results'][0]['events'][num]['displayName']:
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
+
+            # where green == 0, orange == 1 and red == 2, so I can use > to compare
+            most_critical_alert = 0
+            for alert in alerts_data:
+                try:
+                    if alert['enabled'] != 'True':
+                        continue
+
+                    # Trying to deal with filters is a pain.
+                    # If no filters are used then an alert affects all servers
+                    # If a filter is used I need to know which servers are
+                    # affected by the alert condition.
+                    # Currently the easiest most logical filter to add through
+                    # the interface is the entityName filter so I will assume
+                    # that we and our customers will only ever use this
+                    # I am also assuming that entityName and fullHostname are
+                    # identical (we can grab entityName name from insights if
+                    # needed but I will set that up later)
+                    if 'filter' in alert:
+                        if account_infra_data['results'][0]['events'][num]['fullHostname'] in
+                    if alert['select_value'] == 'cpuPercent':
+
+                    if alert['select_value'] == 'memoryUsedBytes/memoryTotalBytes*100':
+
+                    if alert['select_value'] == 'totalUtilizationPercent':
+
+                    if alert['select_value'] == 'diskUsedPercent':
 
             # The warboard script will check this was in the last 5 minutes
             # and react acordingly - set to blue order by 0
@@ -100,30 +146,6 @@ def store_newrelic_infra_data():
             else:
                 infrastructure_host['health_status'] = 'green'
                 infra_results['green'] += 1
-
-            # The next thing to do is to check alert status based on the
-            # infrastructure api and then assign health_status colour
-            #
-            # Servers returns this, I can't see how to get it out of the
-            # insights api to check if a server has exceeded warning and alert
-            # thresholds we could make a call to the infrastructure api
-            # however this is not a priority, for now all health_status's
-            # are set based on order by where > 80 is red and > 60 is orange
-            # this is disabled since we don't want it
-            """
-            if infrastructure_host['orderby'] > 100:
-                infrastructure_host['health_status'] = 'red'
-                infra_results['red'] += 1
-            elif infrastructure_host['orderby'] > 100:
-                infrastructure_host['health_status'] = 'orange'
-                infra_results['orange'] += 1
-            elif infrastructure_host['orderby'] == 0:
-                infrastructure_host['health_status'] = 'blue'
-                infra_results['blue'] += 1
-            else:
-                infrastructure_host['health_status'] = 'green'
-                infra_results['green'] += 1
-            """
 
             infra_results['successful_checks'] += 1
             account_results.append(infrastructure_host)
