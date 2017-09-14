@@ -3,6 +3,9 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_db = 0
 
+# Latency general details
+latency_max_name_length = 30
+
 # Pingdom details
 pingdom_endpoint = 'https://api.pingdom.com/api/2.0/checks'
 pingdom_timeout = 10 # How long the warboard should wait on the pingdom API
