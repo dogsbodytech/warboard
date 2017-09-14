@@ -28,9 +28,9 @@ newrelic_servers_timeout = 10 # How long the warboard should wait on the newreli
 # All you need for adding newrelic accounts is the API key.
 # You can split the account name with a pipe '|' for a subcustomer, support for this will be added in future versions. e.g account1|subcustomer
 newrelic_servers_keys = {'account1': 'api_key',
-                 'account2': 'api_key',
-                 'account3': 'api_key',
-                 'account1|subcustomer': 'api_key',}
+                         'account2': 'api_key',
+                         'account3': 'api_key',
+                         'account1|subcustomer': 'api_key',}
 
 # NewRelic Infrastructure details
 # get requests (infra_endpoint{account_number}infra_query) are made to the
@@ -42,11 +42,11 @@ newrelic_insights_keys =   {'account_name1':  {'account_number': 'number_here', 
 # Specify how many seconds old api data may be before the related server is
 # regarded as not reporting
 newrelic_infrastructure_max_data_age = 300
-newrelic_infrastructure_endpoint = 'https://infra-api.newrelic.com/v2/alerts/conditions'
-newrelic_infrastructure_timeout = 10
+newrelic_main_api_violation_endpoint = 'https://api.newrelic.com/v2/alerts_violations.json?only_open=true'
+newrelic_main_api_timeout = 10
 # Account name must match the account name used in the insights keys dict
-newrelic_infrastructure_keys = {'account_name1':  {'api_key': 'key_here'},
-                                'account_name2':  {'api_key': 'key_here'}}
+newrelic_main_api_keys = {'account_name1':  {'api_key': 'key_here'},
+                          'account_name2':  {'api_key': 'key_here'}}
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
