@@ -16,10 +16,6 @@ from modules.calendar_functions import get_calendar_items
 # Set a data age on monitored data - pingdom and newrelic servers
 #
 # Double check that importing proper division hasn't subtly broken things
-#
-# I am justifying truncating percentages on the basis that rounding would be to
-# a certain number of decimal places not significant figures, this would be
-# a change from our current configuration
 
 app = Flask(__name__)
 
