@@ -208,13 +208,13 @@ def get_newrelic_infra_results():
                 host['health_status'] = 'blue'
                 host['summary']['orderby'] = 0
 
-            if infrastructure_host['health_status'] = 'green':
+            if infrastructure_host['health_status'] == 'green':
                 infra_results['green'] += 1
-            elif infrastructure_host['health_status'] = 'blue':
+            elif infrastructure_host['health_status'] == 'blue':
                 infra_results['blue'] += 1
-            elif infrastructure_host['health_status'] = 'orange':
+            elif infrastructure_host['health_status'] == 'orange':
                 infra_results['orange'] += 1
-            elif infrastructure_host['health_status'] = 'red':
+            elif infrastructure_host['health_status'] == 'red':
                 infra_results['red'] += 1
 
         all_infra_checks.append(account_checks_data_list)
