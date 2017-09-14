@@ -11,10 +11,11 @@ from modules.calendar_functions import get_calendar_items
 # from redis but we should see them as not reporting, this will need a timeout
 # of say a week for when servers are removed
 #
-# Check if servers are alerting via the infrastructure api in order to assign
-# them the correct colour
-#
 # Truncate Pingdom names
+#
+# Improve error logging
+#
+# Set a data age on monitored data - pingdom and newrelic servers
 #
 # Double check that importing proper division hasn't subtly broken things
 #
