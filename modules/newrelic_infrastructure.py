@@ -4,7 +4,7 @@ import ast
 import time
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
-from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout, newrelic_main_api_keys
+from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 
 # This module assumes that newrelic insights returns the most recent data first
 
