@@ -195,18 +195,18 @@ def get_newrelic_infra_results():
         # this to have a timeout of say a week in redis keys or I need to add a
         # section to the prune keys file
 
-        for host in account_checks_data_list:
+        for infrastructure_host in account_checks_data_list:
             # NewRelic Insights returns the timestamp as milli-seconds since
             # epoch, I am converting everything to seconds
-            if retrieved_data_time - ( host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
+            if retrieved_data_time - ( infrastructure_host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
                 # Set servers that haven't reported within
                 # newrelic_infrastructure_max_data_age seconds to blue and
                 # orderby to 0
                 # The number of each colour should be counted at the end
                 # rather than added to as we go since it would be easier to
                 # maintain
-                host['health_status'] = 'blue'
-                host['summary']['orderby'] = 0
+                infrastructure_host['health_status'] = 'blue'
+                infrastructure_host['summary']['orderby'] = 0
 
             if infrastructure_host['health_status'] == 'green':
                 infra_results['green'] += 1
