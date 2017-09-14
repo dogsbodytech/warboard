@@ -3,8 +3,21 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_db = 0
 
-# Latency general details
-latency_max_name_length = 30
+# Display details
+# It is worth noting the default behavior of the flask truncate filter
+# http://jinja.pocoo.org/docs/2.9/templates/#truncate
+# Currently it avoids cutting words, gives 5 characters leeway before before
+# truncating and then appends ... to any strings that have been truncated
+latency_max_name_length = 40
+resources_max_name_length = 30
+# We are truncating percentages rather than rounding them to keep the number of
+# significant figures the same rather than the number of decimal places
+# Note unlike with names we are using a hard truncate that just cuts strings at
+# the given number of charecters
+resources_cpu_max_length = 4
+resources_memory_max_length = 4
+resources_disk_io_max_length = 4
+resources_fullest_disk_max_length = 4
 
 # Pingdom details
 pingdom_endpoint = 'https://api.pingdom.com/api/2.0/checks'
@@ -17,13 +30,6 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account3': {'api_key': 'account3@example.org:password'},
                 'account4': {'api_key': 'account3@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
-
-# Resources general details
-resources_max_name_length = 30
-resources_cpu_max_length = 4
-resources_memory_max_length = 4
-resources_disk_io_max_length = 4
-resources_fullest_disk_max_length = 4
 
 # NewRelic Servers details
 newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
