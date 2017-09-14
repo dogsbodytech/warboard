@@ -145,11 +145,11 @@ def store_newrelic_infra_data():
                         log_messages('Warning: unrecognised violation {} expected Warning or Critical'.format(violation['priority']), 'error')
 
             infrastructure_host['health_status'] = 'blue'
-            if violation_level = 0:
+            if violation_level == 0:
                 infrastructure_host['health_status'] = 'green'
-            elif violation_level = 1:
+            elif violation_level == 1:
                 infrastructure_host['health_status'] = 'orange'
-            elif violation_level = 2:
+            elif violation_level == 2:
                 infrastructure_host['health_status'] = 'red'
 
             infra_results['successful_checks'] += 1
