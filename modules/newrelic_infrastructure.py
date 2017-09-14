@@ -4,7 +4,7 @@ import ast
 import time
 from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
-from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout, newrelic_main_api_keys
+from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout, newrelic_main_api_keys
 
 # This module assumes that newrelic insights returns the most recent data first
 
@@ -17,12 +17,12 @@ def store_newrelic_infra_data():
     infra_results['total_newrelic_infra_accounts'] = 0
     infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
-    for account in newrelic_insights_keys:
+    for account in newrelic_main_and_insights_keys:
         account_results = []
         infra_results['total_newrelic_infra_accounts'] += 1
-        number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'])
+        number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'])
         try:
-            number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
+            number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
@@ -37,9 +37,9 @@ def store_newrelic_infra_data():
         # warboard
         number_of_hosts_data = json.loads(number_of_hosts_response.text)
         number_of_hosts = number_of_hosts_data['results'][0]['uniqueCount']
-        metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(newrelic_insights_endpoint, newrelic_insights_keys[account]['account_number'], number_of_hosts)
+        metric_data_url = '{}{}/query?nrql=SELECT%20displayName%2C%20fullHostname%2C%20cpuPercent%2C%20memoryUsedBytes%2C%20memoryTotalBytes%2C%20diskUtilizationPercent%2C%20diskUsedPercent%2C%20timestamp%20FROM%20SystemSample%20LIMIT%20{}'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'], number_of_hosts)
         try:
-            metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_insights_keys[account]['api_key']}, timeout=newrelic_insights_timeout)
+            metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             metric_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
@@ -58,7 +58,7 @@ def store_newrelic_infra_data():
         # before warning since it would be too complex to implement
         #
         try:
-            violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_api_keys[account]['api_key']}, timeout=newrelic_main_api_timeout)
+            violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_and_insights_keys[account]['main_api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
@@ -180,7 +180,7 @@ def get_newrelic_infra_results():
     infra_results['orange'] = 0
     infra_results['green'] = 0
     infra_results['blue'] = 0
-    for account in newrelic_insights_keys:
+    for account in newrelic_main_and_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
         account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
         retrieved_data_time = time.time()

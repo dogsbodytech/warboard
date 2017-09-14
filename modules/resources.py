@@ -2,7 +2,7 @@ from __future__ import division
 from newrelic_servers import get_newrelic_servers_results
 from newrelic_infrastructure import get_newrelic_infra_results
 from misc import chain_results
-from config import newrelic_servers_keys, newrelic_insights_keys
+from config import newrelic_servers_keys, newrelic_main_and_insights_keys
 
 def get_resource_results():
     """
@@ -33,7 +33,7 @@ def get_resource_results():
         resource_results['failed_accounts'] += newrelic_servers_results['failed_newrelic_servers_accounts']
         resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts']
 
-    if newrelic_insights_keys:
+    if newrelic_main_and_insights_keys:
         newrelic_infra_results = get_newrelic_infra_results()
         resource_results['green'] += newrelic_infra_results['green']
         resource_results['red'] += newrelic_infra_results['red']

@@ -33,20 +33,24 @@ newrelic_servers_keys = {'account1': 'api_key',
                          'account1|subcustomer': 'api_key',}
 
 # NewRelic Infrastructure details
-# get requests (infra_endpoint{account_number}infra_query) are made to the
 # NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
 newrelic_insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
 newrelic_insights_timeout = 10
-newrelic_insights_keys =   {'account_name1':  {'account_number': 'number_here', 'api_key': 'key_here'},
-                            'account_name2':  {'account_number': 'number_here', 'api_key': 'key_here'}}
-# Specify how many seconds old api data may be before the related server is
-# regarded as not reporting
-newrelic_infrastructure_max_data_age = 300
+# NewRelic api endpoint to pull out current alerting data
 newrelic_main_api_violation_endpoint = 'https://api.newrelic.com/v2/alerts_violations.json?only_open=true'
 newrelic_main_api_timeout = 10
-# Account name must match the account name used in the insights keys dict
-newrelic_main_api_keys = {'account_name1':  {'api_key': 'key_here'},
-                          'account_name2':  {'api_key': 'key_here'}}
+# Specify how long (seconds) metric data recieved from the newrelic insights
+# api is valid for, after this time servers will be shown as not reporting
+newrelic_infrastructure_max_data_age = 300
+# Two set's of keys are required - one to get the metric data, one to check
+# if the servers are alerting
+newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'number_here',
+                                                        'main_api_key': 'key_here',
+                                                        'insights_api_key': 'key_here'},
+                                     'account_name2':  {'account_number': 'number_here',
+                                                        'main_api_key': 'key_here',
+                                                        'insights_api_key': 'key_here'}}
+
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
