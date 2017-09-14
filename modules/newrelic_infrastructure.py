@@ -58,7 +58,7 @@ def store_newrelic_infra_data():
         # before warning since it would be too complex to implement
         #
         try:
-            violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_api_keys[account]['api_key']}, newrelic_main_api_timeout)
+            violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_api_keys[account]['api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
