@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-sm-4">
     {% if pingdom_results['failed_pingdom'] > 0 %}
-      <h1>Pingdom ({{ pingdom_results['working_percentage']|string()|truncate(latency_working_percentage_max_length) }}%)</h1>
+      <h1>Pingdom ({{ pingdom_results['working_percentage']|string()|truncate(latency_working_percentage_max_length, True, '') }}%)</h1>
     {% else %}
       <h1>Pingdom</h1>
     {% endif %}
@@ -50,7 +50,7 @@
     </div>
     <div class="col-sm-5">
     {% if resource_results['failed_accounts'] > 0 %}
-      <h1>Resources ({{ resource_results['working_percentage']|string()|truncate(resources_working_percentage_max_length) }}%)</h1>
+      <h1>Resources ({{ resource_results['working_percentage']|string()|truncate(resources_working_percentage_max_length, True, '') }}%)</h1>
     {% else %}
       <h1>Resources</h1>
     {% endif %}
