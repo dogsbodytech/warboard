@@ -154,7 +154,7 @@ def store_newrelic_infra_data():
     if all_server_names_data == None or all_server_names_data == 'None' or type(all_server_names_data) != str:
         all_server_names = []
     else:
-        all_server_names = ast.literal_eval(all_server_names)
+        all_server_names = ast.literal_eval(all_server_names_data)
 
     updated_all_server_names = list(set(all_server_names + reporting_server_names))
     set_data('resources_server_names_newrelic_infrastructure', updated_all_server_names)
