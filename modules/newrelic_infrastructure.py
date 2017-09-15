@@ -48,16 +48,6 @@ def store_newrelic_infra_data():
             continue
 
         account_infra_data = json.loads(metric_data_response.text)
-        # I reading the docs I want to use https://rpm.newrelic.com/api/explore/alerts_violations/list?only_open=true
-        # however the output format has an ID which I can't match to
-        # anything I can pull from the insights api and the name is the
-        # hostname with (/) appended, which makes no-sence and I don't want
-        # to assume is consistant
-        #
-        # Hence I will be using the infrastructure alerts api to get the
-        # alert conditions and ignoring the time that must be exceeded
-        # before warning since it would be too complex to implement
-        #
         try:
             violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_and_insights_keys[account]['main_api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
