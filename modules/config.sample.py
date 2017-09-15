@@ -14,6 +14,8 @@ resources_max_name_length = 30
 # significant figures the same rather than the number of decimal places
 # Note unlike with names we are using a hard truncate that just cuts strings at
 # the given number of charecters
+latency_working_percentage_max_length = 4
+resources_working_percentage_max_length = 4
 resources_cpu_max_length = 4
 resources_memory_max_length = 4
 resources_disk_io_max_length = 4
