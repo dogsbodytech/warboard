@@ -7,10 +7,6 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 ## TODO:
-# Check for servers that are no longer reporting and thus have been removed
-# from redis but we should see them as not reporting, this will need a timeout
-# of say a week for when servers are removed
-#
 # Improve error logging
 #
 # Set a data age on monitored data - pingdom and newrelic servers
