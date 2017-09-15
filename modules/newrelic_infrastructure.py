@@ -2,7 +2,7 @@ import requests
 import json
 import ast
 import time
-from redis_functions import set_data, get_data
+from redis_functions import set_data, get_data, delete_data
 from misc import log_messages, chain_results
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 
@@ -238,12 +238,12 @@ def get_newrelic_infra_results():
 
         all_infra_checks.append(account_checks_data_list)
 
+    infra_results['checks'] = chain_results(all_infra_checks) # Store all the NewRelic Infrastructure results as 1 chained list
     unreporting_server_names = list(set(all_server_names) - set(reporting_server_names))
     for infrastructure_host in unreporting_server_names:
-        # Need to add the servers to the list all_infra_checks
-        # With health_status blue and orderby 0
-        # Need to clean servers from resources_server_names_newrelic_infrastructure
-        # after say a week but that should be done in the above or prune_keys function
+        infra_results['checks'].append({'name': infrastructure_host, 'health_status': 'blue', 'summary': {'orderby': 0}})
 
-    infra_results['checks'] = chain_results(all_infra_checks) # Store all the NewRelic Infrastructure results as 1 chained list
     return infra_results
+
+def clear_new_relic_infrastructure_server_list():
+    delete_data('resources_server_names_newrelic_infrastructure')
