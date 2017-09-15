@@ -231,7 +231,7 @@ def get_newrelic_infra_results():
     infra_results['checks'] = chain_results(all_infra_checks) # Store all the NewRelic Infrastructure results as 1 chained list
     unreporting_server_names = list(set(all_server_names) - set(reporting_server_names))
     for infrastructure_host in unreporting_server_names:
-        infra_results['checks'].append({'name': infrastructure_host, 'health_status': 'blue', 'summary': {'orderby': 0}})
+        infra_results['checks'].append({'name': infrastructure_host, 'health_status': 'blue', 'orderby': 0})
 
     return infra_results
 
