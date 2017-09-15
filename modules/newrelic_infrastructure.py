@@ -215,7 +215,7 @@ def get_newrelic_infra_results():
                 # rather than added to as we go since it would be easier to
                 # maintain
                 infrastructure_host['health_status'] = 'blue'
-                infrastructure_host['summary']['orderby'] = 0
+                infrastructure_host['orderby'] = 0
 
             if infrastructure_host['health_status'] == 'green':
                 infra_results['green'] += 1
