@@ -195,7 +195,7 @@ def get_newrelic_infra_results():
     if all_server_names_data == None or all_server_names_data == 'None' or type(all_server_names_data) != str:
         all_server_names = []
     else:
-        all_server_names = ast.literal_eval(all_server_names)
+        all_server_names = ast.literal_eval(all_server_names_data)
 
     reporting_server_names = []
     for account in newrelic_main_and_insights_keys:
