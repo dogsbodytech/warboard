@@ -8,8 +8,8 @@ redis_db = 0
 # http://jinja.pocoo.org/docs/2.9/templates/#truncate
 # Currently it avoids cutting words, gives 5 characters leeway before before
 # truncating and then appends ... to any strings that have been truncated
-latency_max_name_length = 40
-resources_max_name_length = 30
+latency_max_name_length = 60
+resources_max_name_length = 60
 # We are truncating percentages rather than rounding them to keep the number of
 # significant figures the same rather than the number of decimal places
 # Note unlike with names we are using a hard truncate that just cuts strings at
