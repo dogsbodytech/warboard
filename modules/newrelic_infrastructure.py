@@ -27,7 +27,7 @@ def store_newrelic_infra_data():
             number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
+            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account), 'error')
             continue
 
         # It may be possible for 3 servers to be found, one of which has not
@@ -44,7 +44,7 @@ def store_newrelic_infra_data():
             metric_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account))
+            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account), 'error')
             continue
 
         account_infra_data = json.loads(metric_data_response.text)
@@ -53,7 +53,7 @@ def store_newrelic_infra_data():
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Alerts violation data for {} error'.format(account))
+            log_messages('Could not get NewRelic Alerts violation data for {} error'.format(account), 'error')
             continue
 
         violation_data = json.loads(violation_data_response.text)['violations']
