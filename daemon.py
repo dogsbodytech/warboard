@@ -11,12 +11,27 @@ from modules.prune_keys import prune_old_keys
 
 class WarboardDaemon(Daemon):
     def run(self):
-        prune_old_keys()
+        try:
+            prune_old_keys()
+        except Exception as e:
+            log_messages('prune_old_keys failed {}'.format(e), 'error')
         while True:
-            store_pingdom_results()
-            store_newrelic_servers_results()
-            store_newrelic_infra_data()
-            store_sirportly_results()
+            try:
+                store_pingdom_results()
+            except Exception as e:
+                log_messages('store_pingdom_results failed {}'.format(e), 'error')
+            try:
+                store_newrelic_servers_results()
+            except Exception as e:
+                log_messages('store_newrelic_servers_results failed {}'.format(e), 'error')
+            try:
+                store_newrelic_infra_data()
+            except Exception as e:
+                log_messages('store_newrelic_infra_data {}'.format(e), 'error')
+            try:
+                store_sirportly_results()
+            except Exception as e:
+                log_messages('store_sirportly_results {}'.format(e), 'error')
             sleep(refresh_time())
 
 if __name__ == '__main__':
