@@ -25,9 +25,9 @@ def store_newrelic_infra_data():
         try:
             number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             number_of_hosts_response.raise_for_status()
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account), 'error')
+            log_messages('Could not get NewRelic Infrastructure data for {} - error getting number of hosts from insights api: Error: {}'.format(account, e), 'error')
             continue
 
         # It may be possible for 3 servers to be found, one of which has not
@@ -42,18 +42,18 @@ def store_newrelic_infra_data():
         try:
             metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             metric_data_response.raise_for_status()
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Infrastructure data for {} error'.format(account), 'error')
+            log_messages('Could not get NewRelic Infrastructure data for {}: - error getting metric data from insights api: Error: {}'.format(account, e), 'error')
             continue
 
         account_infra_data = json.loads(metric_data_response.text)
         try:
             violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_and_insights_keys[account]['main_api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
-        except requests.exceptions.RequestException:
+        except requests.exceptions.RequestException as e:
             infra_results['failed_newrelic_infra_accounts'] += 1
-            log_messages('Could not get NewRelic Alerts violation data for {} error'.format(account), 'error')
+            log_messages('Could not get NewRelic Alerts violation data for {}: - error getting open violation data from main api: Error: {}'.format(account, e), 'error')
             continue
 
         violation_data = json.loads(violation_data_response.text)['violations']
