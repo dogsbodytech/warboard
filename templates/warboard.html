@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-sm-4">
     {% if pingdom_results['failed_pingdom'] > 0 %}
-      <h1>Pingdom ({{ pingdom_results['working_percentage'] }}%)</h1>
+      <h1>Pingdom ({{ pingdom_results['working_percentage']|string()|truncate(latency_working_percentage_max_length, True, '') }}%)</h1>
     {% else %}
       <h1>Pingdom</h1>
     {% endif %}
@@ -32,57 +32,57 @@
         <tbody>
         {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
           {% if check['status'] == 'down' %}
-		        <tr class="danger lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
 		      {% if check['status'] == 'paused' %}
-		        <tr class="info lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		        <tr class="info lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
 		      {% if check['status'] == 'up' %}
-		        <tr class="success lead"><td>{{ check['name'] }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+		        <tr class="success lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}
 		    {% endfor %}
         </tbody>
       </table>
     </div>
     <div class="col-sm-5">
-    {% if newrelic_results['failed_newrelic'] > 0 %}
-      <h1>NewRelic ({{ newrelic_results['working_percentage'] }}%)</h1>
+    {% if resource_results['failed_accounts'] > 0 %}
+      <h1>Resources ({{ resource_results['working_percentage']|string()|truncate(resources_working_percentage_max_length, True, '') }}%)</h1>
     {% else %}
-      <h1>NewRelic</h1>
+      <h1>Resources</h1>
     {% endif %}
       <div class="progress">
-        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ newrelic_results['red_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ newrelic_results['orange_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ newrelic_results['green_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ newrelic_results['blue_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ resource_results['red_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ resource_results['orange_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ resource_results['green_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
       </div>
       <table class="table">
         <thead>
           <tr class="lead"><th>Name</th><th>CPU</th><th>Memory</th><th>Disk IO</th><th>Disk Space</th></tr>
         </thead>
         <tbody>
-        {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
+        {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'red' %}
-		        <tr class="danger lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
-		    {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
+		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'orange' %}
-		        <tr class="warning lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		        <tr class="warning lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
-		    {% for check in newrelic_results['checks']|sort(attribute='orderby')|reverse %}
+		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
-		        <tr class="success lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
+		        <tr class="success lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
-        {% for check in newrelic_results['checks']|sort(attribute='name') %}
+        {% for check in resource_results['checks']|sort(attribute='name') %}
           {% if check['health_status'] == 'blue' %}
-            <tr class="info lead"><td>{{ check['name'] }}</td><td></td><td></td><td></td><td></td></tr>
+            <tr class="info lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td></td><td></td><td></td><td></td></tr>
           {% endif %}
         {% endfor %}
         </tbody>

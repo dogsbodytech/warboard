@@ -3,6 +3,24 @@ redis_host = 'localhost'
 redis_port = 6379
 redis_db = 0
 
+# Display details
+# It is worth noting the default behavior of the flask truncate filter
+# http://jinja.pocoo.org/docs/2.9/templates/#truncate
+# Currently it avoids cutting words, gives 5 characters leeway before before
+# truncating and then appends ... to any strings that have been truncated
+latency_max_name_length = 60
+resources_max_name_length = 60
+# We are truncating percentages rather than rounding them to keep the number of
+# significant figures the same rather than the number of decimal places
+# Note unlike with names we are using a hard truncate that just cuts strings at
+# the given number of charecters
+latency_working_percentage_max_length = 4
+resources_working_percentage_max_length = 4
+resources_cpu_max_length = 4
+resources_memory_max_length = 4
+resources_disk_io_max_length = 4
+resources_fullest_disk_max_length = 4
+
 # Pingdom details
 pingdom_endpoint = 'https://api.pingdom.com/api/2.0/checks'
 pingdom_timeout = 10 # How long the warboard should wait on the pingdom API
@@ -15,15 +33,35 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account4': {'api_key': 'account3@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
 
-# NewRelic details
-newrelic_endpoint = 'https://api.newrelic.com/v2/servers.json'
-newrelic_timeout = 10 # How long the warboard should wait on the newrelic API
+# NewRelic Servers details
+newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
+newrelic_servers_timeout = 10 # How long the warboard should wait on the newrelic API
 # All you need for adding newrelic accounts is the API key.
 # You can split the account name with a pipe '|' for a subcustomer, support for this will be added in future versions. e.g account1|subcustomer
-newrelic_keys = {'account1': 'api_key',
-                 'account2': 'api_key',
-                 'account3': 'api_key',
-                 'account1|subcustomer': 'api_key',}
+newrelic_servers_keys = {'account1': 'api_key',
+                         'account2': 'api_key',
+                         'account3': 'api_key',
+                         'account1|subcustomer': 'api_key',}
+
+# NewRelic Infrastructure details
+# NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
+newrelic_insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'
+newrelic_insights_timeout = 10
+# NewRelic api endpoint to pull out current alerting data
+newrelic_main_api_violation_endpoint = 'https://api.newrelic.com/v2/alerts_violations.json?only_open=true'
+newrelic_main_api_timeout = 10
+# Specify how long (seconds) metric data recieved from the newrelic insights
+# api is valid for, after this time servers will be shown as not reporting
+newrelic_infrastructure_max_data_age = 300
+# Two set's of keys are required - one to get the metric data, one to check
+# if the servers are alerting
+newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'number_here',
+                                                        'main_api_key': 'key_here',
+                                                        'insights_api_key': 'key_here'},
+                                     'account_name2':  {'account_number': 'number_here',
+                                                        'main_api_key': 'key_here',
+                                                        'insights_api_key': 'key_here'}}
+
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'

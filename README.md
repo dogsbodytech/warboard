@@ -1,4 +1,6 @@
 # Warboard
+NOTE: The latest series of updates to add newrelic infrastructure break backwards compatability, looking at the sample config and code for the API you should be able to see any changes you need to make if you have been previously using the code.
+
 This is the warboard we use internally at [Dogsbody Technology Ltd.](https://www.dogsbodytechnology.com/) The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic, Sirportly & Google Calendar as sources.
 
 ![Warboard Screenshot](https://raw.githubusercontent.com/dogsbodytech/warboard/master/static/images/warboard_medium_example.png)

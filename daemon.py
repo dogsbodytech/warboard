@@ -4,17 +4,34 @@ from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
-from modules.newrelic import store_newrelic_results
+from modules.newrelic_servers import store_newrelic_servers_results
+from modules.newrelic_infrastructure import store_newrelic_infra_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
 
 class WarboardDaemon(Daemon):
     def run(self):
-        prune_old_keys()
+        try:
+            prune_old_keys()
+        except Exception as e:
+            log_messages('prune_old_keys failed {}'.format(e), 'error')
         while True:
-            store_pingdom_results()
-            store_newrelic_results()
-            store_sirportly_results()
+            try:
+                store_pingdom_results()
+            except Exception as e:
+                log_messages('store_pingdom_results failed {}'.format(e), 'error')
+            try:
+                store_newrelic_servers_results()
+            except Exception as e:
+                log_messages('store_newrelic_servers_results failed {}'.format(e), 'error')
+            try:
+                store_newrelic_infra_data()
+            except Exception as e:
+                log_messages('store_newrelic_infra_data {}'.format(e), 'error')
+            try:
+                store_sirportly_results()
+            except Exception as e:
+                log_messages('store_sirportly_results {}'.format(e), 'error')
             sleep(refresh_time())
 
 if __name__ == '__main__':

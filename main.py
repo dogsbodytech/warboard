@@ -1,10 +1,17 @@
 from flask import Flask, request, render_template, jsonify
 from modules.misc import refresh_time
-from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title
+from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, resources_cpu_max_length, resources_memory_max_length, resources_disk_io_max_length, resources_fullest_disk_max_length, latency_max_name_length, latency_working_percentage_max_length, resources_working_percentage_max_length
 from modules.pingdom import get_pingdom_results
-from modules.newrelic import get_newrelic_results
+from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
+
+## TODO:
+# Improve error logging
+#
+# Set a data age on monitored data - pingdom and newrelic servers
+#
+# Double check that importing proper division hasn't subtly broken things
 
 app = Flask(__name__)
 
@@ -14,7 +21,15 @@ def warboard():
         title=warboard_title,
         refresh_time=refresh_time(),
         pingdom_results=get_pingdom_results(),
-        newrelic_results=get_newrelic_results(),
+        latency_max_name_length=latency_max_name_length,
+        latency_working_percentage_max_length=latency_working_percentage_max_length,
+        resource_results=get_resource_results(),
+        resources_max_name_length=resources_max_name_length,
+        resources_cpu_max_length=resources_cpu_max_length,
+        resources_memory_max_length=resources_memory_max_length,
+        resources_disk_io_max_length=resources_disk_io_max_length,
+        resources_fullest_disk_max_length=resources_fullest_disk_max_length,
+        resources_working_percentage_max_length=resources_working_percentage_max_length,
         sirportly_results=get_sirportly_results(),
         sirportly_users=sirportly_users,
         sirportly_user_order=sirportly_user_order,
@@ -26,23 +41,24 @@ def stats():
         return(jsonify(status='error',
             message='API Key required')), 401
     if request.form['key'] == warboard_stats_key:
-        nr_results = get_newrelic_results()
+        resource_results = get_resource_results()
         pd_results = get_pingdom_results()
         sp_results = get_sirportly_results()
+        # This breaks backwards compatability
         return(jsonify(status='ok',
-            pingdom_count=pd_results['total_checks'],
-            newrelic_count=nr_results['total_checks'],
             resolved_tickets=sp_results['resolved_tickets'],
             unassigned_tickets=sp_results['unassigned_tickets'],
-            pingdom_up=pd_results['pingdom_up'],
-            pingdom_down=pd_results['pingdom_down'],
-            pingdom_paused=pd_results['pingdom_paused'],
-            pingdom_accounts=pd_results['total_pingdom_accounts'],
-            pingdom_failed=pd_results['failed_pingdom'],
-            pingdom_working=pd_results['working_pingdom'],
-            newrelic_accounts=nr_results['total_newrelic_accounts'],
-            newrelic_working=nr_results['working_newrelic'],
-            newrelic_failed=nr_results['failed_newrelic']))
+            latency_checks_total=pd_results['total_checks'],
+            latency_checks_up=pd_results['pingdom_up'],
+            latency_checks_down=pd_results['pingdom_down'],
+            latency_checks_paused=pd_results['pingdom_paused'],
+            latency_accounts_total=pd_results['total_pingdom_accounts'],
+            latency_accounts_failed=pd_results['failed_pingdom'],
+            latency_accounts_working=pd_results['working_pingdom'],
+            resource_checks_total=resource_results['total_checks'],
+            resource_accounts_total=resource_results['total_accounts'],
+            resource_accounts_failed=resource_results['failed_accounts'],
+            resource_accounts_working=resource_results['working_accounts']))
     else:
         return(jsonify(status='error',
             message='Invalid Key')), 401
