@@ -35,34 +35,33 @@ def warboard():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
-"""
 @app.route('/stats', methods=['POST'])
 def stats():
     if 'key' not in request.form:
         return(jsonify(status='error',
             message='API Key required')), 401
     if request.form['key'] == warboard_stats_key:
-        nr_results = get_newrelic_results()
+        resource_results = get_resource_results()
         pd_results = get_pingdom_results()
         sp_results = get_sirportly_results()
+        # This breaks backwards compatability
         return(jsonify(status='ok',
-            pingdom_count=pd_results['total_checks'],
-            newrelic_count=nr_results['total_checks'],
             resolved_tickets=sp_results['resolved_tickets'],
             unassigned_tickets=sp_results['unassigned_tickets'],
-            pingdom_up=pd_results['pingdom_up'],
-            pingdom_down=pd_results['pingdom_down'],
-            pingdom_paused=pd_results['pingdom_paused'],
-            pingdom_accounts=pd_results['total_pingdom_accounts'],
-            pingdom_failed=pd_results['failed_pingdom'],
-            pingdom_working=pd_results['working_pingdom'],
-            newrelic_accounts=nr_results['total_newrelic_accounts'],
-            newrelic_working=nr_results['working_newrelic'],
-            newrelic_failed=nr_results['failed_newrelic']))
+            latency_checks_total=pd_results['total_checks'],
+            latency_checks_up=pd_results['pingdom_up'],
+            latency_checks_down=pd_results['pingdom_down'],
+            latency_checks_paused=pd_results['pingdom_paused'],
+            latency_accounts_total=pd_results['total_pingdom_accounts'],
+            latency_accounts_failed=pd_results['failed_pingdom'],
+            latency_accounts_working=pd_results['working_pingdom'],
+            resource_checks_total=resource_results['total_checks'],
+            resource_accounts_total=resource_results['total_accounts'],
+            resource_accounts_failed=resource_results['failed_accounts'],
+            resource_accounts_working=resource_results['working_accounts']))
     else:
         return(jsonify(status='error',
             message='Invalid Key')), 401
-"""
 
 if __name__ == '__main__': # Used for testing on servers without an uwsgi/nginx setup
     app.run(debug=True)
