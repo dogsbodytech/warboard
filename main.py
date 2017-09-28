@@ -7,6 +7,14 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 ## TODO:
+# Refactor infrastructure and servers modules to store data in redis as
+# key: resources_infrastucture_account_hostname
+# value: json blob containing only the data the warboard will display and the
+# time it was valid
+# The display side of the code will just need to count the number of hosts
+# that have valid data, count up the colours / health status to caculate the
+# percentage and put all of the metric data in a list for jinja to display
+#
 # Improve error logging
 #
 # Set a data age on monitored data - pingdom and newrelic servers
