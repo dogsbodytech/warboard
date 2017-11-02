@@ -1,6 +1,8 @@
 from __future__ import division
+import json
 from newrelic_servers import get_newrelic_servers_results
 from newrelic_infrastructure import get_newrelic_infra_results
+from redis_functions import get_data, get_all_data
 from misc import chain_results
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
 
@@ -24,6 +26,7 @@ def get_resource_results():
     resource_results['total_accounts'] = 0
     resource_results['checks'] = []
     resource_results['total_checks'] = 0
+    resource_results['failed_hosts'] = 0
 
     if newrelic_servers_keys:
         newrelic_servers_results = get_newrelic_servers_results()
@@ -48,6 +51,20 @@ def get_resource_results():
         resource_results['total_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts']
         resource_results['total_checks'] += newrelic_infra_results['total_checks']
         resource_results['working_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts'] - newrelic_infra_results['failed_newrelic_infra_accounts']
+
+    # Get list of keys using new host system resources_host_uuid
+    for host in get_all_data('resources_host_*'):
+        resource_results['total_checks'] += 1
+        try:
+            host_data = json.loads(get_data(host))
+            resource_results['checks'] += host_data
+            # I am going to go ahead and assume the database is returning json in our expected format
+            resource_results[host_data['health_status']] += 1
+        except as e:
+            resource_results['failed_hosts'] += 1
+            # just going to print errors, they can go to the log as is
+            print(e)
+
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100
