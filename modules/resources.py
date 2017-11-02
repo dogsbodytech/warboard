@@ -60,7 +60,7 @@ def get_resource_results():
             resource_results['checks'] += host_data
             # I am going to go ahead and assume the database is returning json in our expected format
             resource_results[host_data['health_status']] += 1
-        except as e:
+        except Exception as e:
             resource_results['failed_hosts'] += 1
             # just going to print errors, they can go to the log as is
             print(e)
