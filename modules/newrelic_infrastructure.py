@@ -3,7 +3,7 @@ import json
 import ast
 import time
 from redis_functions import set_data, get_data, delete_data
-from misc import log_messages, chain_results
+from misc import log_messages, chain_results, to_uuid
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 
 # This module assumes that newrelic insights returns the most recent data first
@@ -142,7 +142,8 @@ def store_newrelic_infra_data():
                 infrastructure_host['health_status'] = 'red'
 
             infra_results['successful_checks'] += 1
-            key = 'resources_host_{}'.format(infrastructure_host['name'])
+            # uuid based on the display name falling back to the fullhostname
+            key = 'resources_host_{}'.format(to_uuid(infrastructure_host['name']))
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
