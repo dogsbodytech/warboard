@@ -145,7 +145,7 @@ def store_newrelic_infra_data():
             # uuid based on the display name falling back to the fullhostname
             print(infrastructure_host['name'])
             print(type(infrastructure_host['name']))
-            key = 'resources_host_{}'.format(to_uuid(infrastructure_host['name']))
+            key = 'resources_host:{}'.format(to_uuid(infrastructure_host['name']))
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))

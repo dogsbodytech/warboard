@@ -33,4 +33,4 @@ def to_uuid(string):
 
     Input a string. Returns the uuid ansible would generate as a string.
     """
-    return str(uuid.uuid5(uuid.UUID('361E6D51-FAEC-444A-9079-341386DA8E2E'), string))
+    return str(uuid.uuid5(uuid.UUID('361E6D51-FAEC-444A-9079-341386DA8E2E'), string.encode('utf-8')))

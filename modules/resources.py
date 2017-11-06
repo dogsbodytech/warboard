@@ -49,7 +49,7 @@ def get_resource_results():
 
 
     # Get list of keys using new host system resources_host_uuid
-    for host in get_all_data('resources_host_*'):
+    for host in get_all_data('resources_host:*'):
         resource_results['total_checks'] += 1
         # This might be a good place to check the timestamp and make the check
         # a failed check if it is more than 5 minutes old, we still need to
