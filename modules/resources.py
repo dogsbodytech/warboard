@@ -57,7 +57,8 @@ def get_resource_results():
         resource_results['total_checks'] += 1
         try:
             host_data = json.loads(get_data(host))
-            resource_results['checks'] += host_data
+            # Forcing host data to a list before adding
+            resource_results['checks'] += [host_data,]
             # I am going to go ahead and assume the database is returning json in our expected format
             resource_results[host_data['health_status']] += 1
         except Exception as e:
