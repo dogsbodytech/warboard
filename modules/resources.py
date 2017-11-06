@@ -41,7 +41,7 @@ def get_resource_results():
 
 
     infrastructure_accounts_json = get_data('resources_success_newrelic_infrastructure')
-    if infrastructure_accounts:
+    if infrastructure_accounts_json:
         infrastructure_accounts = json.loads(infrastructure_accounts_json)[0]
         resource_results['failed_accounts'] += infrastructure_accounts['failed_newrelic_infra_accounts']
         resource_results['total_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts']
