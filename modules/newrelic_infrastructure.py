@@ -147,4 +147,4 @@ def store_newrelic_infra_data():
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
 
-    set_data('resources_success_newrelic_infrastructure', infra_results)
+    set_data('resources_success_newrelic_infrastructure', json.dumps([infra_results]))
