@@ -16,7 +16,6 @@ def store_newrelic_infra_data():
     infra_results['total_newrelic_infra_accounts'] = 0
     infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
-    reporting_server_names = []
     for account in newrelic_main_and_insights_keys:
         all_server_names = []
         infra_results['total_newrelic_infra_accounts'] += 1
@@ -64,8 +63,6 @@ def store_newrelic_infra_data():
             infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['fullHostname']
             if account_infra_data['results'][0]['events'][num]['displayName']:
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
-
-            reporting_server_names.append(infrastructure_host['name'])
 
             # The warboard script will check this was in the last 5 minutes
             # and react acordingly - set to blue order by 0
@@ -150,14 +147,6 @@ def store_newrelic_infra_data():
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
 
-    all_server_names_data = get_data('resources_server_names_newrelic_infrastructure')
-    if all_server_names_data == None or all_server_names_data == 'None' or type(all_server_names_data) != str:
-        all_server_names = []
-    else:
-        all_server_names = ast.literal_eval(all_server_names_data)
-
-    updated_all_server_names = list(set(all_server_names + reporting_server_names))
-    set_data('resources_server_names_newrelic_infrastructure', updated_all_server_names)
     set_data('resources_success_newrelic_infrastructure', infra_results)
 
 def get_newrelic_infra_results():
@@ -181,13 +170,6 @@ def get_newrelic_infra_results():
     infra_results['orange'] = 0
     infra_results['green'] = 0
     infra_results['blue'] = 0
-    all_server_names_data = get_data('resources_server_names_newrelic_infrastructure')
-    if all_server_names_data == None or all_server_names_data == 'None' or type(all_server_names_data) != str:
-        all_server_names = []
-    else:
-        all_server_names = ast.literal_eval(all_server_names_data)
-
-    reporting_server_names = []
     for account in newrelic_main_and_insights_keys:
         # I need to retrieve the list differently or store it dirrerently
         account_checks_string = get_data('resources_newrelic_infra_{}'.format(account))
@@ -204,7 +186,6 @@ def get_newrelic_infra_results():
         # section to the prune keys file
 
         for infrastructure_host in account_checks_data_list:
-            reporting_server_names.append(infrastructure_host['name'])
             # NewRelic Insights returns the timestamp as milli-seconds since
             # epoch, I am converting everything to seconds
             if retrieved_data_time - ( infrastructure_host['timestamp'] / 1000 ) > newrelic_infrastructure_max_data_age:
@@ -229,11 +210,5 @@ def get_newrelic_infra_results():
         all_infra_checks.append(account_checks_data_list)
 
     infra_results['checks'] = chain_results(all_infra_checks) # Store all the NewRelic Infrastructure results as 1 chained list
-    unreporting_server_names = list(set(all_server_names) - set(reporting_server_names))
-    for infrastructure_host in unreporting_server_names:
-        infra_results['checks'].append({'name': infrastructure_host, 'health_status': 'blue', 'orderby': 0})
 
     return infra_results
-
-def clear_new_relic_infrastructure_server_list():
-    delete_data('resources_server_names_newrelic_infrastructure')
