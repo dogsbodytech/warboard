@@ -42,14 +42,14 @@ def get_resource_results():
 
     if newrelic_main_and_insights_keys:
         newrelic_infra_results = get_newrelic_infra_results()
-        resource_results['green'] += newrelic_infra_results['green']
-        resource_results['red'] += newrelic_infra_results['red']
-        resource_results['orange'] += newrelic_infra_results['orange']
-        resource_results['blue'] += newrelic_infra_results['blue']
-        resource_results['checks'] += newrelic_infra_results['checks']
+#        resource_results['green'] += newrelic_infra_results['green']
+#        resource_results['red'] += newrelic_infra_results['red']
+#        resource_results['orange'] += newrelic_infra_results['orange']
+#        resource_results['blue'] += newrelic_infra_results['blue']
+#        resource_results['checks'] += newrelic_infra_results['checks']
         resource_results['failed_accounts'] += newrelic_infra_results['failed_newrelic_infra_accounts']
         resource_results['total_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts']
-        resource_results['total_checks'] += newrelic_infra_results['total_checks']
+#        resource_results['total_checks'] += newrelic_infra_results['total_checks']
         resource_results['working_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts'] - newrelic_infra_results['failed_newrelic_infra_accounts']
 
     # Get list of keys using new host system resources_host_uuid
