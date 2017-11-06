@@ -39,6 +39,19 @@ def get_resource_results():
         resource_results['total_checks'] += newrelic_servers_results['total_checks']
         resource_results['working_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts'] - newrelic_servers_results['failed_newrelic_servers_accounts']
 
+
+    infrastructure_accounts = get_data('resources_success_newrelic_infrastructure')
+    # If infra is not in use redis will return an empty dictionary and the
+    # lookups will fail, would be nice to enable modules cleanly in the config
+    # file but for now this should allow the warboard to run without
+    # using newrelic infrastructure
+    try:
+        resource_results['failed_accounts'] += infrastructure_accounts['failed_newrelic_infra_accounts']
+        resource_results['total_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts']
+        resource_results['working_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts'] - infrastructure_accounts['failed_newrelic_infra_accounts']
+    except KeyError:
+        pass
+
     # Get list of keys using new host system resources_host_uuid
     for host in get_all_data('resources_host_*'):
         resource_results['total_checks'] += 1
