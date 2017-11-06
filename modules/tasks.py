@@ -2,7 +2,6 @@ import sys, getpass
 from config import warboard_user
 from misc import log_messages
 from calendar_functions import store_calendar_items
-from newrelic_infrastructure import clear_new_relic_infrastructure_server_list
 
 def hourly_tasks():
     store_calendar_items()

@@ -1,7 +1,6 @@
 from __future__ import division
 import json
 from newrelic_servers import get_newrelic_servers_results
-from newrelic_infrastructure import get_newrelic_infra_results
 from redis_functions import get_data, get_all_data
 from misc import chain_results, log_messages
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
@@ -39,18 +38,6 @@ def get_resource_results():
         resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts']
         resource_results['total_checks'] += newrelic_servers_results['total_checks']
         resource_results['working_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts'] - newrelic_servers_results['failed_newrelic_servers_accounts']
-
-    if newrelic_main_and_insights_keys:
-        newrelic_infra_results = get_newrelic_infra_results()
-#        resource_results['green'] += newrelic_infra_results['green']
-#        resource_results['red'] += newrelic_infra_results['red']
-#        resource_results['orange'] += newrelic_infra_results['orange']
-#        resource_results['blue'] += newrelic_infra_results['blue']
-#        resource_results['checks'] += newrelic_infra_results['checks']
-        resource_results['failed_accounts'] += newrelic_infra_results['failed_newrelic_infra_accounts']
-        resource_results['total_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts']
-#        resource_results['total_checks'] += newrelic_infra_results['total_checks']
-        resource_results['working_accounts'] += newrelic_infra_results['total_newrelic_infra_accounts'] - newrelic_infra_results['failed_newrelic_infra_accounts']
 
     # Get list of keys using new host system resources_host_uuid
     for host in get_all_data('resources_host_*'):
