@@ -18,7 +18,6 @@ def store_newrelic_infra_data():
     infra_results['successful_checks'] = 0
     reporting_server_names = []
     for account in newrelic_main_and_insights_keys:
-        account_results = []
         all_server_names = []
         infra_results['total_newrelic_infra_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'])
@@ -150,9 +149,6 @@ def store_newrelic_infra_data():
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
-            account_results.append(infrastructure_host)
-
-        set_data('resources_newrelic_infra_'+account, account_results)
 
     all_server_names_data = get_data('resources_server_names_newrelic_infrastructure')
     if all_server_names_data == None or all_server_names_data == 'None' or type(all_server_names_data) != str:
