@@ -3,7 +3,7 @@ import json
 from newrelic_servers import get_newrelic_servers_results
 from newrelic_infrastructure import get_newrelic_infra_results
 from redis_functions import get_data, get_all_data
-from misc import chain_results
+from misc import chain_results, log_messages
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
 
 def get_resource_results():
@@ -26,7 +26,7 @@ def get_resource_results():
     resource_results['total_accounts'] = 0
     resource_results['checks'] = []
     resource_results['total_checks'] = 0
-    resource_results['failed_hosts'] = 0
+    resource_results['failed_checks'] = 0
 
     if newrelic_servers_keys:
         newrelic_servers_results = get_newrelic_servers_results()
@@ -56,15 +56,18 @@ def get_resource_results():
     for host in get_all_data('resources_host_*'):
         resource_results['total_checks'] += 1
         try:
-            host_data = json.loads(get_data(host))
-            # Forcing host data to a list before adding
-            resource_results['checks'] += [host_data,]
-            # I am going to go ahead and assume the database is returning json in our expected format
+            # Storing lists with only one value since when I convert dictionarys
+            # to json and store them in redis they come back as strings, I am
+            # working around this by storing lists, ast.literal_eval also works
+            host_data = json.loads(get_data(host))[0]
+            resource_results['checks'].append(host_data)
+            # get the health status colour of the current check, and then add
+            # one to the number of checks with that health status
             resource_results[host_data['health_status']] += 1
         except Exception as e:
-            resource_results['failed_hosts'] += 1
-            # just going to print errors, they can go to the log as is
-            print(e)
+            resource_results['failed_checks'] += 1
+            # I would rather log to uwsgi's log but I'll sort this out later
+            log_messages(e, 'error')
 
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
