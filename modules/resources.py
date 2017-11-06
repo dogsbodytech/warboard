@@ -51,6 +51,12 @@ def get_resource_results():
     # Get list of keys using new host system resources_host_uuid
     for host in get_all_data('resources_host_*'):
         resource_results['total_checks'] += 1
+        # This might be a good place to check the timestamp and make the check
+        # a failed check if it is more than 5 minutes old, we still need to
+        # display the failed checks as a percentage since this is how the failed
+        # accounts percentage works, it could be better do decied which checks
+        # are too old in the jinja filter and handle displaying them differently
+        # right at the end
         try:
             # Storing lists with only one value since when I convert dictionarys
             # to json and store them in redis they come back as strings, I am
