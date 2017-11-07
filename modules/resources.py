@@ -15,6 +15,8 @@ def get_resource_results():
     <tr class="danger lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
 
     """
+    # success dictionarys need a timestamp, to check the redis data is up to
+    # date, if it isn't then all checks can be considered failed
     resource_results = {}
     resource_results['green'] = 0
     resource_results['red'] = 0

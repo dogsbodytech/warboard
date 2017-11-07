@@ -11,7 +11,7 @@ def store_newrelic_servers_data():
     """
     Collects data for all newrelic servers accounts provided in the config file
     and stores it in redis as json with a key per server with value:
-    '[{"orderby": 0, "timestamp": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
+    '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     nr_servers_results = {}
     nr_servers_results['failed_newrelic_servers_accounts'] = 0
@@ -37,12 +37,6 @@ def store_newrelic_servers_data():
             # summary of metric data, hence we set them blue with orderby = 0
             nr_servers_host['orderby'] = 0
             nr_servers_host['health_status'] = 'blue'
-            # Convert from timestamp returned by newrelic api to milliseconds
-            # since epoch
-            # I've hardcoded the +00:00 since the newrelic servers api is only
-            # returning timestamps in UTC it isn't worth trying to accept times
-            # in any timezone and then convert them to UTC
-            nr_servers_host['timestamp'] = calendar.timegm(time.strptime(server['last_reported_at'], '%Y-%m-%dT%H:%M:%S+00:00')) * 1000
             if server['reporting'] == True:
                 nr_servers_host['health_status'] = server['health_status']
                 nr_servers_host['summary'] = {
@@ -52,11 +46,13 @@ def store_newrelic_servers_data():
                     'cpu': server['cpu']}
                 nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io']
 
+            nr_servers_results['successful_checks'] += 1
+            key = 'resources_host:{}'.format(to_uuid(nr_servers_host['name']))
+            # Create a list with just the dictionary in and convert it to json
+            # to be stored in the redis database
+            set_data(key, json.dumps([nr_servers_host]))
 
-
-
-
-
+    set_data('resources_success_newrelic_servers', json.dumps([nr_servers_results]))
 
 def get_newrelic_servers_data():
     newrelic_results = {}

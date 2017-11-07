@@ -10,7 +10,7 @@ def store_newrelic_infra_data():
     """
     Collects data for all newrelic infrastructure accounts provided in the
     config file and stores it in redis as json with a key per server with value:
-    '[{"orderby": 0, "timestamp": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
+    '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     infra_results = {}
     infra_results['failed_newrelic_infra_accounts'] = 0
@@ -65,87 +65,81 @@ def store_newrelic_infra_data():
             if account_infra_data['results'][0]['events'][num]['displayName']:
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
 
-            # The warboard script will check this was in the last 5 minutes
-            # and react acordingly - set to blue order by 0
-            # It will make it's own api call to avoid using different timezones
-            # and converting from how newrelic want to format the time
-            infrastructure_host['timestamp'] = account_infra_data['results'][0]['events'][num]['timestamp']
-            # The warboard will need to have a list of hosts and check if they
-            # are no-longer present since this will be overwriting the key in
-            # redis when it gets a response for half of the hosts/accounts
+            # Data older than 5 minutes will be flagged as blue
+            timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
+            time_accepted_since = time.time() + 300000
+            infrastructure_host['orderby'] = 0
+            infrastructure_host['health_status'] = 'blue'
+            if timestamp > time_accepted_since:
+                # The warboard will need to have a list of hosts and check if they
+                # are no-longer present since this will be overwriting the key in
+                # redis when it gets a response for half of the hosts/accounts
 
-            # data we are interested in needs to be in a format similar to
-            # newrelic servers in order to easily be displayed along side it
-            memory_percentage = None
-            if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
-                memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
+                # data we are interested in needs to be in a format similar to
+                # newrelic servers in order to easily be displayed along side it
+                memory_percentage = None
+                if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
+                    memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
 
-            infrastructure_host['summary'] = {
-                'memory': memory_percentage,
-                'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
-                'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
-                'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
+                infrastructure_host['summary'] = {
+                    'memory': memory_percentage,
+                    'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
+                    'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
+                    'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
 
-            # The warboard script will check this was in the last 5 minutes
-            # and react acordingly - set to blue order by 0
-            # The warboard will need to have a list of hosts and check if they
-            # are no-longer present since this will be overwriting the key in
-            # redis when it gets a response for half of the hosts/accounts
+                # The warboard script will check this was in the last 5 minutes
+                # and react acordingly - set to blue order by 0
+                # The warboard will need to have a list of hosts and check if they
+                # are no-longer present since this will be overwriting the key in
+                # redis when it gets a response for half of the hosts/accounts
 
-            # Setting the orderby using the same field as newrelic servers
-            infrastructure_host['orderby'] = max(
+                # Setting the orderby using the same field as newrelic servers
+                infrastructure_host['orderby'] = max(
                     infrastructure_host['summary']['cpu'],
                     infrastructure_host['summary']['memory'],
                     infrastructure_host['summary']['fullest_disk'],
                     infrastructure_host['summary']['disk_io'])
-            if infrastructure_host['orderby'] == None:
-                infrastructure_host['orderby'] = 0
-                infrastructure_host['health_status'] = 'blue'
 
-            # Using violation data to determine the health status of servers
-            violation_level = 0
-            # violation level 0 is green and no violation
-            # violation level 1 is orange and Warning
-            # violation level 2 is red and Critical
-            # I'm giving it a number to make comparisons easier
-            for violation in violation_data:
-                if violation['entity']['product'] != 'Infrastructure':
-                    continue
+                # Using violation data to determine the health status of servers
+                violation_level = 0
+                # violation level 0 is green and no violation
+                # violation level 1 is orange and Warning
+                # violation level 2 is red and Critical
+                # I'm giving it a number to make comparisons easier
+                for violation in violation_data:
+                    if violation['entity']['product'] != 'Infrastructure':
+                        continue
 
-                # We have the option to just flag all servers in the account
-                # orange or red based on Warning or Critical here
-                # This would be a consistantly wrong behavior (the best kind of
-                # wrong)
-                # The issue is that in my testing servers are using names of
-                # '<fullhostname> (/)' why they don't just use <fullhostname>
-                # is beyond me, I am unsure on if this tracks display names
+                    # We have the option to just flag all servers in the account
+                    # orange or red based on Warning or Critical here
+                    # This would be a consistantly wrong behavior (the best kind of
+                    # wrong)
+                    # The issue is that in my testing servers are using names of
+                    # '<fullhostname> (/)' why they don't just use <fullhostname>
+                    # is beyond me, I am unsure on if this tracks display names
 
-                # The best I can do to match check if the server / host we are
-                # currently checking was the cause of the violation we are
-                # currently looping through
-                if infrastructure_host['name'] in violation['entity']['name']:
-                    if violation['priority'] == 'Warning':
-                        if violation_level < 1:
-                            violation_level = 1
-                    elif violation['priority'] == 'Critical':
-                        if violation_level < 2:
-                            violation_level = 2
-                    else:
-                        # I'm not expecting this to happen and if I make the server red it will confuse people, it would be nice to be able to make servers pink or send emails since I doubt the log will be read
-                        log_messages('Warning: unrecognised violation {} expected Warning or Critical'.format(violation['priority']), 'error')
+                    # The best I can do to match check if the server / host we are
+                    # currently checking was the cause of the violation we are
+                    # currently looping through
+                    if infrastructure_host['name'] in violation['entity']['name']:
+                        if violation['priority'] == 'Warning':
+                            if violation_level < 1:
+                                violation_level = 1
+                        elif violation['priority'] == 'Critical':
+                            if violation_level < 2:
+                                violation_level = 2
+                        else:
+                            # I'm not expecting this to happen and if I make the server red it will confuse people, it would be nice to be able to make servers pink or send emails since I doubt the log will be read
+                            log_messages('Warning: unrecognised violation {} expected Warning or Critical'.format(violation['priority']), 'error')
 
-            infrastructure_host['health_status'] = 'blue'
-            if violation_level == 0:
-                infrastructure_host['health_status'] = 'green'
-            elif violation_level == 1:
-                infrastructure_host['health_status'] = 'orange'
-            elif violation_level == 2:
-                infrastructure_host['health_status'] = 'red'
+                if violation_level == 0:
+                    infrastructure_host['health_status'] = 'green'
+                elif violation_level == 1:
+                    infrastructure_host['health_status'] = 'orange'
+                elif violation_level == 2:
+                    infrastructure_host['health_status'] = 'red'
 
             infra_results['successful_checks'] += 1
-            # uuid based on the display name falling back to the fullhostname
-            print(infrastructure_host['name'])
-            print(type(infrastructure_host['name']))
             key = 'resources_host:{}'.format(to_uuid(infrastructure_host['name']))
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
