@@ -5,6 +5,14 @@ from redis_functions import set_data, get_data
 from misc import log_messages, chain_results
 from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
 
+def store_newrelic_servers_data():
+    """
+    Collects data for all newrelic servers accounts provided in the config file
+    and stores it in redis as json with a key per server with value:
+    '[{"orderby": 0, "timestamp": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
+    """
+    pass
+
 def get_newrelic_servers_data():
     newrelic_results = {}
     for account in newrelic_servers_keys:

@@ -8,7 +8,9 @@ from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrel
 # This module assumes that newrelic insights returns the most recent data first
 def store_newrelic_infra_data():
     """
-    Calls get_infra_data and puts the relavent structured data into redis
+    Collects data for all newrelic infrastructure accounts provided in the
+    config file and stores it in redis as json with a key per server with value:
+    '[{"orderby": 0, "timestamp": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     infra_results = {}
     infra_results['failed_newrelic_infra_accounts'] = 0
