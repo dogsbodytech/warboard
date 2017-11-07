@@ -1,6 +1,5 @@
 import requests
 import json
-import ast
 import time
 from redis_functions import set_data, get_data, delete_data
 from misc import log_messages, chain_results, to_uuid
