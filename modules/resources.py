@@ -1,6 +1,5 @@
 from __future__ import division
 import json
-from newrelic_servers import get_newrelic_servers_results
 from redis_functions import get_data, get_all_data
 from misc import chain_results, log_messages
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
