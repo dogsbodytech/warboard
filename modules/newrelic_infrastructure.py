@@ -66,7 +66,7 @@ def store_newrelic_infra_data():
 
             # Data older than 5 minutes will be flagged as blue
             timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
-            time_accepted_since = time.time() * 1000 + 300000
+            time_accepted_since = time.time() * 1000 - 300000
             infrastructure_host['orderby'] = 0
             infrastructure_host['health_status'] = 'blue'
             if timestamp > time_accepted_since:
