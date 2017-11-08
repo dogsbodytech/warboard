@@ -1,5 +1,6 @@
 from __future__ import division
 import json
+import time
 from redis_functions import get_data, get_all_data
 from misc import chain_results, log_messages
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
@@ -36,23 +37,21 @@ def get_resource_results():
     resource_results['working_percentage'] = 100
 
 
-    # The following two sections need a rewrite to:
-    # Use an new key naming convention.
-    # Include a stored in redis timestamp that will be used to
-    # determine if the data is old and hence all accounts should be counted as
-    # failed.
-    # Decide and implement the way failed checks will be implemented, I am
-    # currently thinking the lowest of the working accounts and successful
-    # checks percentage should be the percentage displayed.  The user will then
-    # need to check the logs which should be written to by the module that
-    # reports failed accounts / checks.
+    # Check if the data recieved from each module is still valid, if it is not
+    # then all checks from that module are counted as unsuccessful and all
+    # accounts are counted as failed
+    milliseconds_since_epoch = time.time() * 1000
     for module in get_all_data('resources_success:*'):
         module_success_json = get_data(module)
         module_success = json.loads(module_success_json)[0]
-        resource_results['failed_accounts'] += module_success['failed_accounts']
         resource_results['total_accounts'] += module_success['total_accounts']
         resource_results['total_checks'] += module_success['total_checks']
-        resource_results['successful_checks'] += module_success['successful_checks']
+        milliseconds_since_epoch_module_data_is_valid_until = module_success['valid_until']
+        if milliseconds_since_epoch > milliseconds_since_epoch_module_data_is_valid_until:
+            resource_results['failed_accounts'] += module_success['total_accounts']
+        else:
+            resource_results['failed_accounts'] += module_success['failed_accounts']
+            resource_results['successful_checks'] += module_success['successful_checks']
 
     # Get list of keys using new host system resources:module#uuid
     for host in get_all_data('resources:*'):

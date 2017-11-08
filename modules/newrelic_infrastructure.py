@@ -66,16 +66,10 @@ def store_newrelic_infra_data():
 
             # Data older than 5 minutes will be flagged as blue
             timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
-            time_accepted_since = time.time() + 300000
+            time_accepted_since = time.time() * 1000 + 300000
             infrastructure_host['orderby'] = 0
             infrastructure_host['health_status'] = 'blue'
             if timestamp > time_accepted_since:
-                # The warboard will need to have a list of hosts and check if they
-                # are no-longer present since this will be overwriting the key in
-                # redis when it gets a response for half of the hosts/accounts
-
-                # data we are interested in needs to be in a format similar to
-                # newrelic servers in order to easily be displayed along side it
                 memory_percentage = None
                 if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
                     memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
@@ -85,12 +79,6 @@ def store_newrelic_infra_data():
                     'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
                     'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
                     'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
-
-                # The warboard script will check this was in the last 5 minutes
-                # and react acordingly - set to blue order by 0
-                # The warboard will need to have a list of hosts and check if they
-                # are no-longer present since this will be overwriting the key in
-                # redis when it gets a response for half of the hosts/accounts
 
                 # Setting the orderby using the same field as newrelic servers
                 infrastructure_host['orderby'] = max(
@@ -128,7 +116,6 @@ def store_newrelic_infra_data():
                             if violation_level < 2:
                                 violation_level = 2
                         else:
-                            # I'm not expecting this to happen and if I make the server red it will confuse people, it would be nice to be able to make servers pink or send emails since I doubt the log will be read
                             log_messages('Warning: unrecognised violation {} expected Warning or Critical'.format(violation['priority']), 'error')
 
                 if violation_level == 0:
@@ -144,4 +131,6 @@ def store_newrelic_infra_data():
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
 
+    # Data will be valid for 5 minutes after the module runs
+    infra_results['valid_until'] = time.time() * 1000 + 300000
     set_data('resources_success:newrelic_infrastructure', json.dumps([infra_results]))

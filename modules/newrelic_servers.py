@@ -1,6 +1,5 @@
 import requests
 import json
-import math
 import time
 import calendar
 from redis_functions import set_data, get_data
@@ -54,4 +53,6 @@ def store_newrelic_servers_data():
             # to be stored in the redis database
             set_data(key, json.dumps([nr_servers_host]))
 
+    # Data will be valid for 5 minutes after the module runs
+    nr_servers_results['valid_until'] = time.time() * 1000 + 300000
     set_data('resources_success:newrelic_servers', json.dumps([nr_servers_results]))
