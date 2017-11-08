@@ -49,8 +49,10 @@ def get_resource_results():
     for module in get_all_data('resources_success:*'):
         module_success_json = get_data(module)
         module_success = json.loads(module_success_json)[0]
-        for monitored_metric in module_success:
-            resource_results[monitored_metric] += module_success[monitored_metric]
+        resource_results['failed_accounts'] += module_success['failed_accounts']
+        resource_results['total_accounts'] += module_success['total_accounts']
+        resource_results['total_checks'] += module_success['total_checks']
+        resource_results['successful_checks'] += module_success['successful_checks']
 
     # Get list of keys using new host system resources:module#uuid
     for host in get_all_data('resources:*'):
