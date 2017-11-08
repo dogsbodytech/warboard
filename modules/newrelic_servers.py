@@ -29,7 +29,7 @@ def store_newrelic_servers_data():
             continue
 
         for server in json.loads(nr_servers_response.text)['servers']:
-            r_servers_results['total_checks'] += 1
+            nr_servers_results['total_checks'] += 1
             nr_servers_host = {}
             # servers returns name and host, if no dispay name is set it returns
             # the host as both name and host
