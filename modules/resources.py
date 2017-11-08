@@ -29,17 +29,23 @@ def get_resource_results():
     resource_results['total_checks'] = 0
     resource_results['failed_checks'] = 0
 
-    if newrelic_servers_keys:
-        newrelic_servers_results = get_newrelic_servers_results()
-        resource_results['green'] += newrelic_servers_results['green']
-        resource_results['red'] += newrelic_servers_results['red']
-        resource_results['orange'] += newrelic_servers_results['orange']
-        resource_results['blue'] += newrelic_servers_results['blue']
-        resource_results['checks'] += newrelic_servers_results['checks']
-        resource_results['failed_accounts'] += newrelic_servers_results['failed_newrelic_servers_accounts']
-        resource_results['total_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts']
-        resource_results['total_checks'] += newrelic_servers_results['total_checks']
-        resource_results['working_accounts'] += newrelic_servers_results['total_newrelic_servers_accounts'] - newrelic_servers_results['failed_newrelic_servers_accounts']
+
+    # The following two sections need a rewrite to:
+    # Use an new key naming convention.
+    # Include a stored in redis timestamp that will be used to
+    # determine if the data is old and hence all accounts should be counted as
+    # failed.
+    # Decide and implement the way failed checks will be implemented, I am
+    # currently thinking the lowest of the working accounts and successful
+    # checks percentage should be the percentage displayed.  The user will then
+    # need to check the logs which should be written to by the module that
+    # reports failed accounts / checks.
+    newrelic_servers_accounts_json = get_data('resources_success_newrelic_servers')
+    if newrelic_servers_accounts_json:
+        newrelic_servers_accounts = json.loads(newrelic_servers_accounts_json)[0]
+        resource_results['failed_accounts'] += newrelic_servers_accounts['failed_newrelic_servers_accounts']
+        resource_results['total_accounts'] += newrelic_servers_accounts['total_newrelic_servers_accounts']
+        resource_results['working_accounts'] += newrelic_servers_accounts['total_newrelic_servers_accounts'] - newrelic_servers_accounts['failed_newrelic_servers_accounts']
 
 
     infrastructure_accounts_json = get_data('resources_success_newrelic_infrastructure')

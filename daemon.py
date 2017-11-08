@@ -4,7 +4,7 @@ from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
-from modules.newrelic_servers import store_newrelic_servers_results, store_newrelic_servers_data
+from modules.newrelic_servers import store_newrelic_servers_data
 from modules.newrelic_infrastructure import store_newrelic_infra_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
@@ -24,10 +24,6 @@ class WarboardDaemon(Daemon):
                 store_newrelic_servers_data
             except Exception as e:
                 log_messages('store_newrelic_servers_data failed {}'.format(e), 'error')
-            try:
-                store_newrelic_servers_results()
-            except Exception as e:
-                log_messages('store_newrelic_servers_results failed {}'.format(e), 'error')
             try:
                 store_newrelic_infra_data()
             except Exception as e:
