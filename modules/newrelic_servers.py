@@ -27,7 +27,7 @@ def store_newrelic_servers_data():
             log_messages('Could not get NewRelic Servers data for {} - error getting account data from api: Error: {}'.format(account, e), 'error')
             continue
 
-        for server in json.loads(servers_response.text)['servers']:
+        for server in json.loads(nr_servers_response.text)['servers']:
             nr_servers_host = {}
             # servers returns name and host, if no dispay name is set it returns
             # the host as both name and host
