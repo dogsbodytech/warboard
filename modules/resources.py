@@ -15,8 +15,6 @@ def get_resource_results():
     <tr class="danger lead"><td>{{ check['name'] }}</td><td>{{ check['summary']['cpu'] }}%</td><td>{{ check['summary']['memory'] }}%</td><td>{{ check['summary']['disk_io'] }}%</td><td>{{ check['summary']['fullest_disk'] }}%</td></tr>
 
     """
-    # success dictionarys need a timestamp, to check the redis data is up to
-    # date, if it isn't then all checks can be considered failed
     resource_results = {}
     resource_results['checks'] = []
     resource_results['green'] = 0
@@ -35,7 +33,6 @@ def get_resource_results():
     resource_results['orange_percent'] = 0
     resource_results['green_percent'] = 0
     resource_results['working_percentage'] = 100
-
 
     # Check if the data recieved from each module is still valid, if it is not
     # then all checks from that module are counted as unsuccessful and all
@@ -82,10 +79,27 @@ def get_resource_results():
         resource_results['red_percent'] = ( resource_results['red'] / total_results ) * 100
         resource_results['orange_percent'] = ( resource_results['orange'] / total_results ) * 100
         resource_results['blue_percent'] = ( resource_results['blue'] / total_results ) * 100
-        # I want the percentage to always be 100 and green seems the most disposable and least affected by any rounding issues
+        # I want the percentage to always be 100 and green seems the most
+        # disposable / least affected by any rounding issues
         resource_results['green_percent'] = 100 - ( resource_results['red_percent'] + resource_results['orange_percent'] + resource_results['blue_percent'] )
 
+    # Set the working percentage to the lowest of accounts and checks, if either
+    # have a total of 0 then resources isn't working so the working percentage
+    # can be set to 0 to avoid dividing by 0
     if resource_results['total_accounts'] != 0:
-        resource_results['working_percentage'] = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
+        accounts_working_percentage = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
+        if accounts_working_percentage < resource_results['working_percentage']:
+            resource_results['working_percentage'] = accounts_working_percentage
+
+    else:
+        resource_results['working_percentage'] = 0
+
+    if resource_results['total_checks'] != 0:
+        checks_working_percentage = ( resource_results['successful_checks'] / resource_results['total_checks'] ) * 100
+        if checks_working_percentage < resource_results['working_percentage']:
+            resource_results['working_percentage'] = checks_working_percentage
+
+    else:
+        resource_results['working_percentage'] = 0
 
     return resource_results
