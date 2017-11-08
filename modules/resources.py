@@ -17,17 +17,18 @@ def get_resource_results():
     # success dictionarys need a timestamp, to check the redis data is up to
     # date, if it isn't then all checks can be considered failed
     resource_results = {}
+    resource_results['checks'] = []
     resource_results['green'] = 0
     resource_results['red'] = 0
     resource_results['orange'] = 0
     resource_results['blue'] = 0
     resource_results['failed_accounts'] = 0
-    resource_results['working_accounts'] = 0
     resource_results['total_accounts'] = 0
-    resource_results['checks'] = []
     resource_results['total_checks'] = 0
-    resource_results['failed_checks'] = 0
+    resource_results['successful_checks'] = 0
 
+    # Defaults for when no data is reported, working towards having modules be
+    # modular / optional
     resource_results['blue_percent'] = 100
     resource_results['red_percent'] = 0
     resource_results['orange_percent'] = 0
@@ -45,21 +46,11 @@ def get_resource_results():
     # checks percentage should be the percentage displayed.  The user will then
     # need to check the logs which should be written to by the module that
     # reports failed accounts / checks.
-    newrelic_servers_accounts_json = get_data('resources_success_newrelic_servers')
-    if newrelic_servers_accounts_json:
-        newrelic_servers_accounts = json.loads(newrelic_servers_accounts_json)[0]
-        resource_results['failed_accounts'] += newrelic_servers_accounts['failed_newrelic_servers_accounts']
-        resource_results['total_accounts'] += newrelic_servers_accounts['total_newrelic_servers_accounts']
-        resource_results['working_accounts'] += newrelic_servers_accounts['total_newrelic_servers_accounts'] - newrelic_servers_accounts['failed_newrelic_servers_accounts']
-
-
-    infrastructure_accounts_json = get_data('resources_success_newrelic_infrastructure')
-    if infrastructure_accounts_json:
-        infrastructure_accounts = json.loads(infrastructure_accounts_json)[0]
-        resource_results['failed_accounts'] += infrastructure_accounts['failed_newrelic_infra_accounts']
-        resource_results['total_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts']
-        resource_results['working_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts'] - infrastructure_accounts['failed_newrelic_infra_accounts']
-
+    for module in get_all_data('resources_success:*'):
+        module_success_json = get_data(module)
+        module_success = json.loads(module_success_json)[0]
+        for monitored_metric in module_success:
+            resource_results[monitored_metric] += module_success[monitored_metric]
 
     # Get list of keys using new host system resources:module#uuid
     for host in get_all_data('resources:*'):

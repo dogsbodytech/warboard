@@ -14,20 +14,22 @@ def store_newrelic_servers_data():
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     nr_servers_results = {}
-    nr_servers_results['failed_newrelic_servers_accounts'] = 0
-    nr_servers_results['total_newrelic_servers_accounts'] = 0
+    nr_servers_results['failed_accounts'] = 0
+    nr_servers_results['total_accounts'] = 0
     nr_servers_results['total_checks'] = 0
     nr_servers_results['successful_checks'] = 0
     for account in newrelic_servers_keys:
+        nr_servers_results['total_accounts'] += 1
         try:
             nr_servers_response = requests.get(newrelic_servers_endpoint, headers={'X-Api-Key': newrelic_servers_keys[account]}, timeout=newrelic_servers_timeout)
             nr_servers_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            nr_servers_results['failed_newrelic_servers_accounts'] += 1
+            nr_servers_results['failed_accounts'] += 1
             log_messages('Could not get NewRelic Servers data for {} - error getting account data from api: Error: {}'.format(account, e), 'error')
             continue
 
         for server in json.loads(nr_servers_response.text)['servers']:
+            r_servers_results['total_checks'] += 1
             nr_servers_host = {}
             # servers returns name and host, if no dispay name is set it returns
             # the host as both name and host
@@ -52,4 +54,4 @@ def store_newrelic_servers_data():
             # to be stored in the redis database
             set_data(key, json.dumps([nr_servers_host]))
 
-    set_data('resources_success_newrelic_servers', json.dumps([nr_servers_results]))
+    set_data('resources_success:newrelic_servers', json.dumps([nr_servers_results]))

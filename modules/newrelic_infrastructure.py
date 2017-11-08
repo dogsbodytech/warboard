@@ -13,19 +13,18 @@ def store_newrelic_infra_data():
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     infra_results = {}
-    infra_results['failed_newrelic_infra_accounts'] = 0
-    infra_results['total_newrelic_infra_accounts'] = 0
+    infra_results['failed_accounts'] = 0
+    infra_results['total_accounts'] = 0
     infra_results['total_checks'] = 0
     infra_results['successful_checks'] = 0
     for account in newrelic_main_and_insights_keys:
-        all_server_names = []
-        infra_results['total_newrelic_infra_accounts'] += 1
+        infra_results['total_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'])
         try:
             number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_newrelic_infra_accounts'] += 1
+            infra_results['failed_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} - error getting number of hosts from insights api: Error: {}'.format(account, e), 'error')
             continue
 
@@ -42,7 +41,7 @@ def store_newrelic_infra_data():
             metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             metric_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_newrelic_infra_accounts'] += 1
+            infra_results['failed_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {}: - error getting metric data from insights api: Error: {}'.format(account, e), 'error')
             continue
 
@@ -51,7 +50,7 @@ def store_newrelic_infra_data():
             violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_and_insights_keys[account]['main_api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_newrelic_infra_accounts'] += 1
+            infra_results['failed_accounts'] += 1
             log_messages('Could not get NewRelic Alerts violation data for {}: - error getting open violation data from main api: Error: {}'.format(account, e), 'error')
             continue
 
@@ -145,4 +144,4 @@ def store_newrelic_infra_data():
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))
 
-    set_data('resources_success_newrelic_infrastructure', json.dumps([infra_results]))
+    set_data('resources_success:newrelic_infrastructure', json.dumps([infra_results]))
