@@ -21,7 +21,7 @@ class WarboardDaemon(Daemon):
             except Exception as e:
                 log_messages('store_pingdom_results failed {}'.format(e), 'error')
             try:
-                store_newrelic_servers_data
+                store_newrelic_servers_data()
             except Exception as e:
                 log_messages('store_newrelic_servers_data failed {}'.format(e), 'error')
             try:
