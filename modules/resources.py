@@ -55,8 +55,8 @@ def get_resource_results():
         resource_results['working_accounts'] += infrastructure_accounts['total_newrelic_infra_accounts'] - infrastructure_accounts['failed_newrelic_infra_accounts']
 
 
-    # Get list of keys using new host system resources_host_uuid
-    for host in get_all_data('resources_host:*'):
+    # Get list of keys using new host system resources:module#uuid
+    for host in get_all_data('resources:*'):
         resource_results['total_checks'] += 1
         # This might be a good place to check the timestamp and make the check
         # a failed check if it is more than 5 minutes old, we still need to

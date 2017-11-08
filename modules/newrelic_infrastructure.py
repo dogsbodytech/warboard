@@ -140,7 +140,7 @@ def store_newrelic_infra_data():
                     infrastructure_host['health_status'] = 'red'
 
             infra_results['successful_checks'] += 1
-            key = 'resources_host:{}'.format(to_uuid(infrastructure_host['name']))
+            key = 'resources:newrelic_infrastructure#{}'.format(to_uuid(infrastructure_host['name']))
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
             set_data(key, json.dumps([infrastructure_host]))

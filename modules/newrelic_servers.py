@@ -47,7 +47,7 @@ def store_newrelic_servers_data():
                 nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io'])
 
             nr_servers_results['successful_checks'] += 1
-            key = 'resources_host:{}'.format(to_uuid(nr_servers_host['name']))
+            key = 'resources:newrelic_servers#{}'.format(to_uuid(nr_servers_host['name']))
             # Create a list with just the dictionary in and convert it to json
             # to be stored in the redis database
             set_data(key, json.dumps([nr_servers_host]))
