@@ -40,10 +40,10 @@ def store_newrelic_servers_data():
             if server['reporting'] == True:
                 nr_servers_host['health_status'] = server['health_status']
                 nr_servers_host['summary'] = {
-                    'memory': server['memory'],
-                    'disk_io': server['disk_io'],
-                    'fullest_disk': server['fullest_disk'],
-                    'cpu': server['cpu']}
+                    'memory': server['summary']['memory'],
+                    'disk_io': server['summary']['disk_io'],
+                    'fullest_disk': server['summary']['fullest_disk'],
+                    'cpu': server['summary']['cpu']}
                 nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io'])
 
             nr_servers_results['successful_checks'] += 1
