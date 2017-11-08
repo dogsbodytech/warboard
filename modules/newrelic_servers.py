@@ -44,7 +44,7 @@ def store_newrelic_servers_data():
                     'disk_io': server['disk_io'],
                     'fullest_disk': server['fullest_disk'],
                     'cpu': server['cpu']}
-                nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io']
+                nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io'])
 
             nr_servers_results['successful_checks'] += 1
             key = 'resources_host:{}'.format(to_uuid(nr_servers_host['name']))
