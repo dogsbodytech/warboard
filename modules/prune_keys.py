@@ -8,9 +8,3 @@ def prune_old_keys():
     for key in get_all_data('pingdom_*'):
         if key.split('pingdom_')[1] not in pingdom_keys:
             delete_data(key)
-    #for key in get_all_data('resources_newrelic_servers_*'):
-    #    if key.split('resources_newrelic_servers_')[1] not in newrelic_servers_keys:
-    #        delete_data(key)
-    #for key in get_all_data('resources_newrelic_infra_*'):
-    #    if key.split('resources_newrelic_infra_')[1] not in newrelic_main_and_insights_keys:
-    #        delete_data(key)
