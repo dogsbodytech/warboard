@@ -9,9 +9,7 @@ from modules.calendar_functions import get_calendar_items
 ## TODO:
 # Improve error logging
 #
-# Set a data age on monitored data - pingdom and newrelic servers
-#
-# Double check that importing proper division hasn't subtly broken things
+# Set a data age on monitored data - pingdom
 
 app = Flask(__name__)
 

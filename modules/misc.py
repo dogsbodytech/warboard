@@ -1,4 +1,8 @@
-import itertools, datetime, json, logging
+import itertools
+import datetime
+import json
+import logging
+import uuid
 from config import warboard_log
 
 def log_messages(message, priority):
@@ -22,3 +26,11 @@ def refresh_time():
         return(15)
     else:
         return(60)
+
+def to_uuid(string):
+    """
+    Mirroring the jinja filter implemented in ansible
+
+    Input a string. Returns the uuid ansible would generate as a string.
+    """
+    return str(uuid.uuid5(uuid.UUID('361E6D51-FAEC-444A-9079-341386DA8E2E'), string.encode('utf-8')))
