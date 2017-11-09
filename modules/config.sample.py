@@ -63,11 +63,16 @@ newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'numbe
                                                         'insights_api_key': 'key_here'}}
 
 # TICK details
-# Create an influx user with read access on all of the databases telegraf is
-# reporting into
-influx_url = 'https://example.org:8086'
-influx_read_user_name = 'username'
-influx_read_user_pass = 'password'
+# Credentials for a user that has read access to every database you wish to
+# monitor telegraf clients on
+# If you have multiple users or influx instances to monitor you can list them
+# as a list of dictionarys
+influx_read_users = [{'influx_url': 'https://example.com:8086',
+                      'influx_user': 'username1',
+                      'influx_pass': 'password1'},
+                     {'influx_url': 'https://example.org:8086',
+                      'influx_user': 'username2',
+                      'influx_pass': 'password2'}]
 # How old (seconds) data can be before a server is considered not reporting
 influx_max_data_age = 300
 
