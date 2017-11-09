@@ -1,8 +1,8 @@
 import requests
 import json
 import time
-from redis_functions import set_data, get_data, delete_data
-from misc import log_messages, chain_results, to_uuid
+from redis_functions import set_data, get_data
+from misc import log_messages, to_uuid
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 
 # This module assumes that newrelic insights returns the most recent data first
@@ -66,7 +66,7 @@ def store_newrelic_infra_data():
 
             # Data older than 5 minutes will be flagged as blue
             timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
-            time_accepted_since = time.time() * 1000 - 300000
+            time_accepted_since = ( time.time() - newrelic_infrastructure_max_data_age ) * 1000
             infrastructure_host['orderby'] = 0
             infrastructure_host['health_status'] = 'blue'
             if timestamp > time_accepted_since:

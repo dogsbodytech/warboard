@@ -2,7 +2,7 @@ from __future__ import division
 import json
 import time
 from redis_functions import get_data, get_all_data, delete_data
-from misc import chain_results, log_messages
+from misc import log_messages
 from config import newrelic_servers_keys, newrelic_main_and_insights_keys
 
 def get_resource_results():
