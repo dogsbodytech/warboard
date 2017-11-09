@@ -51,9 +51,10 @@ def get_resource_results():
             resource_results['failed_accounts'] += module_success['failed_accounts']
             resource_results['successful_checks'] += module_success['successful_checks']
 
+    resource_results['failed_checks'] = resource_results['total_checks'] - resource_results['successful_checks']
+
     # Get list of keys using new host system resources:module#uuid
     for host in get_all_data('resources:*'):
-        resource_results['total_checks'] += 1
         # This might be a good place to check the timestamp and make the check
         # a failed check if it is more than 5 minutes old, we still need to
         # display the failed checks as a percentage since this is how the failed
@@ -87,16 +88,11 @@ def get_resource_results():
     # Set the working percentage to the lowest of accounts and checks, if either
     # have a total of 0 then resources isn't working so the working percentage
     # can be set to 0 to avoid dividing by 0
-    if resource_results['total_accounts'] != 0:
+    if resource_results['total_accounts'] != 0 and resource_results['total_checks'] != 0:
         accounts_working_percentage = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
         if accounts_working_percentage < resource_results['working_percentage']:
             resource_results['working_percentage'] = accounts_working_percentage
-
-    else:
-        resource_results['working_percentage'] = 0
-
-    if resource_results['total_checks'] != 0:
-        checks_working_percentage = ( resource_results['successful_checks'] / resource_results['total_checks'] ) * 100
+        checks_working_percentage = 100 - (( resource_results['failed_checks'] / resource_results['total_checks'] ) * 100 )
         if checks_working_percentage < resource_results['working_percentage']:
             resource_results['working_percentage'] = checks_working_percentage
 
