@@ -7,6 +7,8 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 ## TODO:
+# Add resources tick module
+#
 # Improve error logging
 #
 # Set a data age on monitored data - pingdom
