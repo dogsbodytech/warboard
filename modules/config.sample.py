@@ -62,6 +62,14 @@ newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'numbe
                                                         'main_api_key': 'key_here',
                                                         'insights_api_key': 'key_here'}}
 
+# TICK details
+# Create an influx user with read access on all of the databases telegraf is
+# reporting into
+influx_url = 'https://example.org:8086'
+influx_read_user_name = 'username'
+influx_read_user_pass = 'password'
+# How old (seconds) data can be before a server is considered not reporting
+influx_max_data_age = 300
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
