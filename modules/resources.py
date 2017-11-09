@@ -73,7 +73,7 @@ def get_resource_results():
         except Exception as e:
             resource_results['failed_checks'] += 1
             # I would rather log to uwsgi's log but I'll sort this out later
-            log_messages(e, 'error')
+            log_messages('Data for {} is not in a valid format: {}'.format(host, e), 'error')
 
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
