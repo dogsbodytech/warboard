@@ -24,8 +24,7 @@ def get_resource_results():
     resource_results['failed_accounts'] = 0
     resource_results['total_accounts'] = 0
     resource_results['total_checks'] = 0
-    resource_results['successful_checks'] = 0
-    resource_results['failed_checks'] = 0
+    successful_checks = 0
 
     # Defaults for when no data is reported, working towards having modules be
     # modular / optional
@@ -49,9 +48,9 @@ def get_resource_results():
             resource_results['failed_accounts'] += module_success['total_accounts']
         else:
             resource_results['failed_accounts'] += module_success['failed_accounts']
-            resource_results['successful_checks'] += module_success['successful_checks']
+            successful_checks += module_success['successful_checks']
 
-    resource_results['failed_checks'] = resource_results['total_checks'] - resource_results['successful_checks']
+    resource_results['failed_checks'] = resource_results['total_checks'] - successful_checks
 
     # Get list of keys using new host system resources:module#uuid
     for host in get_all_data('resources:*'):
