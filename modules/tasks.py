@@ -2,6 +2,7 @@ import sys, getpass
 from config import warboard_user
 from misc import log_messages
 from calendar_functions import store_calendar_items
+from resources import clear_resources_keys
 
 def hourly_tasks():
     store_calendar_items()
@@ -10,7 +11,8 @@ def daily_tasks():
     return(False)
 
 def weekly_tasks():
-    clear_new_relic_infrastructure_server_list()
+    clear_resources_keys()
+
 
 if __name__ == '__main__':
     if getpass.getuser() != warboard_user:
