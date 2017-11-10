@@ -76,6 +76,9 @@ influx_read_users = [{'influx_url': 'https://example.com:8086',
 # How old (seconds) data can be before a server is considered not reporting
 influx_max_data_age = 300
 influx_timeout = 10
+# Used to reduce the number of queries required when a lot of databases are in
+# use
+influx_database_batch_size = 10
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'

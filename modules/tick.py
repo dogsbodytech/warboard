@@ -3,7 +3,7 @@ import json
 import time
 from redis_functions import set_data, get_data
 from misc import log_messages
-from config import influx_read_users, influx_max_data_age, influx_timeout
+from config import influx_read_users, influx_max_data_age, influx_timeout, influx_database_batch_size
 
 def store_tick_data():
     """
@@ -35,6 +35,23 @@ def store_tick_data():
         except Exception as e:
             tick_results['failed_accounts'] += 1
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
+
+
+
+        ####
+        """
+        SELECT 100 - LAST("usage_idle") AS "cpu" FROM "autogen"."cpu" GROUP BY "host";
+SELECT LAST("used_percent") AS "memory" FROM "autogen"."mem" GROUP BY "host";
+SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "autogen"."disk" GROUP BY "path") GROUP BY "host";
+SELECT LAST("derivative") FROM (SELECT derivative(last("io_time"),1ms) FROM "autogen"."diskio" WHERE time >= 0s GROUP BY time(15m)) GROUP BY "host"
+"""
+
+################# We are going to split the list into chunks and then
+# run against 10 databases at a time with all of the queries, I need to decide
+# how I want to split the list up
+
+# Then there will need to be a big section to parse the response
+
 
         for database_as_list in list_of_databases:
             # database is the list ["$database_name"], I can't see how the list
