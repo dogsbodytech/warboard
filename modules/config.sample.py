@@ -75,6 +75,7 @@ influx_read_users = [{'influx_url': 'https://example.com:8086',
                       'influx_pass': 'password2'}]
 # How old (seconds) data can be before a server is considered not reporting
 influx_max_data_age = 300
+influx_timeout = 10
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
