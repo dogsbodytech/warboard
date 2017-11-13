@@ -21,7 +21,7 @@ def store_tick_data():
     tick_results['total_checks'] = 0
     tick_results['successful_checks'] = 0
     for influx_user in influx_read_users:
-        tick_results[total_accounts] += 1
+        tick_results['total_accounts'] += 1
         influx_query_api = '{}/query'.format(influx_user['influx_url'])
         try:
             list_of_databases_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': 'SHOW DATABASES', 'epoch': 'ms'}, timeout=influx_timeout)
