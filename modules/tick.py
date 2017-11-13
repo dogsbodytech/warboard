@@ -37,9 +37,9 @@ def store_tick_data():
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
         queries = {}
-        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" GROUP BY "host";'
-        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" GROUP BY "host";'
-        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" GROUP BY "path") GROUP BY "host";'
+        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 1h GROUP BY "host";'
+        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 1h GROUP BY "host";'
+        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
         # This IO query is probably not using the right time period, I will leave it for now and come back
         queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "host"'
         list_of_queries = []
@@ -81,6 +81,9 @@ def store_tick_data():
         hosts_data = {}
         for batch in batches_response_list:
             for statement in batch:
+                # If we don't get data back there will be no series
+                if 'series' not in statement:
+                    continue
                 for host_data in statement['series']:
                     hostname = host_data['tags']['host']
                     if hostname not in hosts_data:
