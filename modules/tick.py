@@ -62,7 +62,7 @@ def store_tick_data():
             batch_query = ';'.join(list_of_queries[beginning_of_slice:beginning_of_slice + influx_database_batch_size])
             try:
                 metric_data_batch_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': batch_query, 'epoch': 'ms'}, timeout=influx_timeout)
-                list_of_hosts_response.raise_for_status()
+                metric_data_batch_response.raise_for_status()
             except requests.exceptions.RequestException as e:
                 # This is now a failed batch rather than account, incrementing
                 # failed accounts here could cause the output to be
