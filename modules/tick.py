@@ -87,7 +87,6 @@ def store_tick_data():
 
                     # Check if we have old data
                     if host_data['values'][0][0] < time_accepted_since:
-                        hosts[hostname]['health_status'] = 'blue'
                         # No point storing old data since we don't get it from
                         # servers module
                         continue
