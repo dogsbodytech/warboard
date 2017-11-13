@@ -81,16 +81,21 @@ def store_tick_data():
         for batch in batches_response_list:
             for statement in batch:
                 for host_data in statement['series']:
-                    hosts[host_data['tags']['host']] = {}
+                    hostname = hosts[host_data['tags']['host']]
+                    if hostname not in hosts:
+                        hosts[hostname] = {}
+
                     # Check if we have old data
                     if host_data['values'][0][0] < time_accepted_since:
-                        hosts[host_data['tags']['host']]['health_status'] = 'blue'
+                        hosts[hostname]['health_status'] = 'blue'
                         # No point storing old data since we don't get it from
                         # servers module
                         continue
+                    if 'summary' not in hosts[hostname]:
+                        hosts[hostname]['summary'] = {}
+
                     # cpu and fullest_disk will be the first non time column
-                    # create the dictionary hosts[$hostname]['summary']['cpu'] = $cpu_value
-                    hosts[host_data['tags']['host']['summary'][host_data['columns'][1]] = hosts[host_data['tags']['host']][host_data['values'][0][1]]
+                    hosts[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         return hosts
 
