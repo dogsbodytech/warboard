@@ -100,6 +100,7 @@ def get_resource_results():
     else:
         resource_results['working_percentage'] = 0
 
+    resource_results['working_accounts'] = resource_results['total_accounts'] - resource_results['failed_accounts']
     return resource_results
 
 def clear_resources_keys():
