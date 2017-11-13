@@ -81,7 +81,7 @@ def store_tick_data():
         for batch in batches_response_list:
             for statement in batch:
                 for host_data in statement['series']:
-                    hostname = hosts[host_data['tags']['host']]
+                    hostname = host_data['tags']['host']
                     if hostname not in hosts:
                         hosts[hostname] = {}
 
