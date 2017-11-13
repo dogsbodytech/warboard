@@ -114,11 +114,4 @@ def store_tick_data():
                 # for now this will be green for all hosts
                 hosts_data[host]['health_status'] = 'green'
 
-            set_data('resources:tick#{}'.format(to_uuid(host), hosts_data[host]))
-
-        # Calculate orderby
-
-        # When set-up go and get the health_status for now it will be
-        # green for all hosts
-
-        # Format the data as required and place into redis
+            set_data('resources:tick#{}'.format(to_uuid(host)), hosts_data[host])
