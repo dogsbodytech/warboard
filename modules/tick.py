@@ -114,4 +114,4 @@ def store_tick_data():
                 # for now this will be green for all hosts
                 hosts_data[host]['health_status'] = 'green'
 
-            set_data('resources:tick#{}'.format(to_uuid(host)), hosts_data[host])
+            set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([hosts_data[host]]))
