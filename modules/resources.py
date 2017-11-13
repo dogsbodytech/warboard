@@ -52,20 +52,16 @@ def get_resource_results():
 
     resource_results['failed_checks'] = resource_results['total_checks'] - successful_checks
 
-    # Get list of keys using new host system resources:module#uuid
+    checks_found = 0
+    # Get list of keys in the format resources:module#uuid
     for host in get_all_data('resources:*'):
-        # This might be a good place to check the timestamp and make the check
-        # a failed check if it is more than 5 minutes old, we still need to
-        # display the failed checks as a percentage since this is how the failed
-        # accounts percentage works, it could be better do decied which checks
-        # are too old in the jinja filter and handle displaying them differently
-        # right at the end
         try:
             # Storing lists with only one value since when I convert dictionarys
             # to json and store them in redis they come back as strings, I am
             # working around this by storing lists, ast.literal_eval also works
             host_data = json.loads(get_data(host))[0]
             resource_results['checks'].append(host_data)
+            checks_found += 1
             # get the health status colour of the current check, and then add
             # one to the number of checks with that health status
             resource_results[host_data['health_status']] += 1
@@ -74,6 +70,12 @@ def get_resource_results():
             # I would rather log to uwsgi's log but I'll sort this out later
             log_messages('Data for {} is not in a valid format: {}'.format(host, e), 'error')
 
+    # If we are getting back old checks that are no-longer reporting hence
+    # are not in the total_checks variable then they have failed.
+    # If we are getting back less checks than we stored then something has
+    # gone really wrong or we caught the weekly cron that clears the keys.
+    failed_checks += abs(resource_results['total_checks'] - checks_found)
+    resource_results['total_checks'] = checks_found
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
     if total_results != 0:
