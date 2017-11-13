@@ -93,7 +93,7 @@ def store_tick_data():
                         # servers module
                         continue
                     if 'summary' not in hosts_data[hostname]:
-                        hosts[hostname]['summary'] = {}
+                        hosts_data[hostname]['summary'] = {}
 
                     # cpu and fullest_disk will be the first non time column
                     hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
