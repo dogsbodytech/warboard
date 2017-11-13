@@ -12,10 +12,6 @@ def store_tick_data():
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     tick_results = {}
-    # This module is written with the assumption that you only have one
-    # influx instance to get data from and that the user reading from that
-    # instance will have read permissions to every database that is to be
-    # displayed from.
     tick_results['failed_accounts'] = 0
     tick_results['total_accounts'] = 0
     tick_results['total_checks'] = 0
@@ -38,11 +34,11 @@ def store_tick_data():
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
         queries = {}
-        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 1h GROUP BY "host";'
-        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 1h GROUP BY "host";'
-        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
+        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 2w GROUP BY "host";'
+        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 2w GROUP BY "host";'
+        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 2w GROUP BY "path") GROUP BY "host";'
         # This IO query is probably not using the right time period, I will leave it for now and come back
-        queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "host"'
+        queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 2w GROUP BY time(1m)) GROUP BY "host"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
@@ -94,8 +90,8 @@ def store_tick_data():
 
                     # Check if we have old data
                     if host_data['values'][0][0] < time_accepted_since:
-                        # No point storing old data since we don't get it from
-                        # servers module
+                        # No point storing old data since we don't store old
+                        # data from the servers module
                         continue
                     if 'summary' not in hosts_data[hostname]:
                         hosts_data[hostname]['summary'] = {}
