@@ -2,7 +2,7 @@ import requests
 import json
 import time
 from redis_functions import set_data, get_data
-from misc import log_messages
+from misc import log_messages, to_uuid
 from config import influx_read_users, influx_max_data_age, influx_timeout, influx_database_batch_size
 
 def store_tick_data():
