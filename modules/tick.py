@@ -53,7 +53,7 @@ def store_tick_data():
             # loop through all of the returned values
             database = database_as_list[0]
             for query in queries:
-                list_of_queries.append(query.format(database))
+                list_of_queries.append(queries['query'].format(database))
 
         # Collect in a list incase influx_database_batch_size is not a multipe
         # of the number of queries we are running per server
