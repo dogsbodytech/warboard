@@ -71,7 +71,11 @@ def store_tick_data():
                 log_messages('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
                 continue
 
-            batches_response_list.append(metric_data_batch_response.text)
+            try:
+                batches_response_list.append(json.loads(metric_data_batch_response.text)['results'])
+            except:
+                log_messages('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
+
 
         return batches_response_list
 
