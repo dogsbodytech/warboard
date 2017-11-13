@@ -36,66 +36,48 @@ def store_tick_data():
             tick_results['failed_accounts'] += 1
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
+        queries = {}
+        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" GROUP BY "host";'
+        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" GROUP BY "host";'
+        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" GROUP BY "path") GROUP BY "host";'
+        # This IO query is probably not using the right time period, I will leave it for now and come back
+        queries['disk_io_query'] = 'SELECT LAST("derivative") FROM (SELECT derivative(last("io_time"),1ms) FROM "{}"."autogen"."diskio" WHERE time >= 0s GROUP BY time(15m)) GROUP BY "host"'
+        list_of_queries = []
 
-
-        ####
-        """
-        SELECT 100 - LAST("usage_idle") AS "cpu" FROM "autogen"."cpu" GROUP BY "host";
-SELECT LAST("used_percent") AS "memory" FROM "autogen"."mem" GROUP BY "host";
-SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "autogen"."disk" GROUP BY "path") GROUP BY "host";
-SELECT LAST("derivative") FROM (SELECT derivative(last("io_time"),1ms) FROM "autogen"."diskio" WHERE time >= 0s GROUP BY time(15m)) GROUP BY "host"
-"""
-
-################# We are going to split the list into chunks and then
-# run against 10 databases at a time with all of the queries, I need to decide
-# how I want to split the list up
-
-# Then there will need to be a big section to parse the response
-
-
+        # The next two for loops are a little funky, we want to make as few
+        # requests to influx as possible whilst keeping the number low enough
+        # that we don't go over any timeouts or max request sizes
         for database_as_list in list_of_databases:
             # database is the list ["$database_name"], I can't see how the list
             # will have multiple values and would probably rather break than
             # loop through all of the returned values
             database = database_as_list[0]
+            for query in queries:
+                list_of_queries.append(query.format(database))
+
+        # Collect in a list incase influx_database_batch_size is not a multipe
+        # of the number of queries we are running per server
+        batches_response_list = []
+        for beginning_of_slice in xrange(0, len(list_of_queries), influx_database_batch_size):
+            batch_query = ';'.join(list_of_queries[beginning_of_slice:beginning_of_slice + influx_database_batch_size])
             try:
-                list_of_hosts_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'db': database, 'q': 'SHOW TAG VALUES FROM "system" WITH KEY = "host"', 'epoch': 'ms'}, timeout=influx_timeout)
+                metric_data_batch_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': batch_query, 'epoch': 'ms'}, timeout=influx_timeout)
                 list_of_hosts_response.raise_for_status()
             except requests.exceptions.RequestException as e:
-                # This is now a failed check rather than account so we aren't
-                # incrementing a variable as successful_checks are counted in at
-                # the end.  Since this module will be ran from within a try
-                # statement this exception is just in place to allow other
-                # checks to be run if this one fails and to produce a more
-                # detailed log since this is an expected error.  As opposed to
-                # unexpected errors such as influx changing the API, redis
-                # issues, configuration file issues and any other unforseen
-                # errors.
-                log_messages('Could not get TICK data for {} - error listing hosts from Influx database {}: Error: {}'.format(influx_user['influx_user'], database, e), 'error')
+                # This is now a failed batch rather than account, incrementing
+                # failed accounts here could cause the output to be
+                # misinterpreted.  Failed checks will still be picked up by
+                # their absence from successful_checks.
+                log_messages('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
                 continue
 
-            list_of_hosts = json.loads(list_of_hosts_response.text)['results'][0]['series'][0]['values']
-            for host_as_list in list_of_hosts:
-                # host is the list ["host", "$hostname"], I'm happy to just grab
-                # the second value
-                host = host_as_list[1]
-                cpu_query = 'SELECT 100 - LAST("usage_idle") FROM "autogen"."cpu" WHERE "host"=\'{}\''.format(host)
-                memory_query = 'SELECT LAST("used_percent") FROM "autogen"."mem" WHERE "host"=\'{}\''.format(host)
-                fullest_disk_query
-                disk_io_query
-                metrics_query = '{};{}'.format(cpu_query, memory_query)
-                try:
-                    metric_data_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'db': database, 'q': metrics_query, 'epoch': 'ms'}, timeout=influx_timeout)
-                    metric_data_response.raise_for_status()
-                except requests.exceptions.RequestException as e:
-                    log_messages('Could not get TICK data for {} from {} - error getting metric data for host {} from Influx database {}: Error: {}'.format(influx_user['influx_user'], host, database, e), 'error')
-                    continue
-                print(metric_data_response.text)
+            batches_response_list.append(metric_data_batch_response.text)
 
+        return batches_response_list
 
-                # Calculate orderby
+        # Calculate orderby
 
-                # When set-up go and get the health_status for now it will be
-                # green for all hosts
+        # When set-up go and get the health_status for now it will be
+        # green for all hosts
 
-            # Format the data as required and place into redis
+        # Format the data as required and place into redis
