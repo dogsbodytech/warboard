@@ -77,26 +77,44 @@ def store_tick_data():
             except:
                 log_messages('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
-        hosts = {}
+        # Key = hostname, Value = data
+        hosts_data = {}
         for batch in batches_response_list:
             for statement in batch:
                 for host_data in statement['series']:
                     hostname = host_data['tags']['host']
-                    if hostname not in hosts:
-                        hosts[hostname] = {}
+                    if hostname not in hosts_data:
+                        hosts_data[hostname] = {}
+                        hosts_data[hostname]['name'] = hostname
 
                     # Check if we have old data
                     if host_data['values'][0][0] < time_accepted_since:
                         # No point storing old data since we don't get it from
                         # servers module
                         continue
-                    if 'summary' not in hosts[hostname]:
+                    if 'summary' not in hosts_data[hostname]:
                         hosts[hostname]['summary'] = {}
 
                     # cpu and fullest_disk will be the first non time column
-                    hosts[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
+                    hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
-        return hosts
+        for host in hosts_data:
+            try:
+                hosts_data[host]['orderby'] = max(
+                    hosts_data[host]['summary']['cpu'],
+                    hosts_data[host]['summary']['memory'],
+                    hosts_data[host]['summary']['fullest_disk'],
+                    hosts_data[host]['summary']['disk_io'])
+            except KeyError:
+                hosts_data[host]['orderby'] = 0
+                hosts_data[host]['health_status'] = 'blue'
+
+            if 'health_status' not in hosts_data[host]:
+                # get the health status
+                # for now this will be green for all hosts
+                hosts_data[host]['health_status'] = 'green'
+
+            set_data('resources:tick#{}'.format(to_uuid(host), hosts_data[host]))
 
         # Calculate orderby
 
