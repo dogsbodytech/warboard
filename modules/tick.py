@@ -41,7 +41,7 @@ def store_tick_data():
         queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" GROUP BY "host";'
         queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" GROUP BY "path") GROUP BY "host";'
         # This IO query is probably not using the right time period, I will leave it for now and come back
-        queries['disk_io_query'] = 'SELECT LAST("derivative") FROM (SELECT derivative(last("io_time"),1ms) FROM "{}"."autogen"."diskio" WHERE time >= 0s GROUP BY time(15m)) GROUP BY "host"'
+        queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),1ms) FROM "{}"."autogen"."diskio" WHERE time >= 0s GROUP BY time(15m)) GROUP BY "host"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
@@ -58,6 +58,7 @@ def store_tick_data():
         # Collect in a list incase influx_database_batch_size is not a multipe
         # of the number of queries we are running per server
         batches_response_list = []
+        time_accepted_since = ( time.time() - influx_max_data_age ) * 1000
         for beginning_of_slice in xrange(0, len(list_of_queries), influx_database_batch_size):
             batch_query = ';'.join(list_of_queries[beginning_of_slice:beginning_of_slice + influx_database_batch_size])
             try:
@@ -76,8 +77,22 @@ def store_tick_data():
             except:
                 log_messages('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
+        hosts = {}
+        for batch in batches_response_list:
+            for statement in batch:
+                for host_data in statement['series']:
+                    hosts[host_data['tags']['host']] = {}
+                    # Check if we have old data
+                    if host_data['values'][0][0] < time_accepted_since:
+                        hosts[host_data['tags']['host']]['health_status'] = 'blue'
+                        # No point storing old data since we don't get it from
+                        # servers module
+                        continue
+                    # cpu and fullest_disk will be the first non time column
+                    # create the dictionary hosts[$hostname]['summary']['cpu'] = $cpu_value
+                    hosts[host_data['tags']['host']['summary']host_data['columns'][1]] = hosts[host_data['tags']['host']][host_data['values'][0][1]]
 
-        return batches_response_list
+        return hosts
 
         # Calculate orderby
 
