@@ -90,7 +90,7 @@ def store_tick_data():
                         continue
                     # cpu and fullest_disk will be the first non time column
                     # create the dictionary hosts[$hostname]['summary']['cpu'] = $cpu_value
-                    hosts[host_data['tags']['host']['summary']host_data['columns'][1]] = hosts[host_data['tags']['host']][host_data['values'][0][1]]
+                    hosts[host_data['tags']['host']['summary'][host_data['columns'][1]] = hosts[host_data['tags']['host']][host_data['values'][0][1]]
 
         return hosts
 
