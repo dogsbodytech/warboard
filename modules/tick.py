@@ -7,8 +7,8 @@ from config import influx_read_users, influx_max_data_age, influx_timeout, influ
 
 def store_tick_data():
     """
-    Collects data for all newrelic infrastructure accounts provided in the
-    config file and stores it in redis as json with a key per server with value:
+    Collects data for all influx users provided in the config file and stores it
+    in redis as json with a key per server with value:
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     tick_results = {}
@@ -21,6 +21,7 @@ def store_tick_data():
     tick_results['total_checks'] = 0
     tick_results['successful_checks'] = 0
     for influx_user in influx_read_users:
+        tick_results[total_accounts] += 1
         influx_query_api = '{}/query'.format(influx_user['influx_url'])
         try:
             list_of_databases_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': 'SHOW DATABASES', 'epoch': 'ms'}, timeout=influx_timeout)
@@ -87,6 +88,7 @@ def store_tick_data():
                 for host_data in statement['series']:
                     hostname = host_data['tags']['host']
                     if hostname not in hosts_data:
+                        tick_results['total_checks'] += 1
                         hosts_data[hostname] = {}
                         hosts_data[hostname]['name'] = hostname
 
@@ -117,4 +119,8 @@ def store_tick_data():
                 # for now this will be green for all hosts
                 hosts_data[host]['health_status'] = 'green'
 
+            tick_results['successful_checks'] += 1
             set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([hosts_data[host]]))
+
+    tick_results['valid_until'] = time.time() * 1000 + 300000
+    set_data('resources_success:tick', json.dumps([tick_results]))
