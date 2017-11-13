@@ -74,7 +74,7 @@ def get_resource_results():
     # are not in the total_checks variable then they have failed.
     # If we are getting back less checks than we stored then something has
     # gone really wrong or we caught the weekly cron that clears the keys.
-    failed_checks += abs(resource_results['total_checks'] - checks_found)
+    resource_results['failed_checks'] += abs(resource_results['total_checks'] - checks_found)
     resource_results['total_checks'] = checks_found
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
