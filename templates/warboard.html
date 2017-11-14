@@ -50,7 +50,7 @@
     </div>
     <div class="col-sm-5">
     {% if resource_results['working_percentage'] != 100 %}
-      <h1>Resources ({{ resource_results['working_percentage']resources_working_percentage_max_length }}%)</h1>
+      <h1>Resources ({{ '%0.3g' | format(resource_results['working_percentage']) | float }}%)</h1>
     {% else %}
       <h1>Resources</h1>
     {% endif %}
