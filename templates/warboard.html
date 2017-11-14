@@ -16,7 +16,7 @@
   <div class="row">
     <div class="col-sm-4">
     {% if pingdom_results['failed_pingdom'] > 0 %}
-      <h1>Pingdom ({{ '%0.3g' | format(pingdom_results['working_percentage']) | float }}%)</h1>
+      <h1>Pingdom ({{ '{:0<4}'.format('{:0.3g}'.format((pingdom_results['working_percentage']) | float | truncate(4, killwords=True, end='') }}%)</h1>
     {% else %}
       <h1>Pingdom</h1>
     {% endif %}
@@ -50,7 +50,7 @@
     </div>
     <div class="col-sm-5">
     {% if resource_results['working_percentage'] != 100 %}
-      <h1>Resources ({{ '%0.3g' | format(resource_results['working_percentage']) | float }}%)</h1>
+      <h1>Resources ({{ '{:0<4}'.format('{:0.3g}'.format((resource_results['working_percentage']) | float | truncate(4, killwords=True, end='') }}%)</h1>
     {% else %}
       <h1>Resources</h1>
     {% endif %}
@@ -67,17 +67,17 @@
         <tbody>
         {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'red' %}
-		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
+		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['cpu'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['memory'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['disk_io'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['fullest_disk'])| float | truncate(4, killwords=True, end='') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'orange' %}
-		        <tr class="warning lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
+		        <tr class="warning lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['cpu'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['memory'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['disk_io'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['fullest_disk'])| float | truncate(4, killwords=True, end='') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
-		        <tr class="success lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
+		        <tr class="success lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['cpu'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['memory'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['disk_io'])| float | truncate(4, killwords=True, end='') }}%</td><td>{{ '{:0<4}'.format('{:0.3g}'.format((check['summary']['fullest_disk'])| float | truncate(4, killwords=True, end='') }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
         {% for check in resource_results['checks']|sort(attribute='name') %}
