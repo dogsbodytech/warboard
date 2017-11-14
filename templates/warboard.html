@@ -50,7 +50,7 @@
     </div>
     <div class="col-sm-5">
     {% if resource_results['working_percentage'] != 100 %}
-      <h1>Resources ({{ resource_results['working_percentage']|float|round(3)|string()|truncate(resources_working_percentage_max_length, True, '') }}%)</h1>
+      <h1>Resources ({{ resource_results['working_percentage']resources_working_percentage_max_length }}%)</h1>
     {% else %}
       <h1>Resources</h1>
     {% endif %}
@@ -67,17 +67,17 @@
         <tbody>
         {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'red' %}
-		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|float|round(3)|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|float|round(3)|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|float|round(3)|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|float|round(3)|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
+		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'orange' %}
-		        <tr class="warning lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|float|round(3)|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|float|round(3)|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|float|round(3)|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|float|round(3)|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
+		        <tr class="warning lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
 		    {% for check in resource_results['checks']|sort(attribute='orderby')|reverse %}
           {% if check['health_status'] == 'green' %}
-		        <tr class="success lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|float|round(3)|string()|truncate(resources_cpu_max_length, True, '') }}%</td><td>{{ check['summary']['memory']|float|round(3)|string()|truncate(resources_memory_max_length, True, '') }}%</td><td>{{ check['summary']['disk_io']|float|round(3)|string()|truncate(resources_disk_io_max_length, True, '') }}%</td><td>{{ check['summary']['fullest_disk']|float|round(3)|string()|truncate(resources_fullest_disk_max_length, True, '') }}%</td></tr>
+		        <tr class="success lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ '%0.3g' | format(check['summary']['cpu'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['memory'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['disk_io'])| float }}%</td><td>{{ '%0.3g' | format(check['summary']['fullest_disk'])| float }}%</td></tr>
 		      {% endif %}
 		    {% endfor %}
         {% for check in resource_results['checks']|sort(attribute='name') %}
