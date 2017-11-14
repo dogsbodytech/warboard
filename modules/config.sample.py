@@ -10,16 +10,6 @@ redis_db = 0
 # truncating and then appends ... to any strings that have been truncated
 latency_max_name_length = 60
 resources_max_name_length = 60
-# We are truncating percentages rather than rounding them to keep the number of
-# significant figures the same rather than the number of decimal places
-# Note unlike with names we are using a hard truncate that just cuts strings at
-# the given number of charecters
-latency_working_percentage_max_length = 4
-resources_working_percentage_max_length = 4
-resources_cpu_max_length = 4
-resources_memory_max_length = 4
-resources_disk_io_max_length = 4
-resources_fullest_disk_max_length = 4
 
 # Pingdom details
 pingdom_endpoint = 'https://api.pingdom.com/api/2.0/checks'
@@ -62,6 +52,23 @@ newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'numbe
                                                         'main_api_key': 'key_here',
                                                         'insights_api_key': 'key_here'}}
 
+# TICK details
+# Credentials for a user that has read access to every database you wish to
+# monitor telegraf clients on
+# If you have multiple users or influx instances to monitor you can list them
+# as a list of dictionarys
+influx_read_users = [{'influx_url': 'https://example.com:8086',
+                      'influx_user': 'username1',
+                      'influx_pass': 'password1'},
+                     {'influx_url': 'https://example.org:8086',
+                      'influx_user': 'username2',
+                      'influx_pass': 'password2'}]
+# How old (seconds) data can be before a server is considered not reporting
+influx_max_data_age = 300
+influx_timeout = 10
+# Used to reduce the number of queries required when a lot of databases are in
+# use
+influx_database_batch_size = 40
 
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
