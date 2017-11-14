@@ -1,7 +1,6 @@
 import requests
 import json
 import time
-import calendar
 from redis_functions import set_data, get_data
 from misc import log_messages, to_uuid
 from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
