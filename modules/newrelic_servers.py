@@ -39,9 +39,10 @@ def store_newrelic_servers_data():
             nr_servers_host['health_status'] = 'blue'
             if server['reporting'] == True:
                 nr_servers_host['health_status'] = server['health_status']
-                if nr_servers_host['health_status'] = 'unknown':
+                if nr_servers_host['health_status'] == 'unknown':
                     nr_servers_host['health_status'] = 'green'
                     nr_servers_host['name'] = '* {}'.format(nr_servers_host['name'])
+                    
                 nr_servers_host['summary'] = {
                     'memory': server['summary']['memory'],
                     'disk_io': server['summary']['disk_io'],
