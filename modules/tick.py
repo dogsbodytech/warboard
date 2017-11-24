@@ -39,6 +39,7 @@ def store_tick_data():
         queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 2w GROUP BY "path") GROUP BY "host";'
         # This IO query is probably not using the right time period, I will leave it for now and come back
         queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 2w GROUP BY time(1m)) GROUP BY "host"'
+        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 2w GROUP BY "host","kapacitor_alert_level","cpu","total","name","device"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
@@ -81,6 +82,32 @@ def store_tick_data():
                 # If we don't get data back there will be no series
                 if 'series' not in statement:
                     continue
+
+                # Catch kapacitor alert data and set the health status accordingly
+                if statement['series'][0]['name'] == "kapacitor_alerts":
+                    alerts = {}
+                    alerts['critical'] = [-1]
+                    alerts['warning'] = [-1]
+                    for alert in statement['series']:
+                        alerts[alert['tags']['kapacitor_alert_level']].append(alert['values'][0][1])
+
+                    health_status = 'green'
+
+                    if max(alerts['warning']) > 0:
+                        health_status = 'orange'
+
+                    if max(alerts['critical']) > 0:
+                        health_status = 'red'
+
+                    if hostname not in hosts_data:
+                        tick_results['total_checks'] += 1
+                        hosts_data[hostname] = {}
+                        hosts_data[hostname]['name'] = hostname
+
+                    hosts_data[hostname]['health_status'] = health_status
+                    continue
+
+                # for all other data - cpu memory disk diskio
                 for host_data in statement['series']:
                     hostname = host_data['tags']['host']
                     if hostname not in hosts_data:
@@ -109,11 +136,6 @@ def store_tick_data():
             except KeyError:
                 hosts_data[host]['orderby'] = 0
                 hosts_data[host]['health_status'] = 'blue'
-
-            if 'health_status' not in hosts_data[host]:
-                # get the health status
-                # for now this will be green for all hosts
-                hosts_data[host]['health_status'] = 'green'
 
             tick_results['successful_checks'] += 1
             set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([hosts_data[host]]))
