@@ -86,6 +86,7 @@ def get_tick_data():
 
                 # Catch kapacitor alert data and set the health status accordingly
                 if statement['series'][0]['name'] == "kapacitor_alerts":
+                    log_messages(statement['series'], 'debug')
                     alerts = {}
                     alerts['critical'] = [-1]
                     alerts['warning'] = [-1]
