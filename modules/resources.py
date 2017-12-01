@@ -109,7 +109,7 @@ def clear_resources_keys():
 def list_unreporting_servers():
     found_servers = set()
     for key in get_all_data('resources:*'):
-        host_data = json.loads(get_data(host))[0]
+        host_data = json.loads(get_data(key))[0]
         found_servers.add(host_data['name'])
 
     reporting_servers = set()
