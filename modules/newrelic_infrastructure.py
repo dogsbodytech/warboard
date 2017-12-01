@@ -141,4 +141,4 @@ def store_newrelic_infra_data(newrelic_infra_data, newrelic_infra_data_validity)
         host_data = newrelic_infra_data[host]
         set_data('resources:newrelic_infrastructure#{}'.format(to_uuid(host)), json.dumps([host_data]))
 
-    set_data('resources_success:newrelic_infrastructure', json.dumps([newrelic_infra_data_validity])
+    set_data('resources_success:newrelic_infrastructure', json.dumps([newrelic_infra_data_validity]))
