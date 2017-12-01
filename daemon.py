@@ -22,15 +22,15 @@ class WarboardDaemon(Daemon):
             except Exception as e:
                 log_messages('store_pingdom_results failed {}'.format(e), 'error')
             try:
-                store_newrelic_servers_data()
+                store_newrelic_servers_data(get_newrelic_servers_data)
             except Exception as e:
                 log_messages('store_newrelic_servers_data failed {}'.format(e), 'error')
             try:
-                store_newrelic_infra_data()
+                store_newrelic_infra_data(get_newrelic_infra_data)
             except Exception as e:
                 log_messages('store_newrelic_infra_data {}'.format(e), 'error')
             try:
-                store_tick_data()
+                store_tick_data(get_tick_data)
             except Exception as e:
                 log_messages('store_tick_data {}'.format(e), 'error')
             try:

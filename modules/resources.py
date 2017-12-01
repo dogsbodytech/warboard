@@ -3,7 +3,6 @@ import json
 import time
 from redis_functions import get_data, get_all_data, delete_data
 from misc import log_messages
-from config import newrelic_servers_keys, newrelic_main_and_insights_keys
 
 def get_resource_results():
     """
@@ -106,3 +105,27 @@ def get_resource_results():
 def clear_resources_keys():
     for key in get_all_data('resources:*'):
         delete_data(key)
+
+def list_unreporting_servers():
+    found_servers = set()
+    for key in get_all_data('resources:*'):
+        host_data = json.loads(get_data(host))[0]
+        found_servers.add(host_data['name'])
+
+    reporting_servers = set()
+    tick_data, tick_data_validity = get_tick_data()
+    for host in tick_data:
+        host_data = tick_data[host]
+        reporting_servers.add(host_data['name'])
+
+    newrelic_servers_data, newrelic_servers_data_validity = get_newrelic_servers_data()
+    for host in newrelic_servers_data:
+        host_data = newrelic_servers_data[host]
+        reporting_servers.add(host_data['name'])
+
+    newrelic_infra_data, newrelic_infra_data_validity = get_newrelic_infra_data()
+    for host in newrelic_infra_data:
+        host_data = newrelic_infra_data[host]
+        reporting_servers.add(host_data['name'])
+
+    return found_servers - reporting_servers

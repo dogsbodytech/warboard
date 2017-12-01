@@ -6,12 +6,13 @@ from misc import log_messages, to_uuid
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 
 # This module assumes that newrelic insights returns the most recent data first
-def store_newrelic_infra_data():
+def get_newrelic_infra_data():
     """
     Collects data for all newrelic infrastructure accounts provided in the
     config file and stores it in redis as json with a key per server with value:
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
+    newrelic_infra_data = {}
     infra_results = {}
     infra_results['failed_accounts'] = 0
     infra_results['total_accounts'] = 0
@@ -134,3 +135,10 @@ def store_newrelic_infra_data():
     # Data will be valid for 5 minutes after the module runs
     infra_results['valid_until'] = time.time() * 1000 + 300000
     set_data('resources_success:newrelic_infrastructure', json.dumps([infra_results]))
+
+def store_newrelic_infra_data(newrelic_infra_data, newrelic_infra_data_validity):
+    for host in newrelic_infra_data:
+        host_data = newrelic_infra_data[host]
+        set_data('resources:newrelic_infrastructure#{}'.format(to_uuid(host)), json.dumps([host_data]))
+
+    set_data('resources_success:newrelic_infrastructure', json.dumps([newrelic_infra_data_validity])

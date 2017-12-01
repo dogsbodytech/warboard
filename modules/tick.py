@@ -5,32 +5,33 @@ from redis_functions import set_data, get_data
 from misc import log_messages, to_uuid
 from config import influx_read_users, influx_max_data_age, influx_timeout, influx_database_batch_size
 
-def store_tick_data():
+def get_tick_data():
     """
     Collects data for all influx users provided in the config file and stores it
     in redis as json with a key per server with value:
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
-    tick_results = {}
-    tick_results['failed_accounts'] = 0
-    tick_results['total_accounts'] = 0
-    tick_results['total_checks'] = 0
-    tick_results['successful_checks'] = 0
+    tick_data = {}
+    tick_data_validity = {}
+    tick_data_validity['failed_accounts'] = 0
+    tick_data_validity['total_accounts'] = 0
+    tick_data_validity['total_checks'] = 0
+    tick_data_validity['successful_checks'] = 0
     for influx_user in influx_read_users:
-        tick_results['total_accounts'] += 1
+        tick_data_validity['total_accounts'] += 1
         influx_query_api = '{}/query'.format(influx_user['influx_url'])
         try:
             list_of_databases_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': 'SHOW DATABASES', 'epoch': 'ms'}, timeout=influx_timeout)
             list_of_databases_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            tick_results['failed_accounts'] += 1
+            tick_data_validity['failed_accounts'] += 1
             log_messages('Could not get TICK data for {} - error listing databases from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
             continue
 
         try:
             list_of_databases = json.loads(list_of_databases_response.text)['results'][0]['series'][0]['values']
         except Exception as e:
-            tick_results['failed_accounts'] += 1
+            tick_data_validity['failed_accounts'] += 1
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
         queries = {}
@@ -100,7 +101,7 @@ def store_tick_data():
                         health_status = 'red'
 
                     if hostname not in hosts_data:
-                        tick_results['total_checks'] += 1
+                        tick_data_validity['total_checks'] += 1
                         hosts_data[hostname] = {}
                         hosts_data[hostname]['name'] = hostname
 
@@ -111,7 +112,7 @@ def store_tick_data():
                 for host_data in statement['series']:
                     hostname = host_data['tags']['host']
                     if hostname not in hosts_data:
-                        tick_results['total_checks'] += 1
+                        tick_data_validity['total_checks'] += 1
                         hosts_data[hostname] = {}
                         hosts_data[hostname]['name'] = hostname
 
@@ -137,8 +138,15 @@ def store_tick_data():
                 hosts_data[host]['orderby'] = 0
                 hosts_data[host]['health_status'] = 'blue'
 
-            tick_results['successful_checks'] += 1
-            set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([hosts_data[host]]))
+            tick_data_validity['successful_checks'] += 1
+            tick_data[host] = hosts_data[host]
 
-    tick_results['valid_until'] = time.time() * 1000 + 300000
-    set_data('resources_success:tick', json.dumps([tick_results]))
+    tick_data_validity['valid_until'] = time.time() * 1000 + 300000
+    return tick_data, tick_data_validity
+
+def store_tick_data(tick_data, tick_data_validity):
+    for host in tick_data:
+        host_data = tick_data[host]
+        set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([host_data]))
+
+    set_data('resources_success:tick', json.dumps([tick_data_validity]))
