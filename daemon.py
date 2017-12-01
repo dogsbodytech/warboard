@@ -4,9 +4,9 @@ from modules.misc import log_messages, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
-from modules.newrelic_servers import store_newrelic_servers_data
-from modules.newrelic_infrastructure import store_newrelic_infra_data
-from modules.tick import store_tick_data
+from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
+from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
+from modules.tick import get_tick_data, store_tick_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
 
