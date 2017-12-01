@@ -134,6 +134,9 @@ def get_newrelic_infra_data():
     return newrelic_infra_data, newrelic_infra_data_validity
 
 def store_newrelic_infra_data(newrelic_infra_data, newrelic_infra_data_validity):
+    """
+    Store data returned by get_newrelic_infra_data in redis as key value pairs
+    """
     for host in newrelic_infra_data:
         host_data = newrelic_infra_data[host]
         set_data('resources:newrelic_infrastructure#{}'.format(to_uuid(host)), json.dumps([host_data]))

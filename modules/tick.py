@@ -7,9 +7,9 @@ from config import influx_read_users, influx_max_data_age, influx_timeout, influ
 
 def get_tick_data():
     """
-    Collects data for all influx users provided in the config file and stores it
-    in redis as json with a key per server with value:
-    '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
+    Collects data for all influx users provided in the config file and returns
+    it as a tuple, dictionary containing all servers as key server name, value
+    server data and dictionary with meta data for checks returned
     """
     tick_data = {}
     tick_data_validity = {}
@@ -128,6 +128,9 @@ def get_tick_data():
                     hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         for host in hosts_data:
+            if 'health_status' not in hosts_data[host]:
+                hosts_data[host]['health_status'] = 'green'
+
             hosts_data[host]['health_status'] = 'green'
             try:
                 hosts_data[host]['orderby'] = max(
@@ -140,12 +143,15 @@ def get_tick_data():
                 hosts_data[host]['health_status'] = 'blue'
 
             tick_data_validity['successful_checks'] += 1
-            tick_data[host] = hosts_data[host]
+            tick_data[hosts_data['name']] = hosts_data[host]
 
     tick_data_validity['valid_until'] = time.time() * 1000 + 300000
     return tick_data, tick_data_validity
 
 def store_tick_data(tick_data, tick_data_validity):
+    """
+    Store data returned by get_tick_data in redis as key value pairs
+    """
     for host in tick_data:
         host_data = tick_data[host]
         set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([host_data]))

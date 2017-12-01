@@ -52,8 +52,6 @@ def get_newrelic_servers_data():
                 nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io'])
 
             newrelic_servers_data_validity['successful_checks'] += 1
-            # Create a list with just the dictionary in and convert it to json
-            # to be stored in the redis database
             newrelic_servers_data[server['name']] = nr_servers_host
 
     # Data will be valid for 5 minutes after the module runs
@@ -61,6 +59,9 @@ def get_newrelic_servers_data():
     return newrelic_servers_data, newrelic_servers_data_validity
 
 def store_newrelic_servers_data(newrelic_servers_data, newrelic_servers_data_validity):
+    """
+    Store data returned by get_newrelic_servers_data in redis as key value pairs
+    """
     for host in newrelic_servers_data:
         host_data = newrelic_servers_data[host]
         set_data('resources:newrelic_servers#{}'.format(to_uuid(host)), json.dumps([host_data]))
