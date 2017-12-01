@@ -128,22 +128,22 @@ def get_tick_data():
                     hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         for host in hosts_data:
-            if 'health_status' not in hosts_data[host]:
-                hosts_data[host]['health_status'] = 'green'
+            tick_host_data = hosts_data[host]
+            if 'health_status' not in tick_host_data:
+                tick_host_data['health_status'] = 'green'
 
-            hosts_data[host]['health_status'] = 'green'
             try:
-                hosts_data[host]['orderby'] = max(
-                    hosts_data[host]['summary']['cpu'],
-                    hosts_data[host]['summary']['memory'],
-                    hosts_data[host]['summary']['fullest_disk'],
-                    hosts_data[host]['summary']['disk_io'])
+                tick_host_data['orderby'] = max(
+                    tick_host_data['summary']['cpu'],
+                    tick_host_data['summary']['memory'],
+                    tick_host_data['summary']['fullest_disk'],
+                    tick_host_data['summary']['disk_io'])
             except KeyError:
-                hosts_data[host]['orderby'] = 0
-                hosts_data[host]['health_status'] = 'blue'
+                tick_host_data['orderby'] = 0
+                tick_host_data['health_status'] = 'blue'
 
             tick_data_validity['successful_checks'] += 1
-            tick_data[hosts_data['name']] = hosts_data[host]
+            tick_data[tick_host_data['name']] = tick_host_data
 
     tick_data_validity['valid_until'] = time.time() * 1000 + 300000
     return tick_data, tick_data_validity
