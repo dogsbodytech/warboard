@@ -128,6 +128,7 @@ def get_tick_data():
                     hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         for host in hosts_data:
+            hosts_data[host]['health_status'] = 'green'
             try:
                 hosts_data[host]['orderby'] = max(
                     hosts_data[host]['summary']['cpu'],
