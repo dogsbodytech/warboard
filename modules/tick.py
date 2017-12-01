@@ -90,6 +90,7 @@ def get_tick_data():
                     alerts = {}
                     alerts['critical'] = [-1]
                     alerts['warning'] = [-1]
+                    hostname = alert['tags']['host']
                     for alert in statement['series']:
                         alerts[alert['tags']['kapacitor_alert_level']].append(alert['values'][0][1])
 
