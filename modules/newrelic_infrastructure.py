@@ -13,19 +13,19 @@ def get_newrelic_infra_data():
     '[{"orderby": 0, "health_status": "green", "name": "wibble", "summary": {"cpu": 0, "fullest_disk": 0, "disk_io": 0, "memory": 0}}]'
     """
     newrelic_infra_data = {}
-    infra_results = {}
-    infra_results['failed_accounts'] = 0
-    infra_results['total_accounts'] = 0
-    infra_results['total_checks'] = 0
-    infra_results['successful_checks'] = 0
+    newrelic_infra_data_validity = {}
+    newrelic_infra_data_validity['failed_accounts'] = 0
+    newrelic_infra_data_validity['total_accounts'] = 0
+    newrelic_infra_data_validity['total_checks'] = 0
+    newrelic_infra_data_validity['successful_checks'] = 0
     for account in newrelic_main_and_insights_keys:
-        infra_results['total_accounts'] += 1
+        newrelic_infra_data_validity['total_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'])
         try:
             number_of_hosts_response = requests.get(number_or_hosts_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_accounts'] += 1
+            newrelic_infra_data_validity['failed_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {} - error getting number of hosts from insights api: Error: {}'.format(account, e), 'error')
             continue
 
@@ -42,7 +42,7 @@ def get_newrelic_infra_data():
             metric_data_response = requests.get(metric_data_url, headers={'X-Query-Key': newrelic_main_and_insights_keys[account]['insights_api_key']}, timeout=newrelic_insights_timeout)
             metric_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_accounts'] += 1
+            newrelic_infra_data_validity['failed_accounts'] += 1
             log_messages('Could not get NewRelic Infrastructure data for {}: - error getting metric data from insights api: Error: {}'.format(account, e), 'error')
             continue
 
@@ -51,13 +51,13 @@ def get_newrelic_infra_data():
             violation_data_response = requests.get(newrelic_main_api_violation_endpoint, headers={'X-Api-Key': newrelic_main_and_insights_keys[account]['main_api_key']}, timeout=newrelic_main_api_timeout)
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
-            infra_results['failed_accounts'] += 1
+            newrelic_infra_data_validity['failed_accounts'] += 1
             log_messages('Could not get NewRelic Alerts violation data for {}: - error getting open violation data from main api: Error: {}'.format(account, e), 'error')
             continue
 
         violation_data = json.loads(violation_data_response.text)['violations']
         for num, host_data in enumerate(account_infra_data['results'][0]['events']):
-            infra_results['total_checks'] += 1
+            newrelic_infra_data_validity['total_checks'] += 1
             infrastructure_host = {}
             # name is the display name, if it is not set it is the hostname
             # I will crop the name in the jinja filter
@@ -126,15 +126,12 @@ def get_newrelic_infra_data():
                 elif violation_level == 2:
                     infrastructure_host['health_status'] = 'red'
 
-            infra_results['successful_checks'] += 1
-            key = 'resources:newrelic_infrastructure#{}'.format(to_uuid(infrastructure_host['name']))
-            # Create a list with just the dictionary in and convert it to json
-            # to be stored in the redis database
-            set_data(key, json.dumps([infrastructure_host]))
+            newrelic_infra_data_validity['successful_checks'] += 1
+            newrelic_infra_data[infrastructure_host['name']] = infrastructure_host
 
     # Data will be valid for 5 minutes after the module runs
-    infra_results['valid_until'] = time.time() * 1000 + 300000
-    set_data('resources_success:newrelic_infrastructure', json.dumps([infra_results]))
+    newrelic_infra_data_validity['valid_until'] = time.time() * 1000 + 300000
+    return newrelic_infra_data, newrelic_infra_data_validity
 
 def store_newrelic_infra_data(newrelic_infra_data, newrelic_infra_data_validity):
     for host in newrelic_infra_data:
