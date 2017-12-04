@@ -35,12 +35,12 @@ def get_tick_data():
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
         queries = {}
-        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 2w GROUP BY "host";'
-        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 2w GROUP BY "host";'
-        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 2w GROUP BY "path") GROUP BY "host";'
+        queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 1h GROUP BY "host";'
+        queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 1h GROUP BY "host";'
+        queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
         # This IO query is probably not using the right time period, I will leave it for now and come back
-        queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 2w GROUP BY time(1m)) GROUP BY "host"'
-        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 2w GROUP BY "host","kapacitor_alert_level","cpu","total","name","device"'
+        queries['disk_io_query'] = 'SELECT LAST("derivative") AS "disk_io" FROM (SELECT derivative(last("io_time"),100ms) FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "host"'
+        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 1h GROUP BY "host","kapacitor_alert_level","cpu","total","name","device"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
