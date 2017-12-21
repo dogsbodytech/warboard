@@ -40,6 +40,11 @@ def get_tick_data():
         queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
         # I'm not sure the io time is the best way to calculate disk io
         queries['disk_io_query'] = 'SELECT MAX(latest_delta_io) AS "disk_io" FROM (SELECT LAST("delta_io") AS "latest_delta_io" FROM (SELECT derivative(last("io_time"),100ms) AS "delta_io" FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"'
+
+"""
+> SELECT MAX("last_combined_io_time") AS "io_time" FROM (SELECT LAST("combined_io_time") AS "last_combined_io_time" FROM (SELECT DERIVATIVE(LAST("read_time"), 1ms)+DERIVATIVE(LAST("write_time"), 1ms) AS "combined_io_time" FROM "diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"
+"""
+
         queries['alert_query'] = 'SELECT LAST("crit_duration") AS "duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 1h GROUP BY "host","kapacitor_alert_level","cpu","total","name","device"'
         list_of_queries = []
 
