@@ -29,4 +29,6 @@ def list_unreporting_servers():
     return found_servers - reporting_servers
 
 if __name__ == '__main__':
-    print(list_unreporting_servers())
+    print("The following servers aren't reporting:")
+    for server in list_unreporting_servers():
+        print(server)
