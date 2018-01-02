@@ -27,3 +27,6 @@ def list_unreporting_servers():
         reporting_servers.add(host_data['name'])
 
     return found_servers - reporting_servers
+
+if __name__ == '__main__':
+    print(list_unreporting_servers())
