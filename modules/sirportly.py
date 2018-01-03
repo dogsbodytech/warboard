@@ -62,7 +62,7 @@ def get_sirportly_results(): # Get all the sirportly data to pass to the warboar
     sirportly_results['resolved_tickets'] = int(get_data('resolved_tickets'))
     sirportly_results['red_percent'] = get_data('red_percent')
     sirportly_results['green_percent'] = get_data('green_percent')
-    sirportly_results['multiplier'] = int(get_data('multiplier'))
+    sirportly_results['multiplier'] = get_data('multiplier'))
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
     for user in sirportly_users:
