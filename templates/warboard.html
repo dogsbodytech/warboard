@@ -110,9 +110,9 @@
             <td class="col-sm-4">{{ sirportly_users[user] }}<span class="pull-right">{{ sirportly_results['users'][user+'_total'] }}</span></td>
             <td class="col-sm-8">
               <div class="progress">
-                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ sirportly_results['users'][user+'_red'] * sirportly_results['multiplier'] }}%"></div>
-                <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ sirportly_results['users'][user+'_blue'] * sirportly_results['multiplier'] }}%"></div>
-                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ sirportly_results['users'][user+'_green'] * sirportly_results['multiplier'] }}%"></div>
+                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ int(sirportly_results['users'][user+'_red'] * sirportly_results['multiplier']) }}%"></div>
+                <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ int(sirportly_results['users'][user+'_blue'] * sirportly_results['multiplier']) }}%"></div>
+                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ int(sirportly_results['users'][user+'_green'] * sirportly_results['multiplier']) }}%"></div>
               </div>
             </td>
           </tr>
