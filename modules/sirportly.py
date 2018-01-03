@@ -39,14 +39,13 @@ def sirportly_ticket_multiplier(unassigned, user_data): # Calculate the multipli
     ticket_counts = [unassigned]
     for user in sirportly_users:
         ticket_counts.append(user_data[user+'_total'])
-    try:
-        multiplier = math.trunc(100/max(ticket_counts))
-    except ZeroDivisionError:
-        multiplier = 0
-    if multiplier < 1:
-        return(1)
-    else:
-        return(multiplier)
+
+    most_tickets = max(ticket_counts)
+    multiplier = 1
+    if most_tickets > 0:
+        multiplier = 100.0 / most_tickets
+
+    return(multiplier)
 
 def store_sirportly_results(): # Store all the sirportly data in redis
     sirportly_data = get_sirportly_data()
