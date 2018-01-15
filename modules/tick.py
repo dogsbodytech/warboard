@@ -99,7 +99,6 @@ def get_tick_data():
                     # variable critTime / warnTime
                     for each_measurement_with_an_alerting_status in statement['series']:
                         hostname = each_measurement_with_an_alerting_status['tags']['host']
-                        hostnames.append(hostname)
                         alerts[hostname] = {}
                         alerts[hostname]['critical'] = []
                         alerts[hostname]['warning'] = []
