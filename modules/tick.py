@@ -40,12 +40,12 @@ def get_tick_data():
         queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
         # I'm not sure the io time is the best way to calculate disk io
         queries['disk_io_query'] = 'SELECT MAX(latest_delta_io) AS "disk_io" FROM (SELECT LAST("delta_io") AS "latest_delta_io" FROM (SELECT derivative(last("io_time"),100ms) AS "delta_io" FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"'
-
         """
         > SELECT MAX("last_combined_io_time") AS "io_time" FROM (SELECT LAST("combined_io_time") AS "last_combined_io_time" FROM (SELECT DERIVATIVE(LAST("read_time"), 1ms)+DERIVATIVE(LAST("write_time"), 1ms) AS "combined_io_time" FROM "diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"
         """
-
-        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 1h GROUP BY "host","kapacitor_alert_level","cpu","total","name","device"'
+        # We don't have a tag key for memory, at the moment it is the only thing without a tag so it will be seperate
+        # We actually want to pull this query from all of time since it gives the most recent alert status however the db isn't going to appreciate that to I'll grab the last 28 days for now
+        queries['crit_alert_query'] = 'SELECT LAST("crit_duration") AS "crit_duration_before_alerting", LAST("warn_duration") AS "warn_duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 28d GROUP BY "host","cpu","total","device"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
@@ -92,27 +92,40 @@ def get_tick_data():
                 # Catch kapacitor alert data and set the health status accordingly
                 if statement['series'][0]['name'] == "kapacitor_alerts":
                     alerts = {}
-                    alerts['critical'] = [-1]
-                    alerts['warning'] = [-1]
-                    hostname = statement['series'][0]['tags']['host']
-                    for alert in statement['series']:
-                        alerts[alert['tags']['kapacitor_alert_level']].append(alert['values'][0][1])
+                    # We will create two lists and to store the crit_duration and warn_duration values in
+                    # when an alert is a warning it's warn_duration will be an integer and it's crit_duration
+                    # will be None, we will then grab to max to check if something is alerting since
+                    # crit duration has value -1 when not alerting and x when alerting where x is the kapacitor
+                    # variable critTime / warnTime
+                    for each_measurement_with_an_alerting_status in statement['series']:
+                        hostname = each_measurement_with_an_alerting_status['tags']['host']
+                        hostnames.append(hostname)
+                        alerts[hostname] = {}
+                        alerts[hostname]['critical'] = []
+                        alerts[hostname]['warning'] = []
+                        for tag_or_field_position_in_list, tag_or_field in enumerate(each_measurement_with_an_alerting_status['columns']):
+                            if tag_or_field == "crit_duration_before_alerting":
+                                assert len(each_measurement_with_an_alerting_status['values']) == 1
+                                alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
+                            if tag_or_field == "warn_duration_before_alerting":
+                                assert len(each_measurement_with_an_alerting_status['values']) == 1
+                                alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
 
-                    health_status = 'green'
+                    for hostname in alerts:
+                        health_status = 'green'
 
-                    if max(alerts['warning']) > 0:
-                        health_status = 'orange'
+                        if max(alerts[hostname]['warning']) > 0:
+                            health_status = 'orange'
 
-                    if max(alerts['critical']) > 0:
-                        health_status = 'red'
+                        if max(alerts[hostname]['critical']) > 0:
+                            health_status = 'red'
 
-                    if hostname not in hosts_data:
-                        tick_data_validity['total_checks'] += 1
-                        hosts_data[hostname] = {}
-                        hosts_data[hostname]['name'] = hostname
+                        if hostname not in hosts_data:
+                            tick_data_validity['total_checks'] += 1
+                            hosts_data[hostname] = {}
+                            hosts_data[hostname]['name'] = hostname
 
-                    hosts_data[hostname]['health_status'] = health_status
-                    continue
+                        hosts_data[hostname]['health_status'] = health_status
 
                 # for all other data - cpu memory disk diskio
                 for host_data in statement['series']:
