@@ -108,7 +108,7 @@ def get_tick_data():
                                 alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
                             if tag_or_field == "warn_duration_before_alerting":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
-                                alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
+                                alerts[hostname]['warning'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
 
                     for hostname in alerts:
                         health_status = 'green'
