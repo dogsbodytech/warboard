@@ -99,9 +99,11 @@ def get_tick_data():
                     # variable critTime / warnTime
                     for each_measurement_with_an_alerting_status in statement['series']:
                         hostname = each_measurement_with_an_alerting_status['tags']['host']
-                        alerts[hostname] = {}
-                        alerts[hostname]['critical'] = [None]
-                        alerts[hostname]['warning'] = [None]
+                        if hostname not in alerts:
+                            alerts[hostname] = {}
+                            alerts[hostname]['critical'] = [None]
+                            alerts[hostname]['warning'] = [None]
+         
                         for tag_or_field_position_in_list, tag_or_field in enumerate(each_measurement_with_an_alerting_status['columns']):
                             if tag_or_field == "crit_duration_before_alerting":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
