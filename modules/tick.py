@@ -45,7 +45,7 @@ def get_tick_data():
         """
         # We don't have a tag key for memory, at the moment it is the only thing without a tag so it will be seperate
         # We actually want to pull this query from all of time since it gives the most recent alert status however the db isn't going to appreciate that to I'll grab the last 28 days for now
-        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "crit_duration_before_alerting", LAST("warn_duration") AS "warn_duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 28d GROUP BY "host","cpu","name","device"'
+        queries['alert_query'] = 'SELECT LAST("crit_duration") AS "crit_duration_before_alerting", LAST("warn_duration") AS "warn_duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 28d GROUP BY "host","cpu","name","path"'
         list_of_queries = []
 
         # The next two for loops are a little funky, we want to make as few
