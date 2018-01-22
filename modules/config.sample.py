@@ -70,6 +70,19 @@ influx_timeout = 10
 # use
 influx_database_batch_size = 50
 
+# Prometheus details
+prometheus_credentials = {  'user1': {   'username': '',
+                                        'password': '',
+                                        'url': '',
+                                        'timeout': 5
+                                        },
+                            'user2': {   'username': '',
+                                        'password': '',
+                                        'url': '',
+                                        'timeout': 5
+                                        }
+                            }
+
 # Sirportly details
 sirportly_endpoint = 'https://sirportly.example.org/api/v2/tickets'
 sirportly_token = 'token_here'
