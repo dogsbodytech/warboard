@@ -25,6 +25,18 @@ def get_prometheus_data():
 
     query = '(1 - avg(rate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
 
+    """
+    Need to write queries for the other 3 metrics
+    Would be good to keep all of the queries in on big get request to minimise
+    requests and to make it easy to decide how many accounts have failed
+    Will need to parse the data before returning it
+    Will need to store the data in redis, it would be nice to make a resources
+    store data function since it will be almost identical to the other functions
+    all that would need to be added would be a name parameter.
+    Would like to get alerting status from the alerts section, will do this
+    after
+    """
+
     for user in prometheus_credentials:
         prometheus_validity['total_accounts'] += 1
         try:
