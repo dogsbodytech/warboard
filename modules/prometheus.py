@@ -40,4 +40,7 @@ def get_prometheus_data():
             log_messages('Could not get prometheus data for {}: Error: {}'.format(user, e), 'error')
             continue
 
-        metrics_response_json =  metrics_response
+        metrics_response_json =  json.loads(metrics_response)
+        prometheus_data[user] = metrics_response_json
+
+    return prometheus_data, prometheus_validity
