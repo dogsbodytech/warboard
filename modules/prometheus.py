@@ -16,6 +16,9 @@ def get_prometheus_data():
     prometheus_validity['failed_accounts'] = 0
     prometheus_validity['total_accounts'] = 0
     prometheus_validity['total_checks'] = 0
+    # successful_checks will be removed but it needs to be removed in multiple
+    # places at once
+    prometheus_validity['successful_checks'] = 0
 
     queries = {}
     # Node cpu is a number of cpu cycles so we need to look at the rate
