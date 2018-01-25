@@ -78,6 +78,7 @@ def get_prometheus_data():
                 hostname = instance_data['metric']['instance']
                 if hostname not in prometheus_data[user]:
                     prometheus_data[user][hostname] = {}
+                    prometheus_data[user][hostname]['summary'] = {}
 
                 prometheus_data[user][hostname]['summary'][metric] = instance_data['value'][1]
 
