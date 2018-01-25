@@ -24,7 +24,7 @@ def get_prometheus_data():
     # cpu usage will be changing at:
     # https://prometheus.io/docs/prometheus/latest/querying/functions/
     queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
-    queries['memory'] = '(node_memory_MemTotal - node_memory_MemAvailable) / node_memory_MemTotal'
+    queries['memory'] = '((node_memory_MemTotal - node_memory_MemAvailable) / node_memory_MemTotal) * 100'
     # We want all data for each instance
     # We are only interested in the disk with greatest disk io
     # We are calculating disk io for each disk in the same way as cpu
