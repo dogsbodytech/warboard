@@ -68,9 +68,28 @@ def get_prometheus_data():
 
         if len(responses) < len(queries):
             prometheus_validity['failed_accounts'] += 1
+            continue
 
-        # for now make no attempt to parse and reformat the data just return
-        # as is
-        prometheus_data[user] = responses
+        for metric in responses:
+            if responses[metric]['status'] != "success":
+                continue
+
+            for instance_data in responses[metric]['data']['result']:
+                hostname = instance_data['metric']['instance']
+                if hostname not in prometheus_data[user]:
+                    prometheus_data[user][hostname] = {}
+
+                prometheus_data[user][hostname]['summary'][metric] = instance_data['metric']['value'][1]
+
+        for host in prometheus_data[user]:
+            values = []
+            for metric in prometheus_data[user][host]['summary']:
+                values.append(prometheus_data[user][host]['summary'][metric])
+
+            prometheus_data[user][host]['orderby'] = max(values)
+
+            # we will need to check alerting to calculate health status but that
+            # is a second job for after the current code runs propperly
+            prometheus_data[user][host]['health_status'] = 'green'
 
     return prometheus_data, prometheus_validity
