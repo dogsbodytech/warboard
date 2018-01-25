@@ -1,8 +1,8 @@
 from __future__ import division
 import json
 import time
-from redis_functions import get_data, get_all_data, delete_data
-from misc import log_messages
+from redis_functions import get_data, get_all_data, set_data, delete_data
+from misc import log_messages, to_uuid
 
 def get_resource_results():
     """
@@ -101,6 +101,20 @@ def get_resource_results():
 
     resource_results['working_accounts'] = resource_results['total_accounts'] - resource_results['failed_accounts']
     return resource_results
+
+def store_resource_data(module_name, data, validity):
+    """
+    Store data returned by get_module_name_data in redis as key value pairs
+    The module must return data in the format returned by get_prometheus_data
+    other modules will be moved over to this format since it doesn't allow
+    host names to collide between accounts
+    """
+    for account in data:
+        for host in data[account]:
+            uuid = to_uuid('{}{}'.format(account, host))
+            set_data('resources:{}#{}'.format(module_name, uuid), json.dumps([data[account][host]]))
+
+    set_data('resources_success:{}'.format(module_name), json.dumps([validity]))
 
 def clear_resources_keys():
     for key in get_all_data('resources:*'):

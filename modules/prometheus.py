@@ -1,8 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
-from redis_functions import set_data, get_data
-from misc import log_messages, to_uuid
+from misc import log_messages
 from config import prometheus_credentials
 
 def get_prometheus_data():
