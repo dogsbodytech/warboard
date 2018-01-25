@@ -91,7 +91,7 @@ def get_prometheus_data():
                     # before resolving the issue properly
                     prometheus_data[user][hostname]['summary']['memory'] = 0
 
-                prometheus_data[user][hostname]['summary'][metric] = instance_data['value'][1]
+                prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         for host in prometheus_data[user]:
             values = []
