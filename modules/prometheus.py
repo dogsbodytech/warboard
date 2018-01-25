@@ -16,6 +16,7 @@ def get_prometheus_data():
     prometheus_validity['failed_accounts'] = 0
     prometheus_validity['total_accounts'] = 0
     prometheus_validity['total_checks'] = 0
+    # IMPROVE
     # successful_checks will be removed but it needs to be removed in multiple
     # places at once
     prometheus_validity['successful_checks'] = 0
@@ -38,7 +39,10 @@ def get_prometheus_data():
     # but could easily be wrong in the future or in a different enviroment
     # I'm going to test it like this and consider what a good exclude line
     # would be or how we want to be notified of unexpected data
-    queries['disk_space'] = '((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100'
+    # IMPROVE
+    # THIS QUERY IS PRETTY MUCH BUGGED SINCE IT NEEDS TO CALCULATE THE FULLEST
+    # DISK NOT ALL OF THEM
+    queries['fullest_disk'] = '((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100'
 
 
     """
@@ -86,6 +90,7 @@ def get_prometheus_data():
                     prometheus_data[user][hostname] = {}
                     prometheus_data[user][hostname]['name'] = hostname
                     prometheus_data[user][hostname]['summary'] = {}
+                    # IMPROVE
                     # This is temporary to handle servers that don't report
                     # memory usage so the rest of the module can be tested
                     # before resolving the issue properly
@@ -100,6 +105,7 @@ def get_prometheus_data():
 
             prometheus_data[user][host]['orderby'] = max(values)
 
+            # IMPROVE
             # we will need to check alerting to calculate health status but that
             # is a second job for after the current code runs propperly
             prometheus_data[user][host]['health_status'] = 'green'
