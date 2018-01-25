@@ -21,6 +21,7 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
     sirportly_data['unassigned_tickets'] = sirportly_filter(sirportly_unassigned_filter, False)
     sirportly_data['total_tickets'] = sirportly_filter(sirportly_total_filter, False)
     sirportly_data['red_tickets'] = sirportly_filter(sirportly_red_filter, False)
+    sirportly_data['blue_tickets'] = sirportly_filter(sirportly_blueuser_filter, False)
     sirportly_data['resolved_tickets'] = sirportly_filter(sirportly_resolved_filter, False)
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
@@ -32,6 +33,14 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
         sirportly_data['red_percent'] = math.ceil(100*float(sirportly_data['red_tickets'])/float(sirportly_data['total_tickets']))
     except ZeroDivisionError: # We will get a ZeroDivisionError generally if both of these ticket counts are 0 (normally when an API error has occured)
         sirportly_data['red_percent'] = 0
+    try:
+        sirportly_data['blue_percent'] = math.ceil(100*float(sirportly_data['blue_tickets'])/float(sirportly_data['total_tickets']))
+    except ZeroDivisionError: # We will get a ZeroDivisionError generally if both of these ticket counts are 0 (normally when an API error has occured)
+        sirportly_data['blue_percent'] = 0
+    try:
+        sirportly_data['orange_percent'] = math.ceil(100*float(sirportly_data['unassigned_tickets'])/float(sirportly_data['total_tickets']))
+    except ZeroDivisionError: # We will get a ZeroDivisionError generally if both of these ticket counts are 0 (normally when an API error has occured)
+        sirportly_data['orange_percent'] = 0
     sirportly_data['green_percent'] = 100-sirportly_data['red_percent']
     return(sirportly_data)
 
@@ -62,6 +71,8 @@ def get_sirportly_results(): # Get all the sirportly data to pass to the warboar
     sirportly_results['resolved_tickets'] = int(get_data('resolved_tickets'))
     sirportly_results['red_percent'] = get_data('red_percent')
     sirportly_results['green_percent'] = get_data('green_percent')
+    sirportly_results['blue_percent'] = get_data('blue_percent')
+    sirportly_results['orange_percent'] = get_data('orange_percent')
     sirportly_results['multiplier'] = float(get_data('multiplier'))
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
