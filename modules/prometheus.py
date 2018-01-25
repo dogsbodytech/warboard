@@ -66,7 +66,7 @@ def get_prometheus_data():
 
             responses[query] = json.loads(metrics_response.text)
 
-        if len(resources) < len(queries):
+        if len(responses) < len(queries):
             prometheus_validity['failed_accounts'] += 1
 
         # for now make no attempt to parse and reformat the data just return
