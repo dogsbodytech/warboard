@@ -1,6 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+import time
 from misc import log_messages
 from config import prometheus_credentials
 
