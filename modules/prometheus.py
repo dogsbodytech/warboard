@@ -57,7 +57,7 @@ def get_prometheus_data():
                     '{}/api/v1/query'.format(prometheus_credentials[user]['url']),
                     auth=HTTPBasicAuth(prometheus_credentials[user]['username'],
                     prometheus_credentials[user]['password']),
-                    params={'query': query},
+                    params={'query': queries[query]},
                     timeout=prometheus_credentials[user]['timeout'])
                 metrics_response.raise_for_status()
             except requests.exceptions.RequestException as e:
