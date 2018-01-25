@@ -12,6 +12,9 @@ from modules.calendar_functions import get_calendar_items
 # Improve error logging
 #
 # Set a data age on monitored data - pingdom
+#
+# Staging flag to store in a different database so testing can be done on the
+# live server without interfering with the live warboard
 
 app = Flask(__name__)
 
