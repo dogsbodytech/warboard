@@ -17,18 +17,28 @@ def get_prometheus_data():
     prometheus_validity['total_accounts'] = 0
     prometheus_validity['total_checks'] = 0
 
-    #queries = {}
-    #queries['cpu'] = '(1 - avg(rate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
-    #queries['memory'] =
-    #queries['disk_io'] =
-    #queries['disk_space'] =
+    queries = {}
+    # Node cpu is a number of cpu cycles so we need to look at the rate
+    # to calculate the cpu usage percentage
+    # We are using irate over rate as it seems more suitable for the speed
+    # cpu usage will be changing at:
+    # https://prometheus.io/docs/prometheus/latest/querying/functions/
+    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
+    queries['memory'] = '(node_memory_MemTotal - node_memory_MemAvailable) / node_memory_MemTotal'
+    # We want all data for each instance
+    # We are only interested in the disk with greatest disk io
+    # We are calculating disk io for each disk in the same way as cpu
+    queries['disk_io'] = 'max(avg(irate(node_disk_io_time_ms[1m])) by (instance, device)) by (instance)'
+    # We need want to exclude temporary file systems, docker and rootfs as it
+    # is reported as well as the device that it is mounted on
+    # Including just ext4 and vfat covers all the systems we currently want
+    # but could easily be wrong in the future or in a different enviroment
+    # I'm going to test it like this and consider what a good exclude line
+    # would be or how we want to be notified of unexpected data
+    queries['disk_space'] = '((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100'
 
-    query = '(1 - avg(rate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
 
     """
-    Need to write queries for the other 3 metrics
-    Would be good to keep all of the queries in on big get request to minimise
-    requests and to make it easy to decide how many accounts have failed
     Will need to parse the data before returning it
     Will need to store the data in redis, it would be nice to make a resources
     store data function since it will be almost identical to the other functions
@@ -38,21 +48,29 @@ def get_prometheus_data():
     """
 
     for user in prometheus_credentials:
+        prometheus_data[user] = {}
         prometheus_validity['total_accounts'] += 1
-        try:
-            metrics_response = requests.get(
-                '{}/api/v1/query'.format(prometheus_credentials[user]['url']),
-                auth=HTTPBasicAuth(prometheus_credentials[user]['username'],
-                prometheus_credentials[user]['password']),
-                params={'query': query},
-                timeout=prometheus_credentials[user]['timeout'])
-            metrics_response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            prometheus_validity['failed_accounts'] += 1
-            log_messages('Could not get prometheus data for {}: Error: {}'.format(user, e), 'error')
-            continue
+        responses = {}
+        for query in queries:
+            try:
+                metrics_response = requests.get(
+                    '{}/api/v1/query'.format(prometheus_credentials[user]['url']),
+                    auth=HTTPBasicAuth(prometheus_credentials[user]['username'],
+                    prometheus_credentials[user]['password']),
+                    params={'query': query},
+                    timeout=prometheus_credentials[user]['timeout'])
+                metrics_response.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                log_messages('Could not get prometheus data for {}: Error: {}'.format(user, e), 'error')
+                continue
 
-        metrics_response_json =  json.loads(metrics_response.text)
-        prometheus_data[user] = metrics_response_json
+            responses[query] = json.loads(metrics_response.text)
+
+        if len(resources) < len(queries):
+            prometheus_validity['failed_accounts'] += 1
+
+        # for now make no attempt to parse and reformat the data just return
+        # as is
+        prometheus_data[user] = responses
 
     return prometheus_data, prometheus_validity
