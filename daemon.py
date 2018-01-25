@@ -7,6 +7,8 @@ from modules.pingdom import store_pingdom_results
 from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
 from modules.tick import get_tick_data, store_tick_data
+from modules.prometheus import get_prometheus_data
+from modules.resources import store_resource_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
 
@@ -33,6 +35,10 @@ class WarboardDaemon(Daemon):
                 store_tick_data(*get_tick_data())
             except Exception as e:
                 log_messages('store_tick_data {}'.format(e), 'error')
+            try:
+                store_resource_data('prometheus', *get_prometheus_data())
+            except Exception as e:
+                log_messages('The following error occured whilst trying to store prometheus data: {}'.format(e), 'error')
             try:
                 store_sirportly_results()
             except Exception as e:
