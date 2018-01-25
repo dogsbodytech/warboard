@@ -98,6 +98,11 @@ def get_prometheus_data():
                     prometheus_data[user][hostname]['summary']['memory'] = float(0)
                     prometheus_data[user][hostname]['summary']['disk_io'] = float(0)
                     prometheus_data[user][hostname]['summary']['fullest_disk'] = float(0)
+                    # IMPROVE
+                    # This may not be the best place to implement total checks
+                    # and successful_checks needs to be removed
+                    prometheus_validity['total_checks'] += 1
+                    prometheus_validity['successful_checks'] += 1
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
