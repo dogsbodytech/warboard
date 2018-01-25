@@ -86,6 +86,10 @@ def get_prometheus_data():
                     prometheus_data[user][hostname] = {}
                     prometheus_data[user][hostname]['name'] = hostname
                     prometheus_data[user][hostname]['summary'] = {}
+                    # This is temporary to handle servers that don't report
+                    # memory usage so the rest of the module can be tested
+                    # before resolving the issue properly
+                    prometheus_data[user][hostname]['summary']['memory'] = 0
 
                 prometheus_data[user][hostname]['summary'][metric] = instance_data['value'][1]
 
