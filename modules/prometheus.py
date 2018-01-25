@@ -96,4 +96,5 @@ def get_prometheus_data():
             # is a second job for after the current code runs propperly
             prometheus_data[user][host]['health_status'] = 'green'
 
+    prometheus_validity['valid_until'] = time.time() * 1000 + 300000
     return prometheus_data, prometheus_validity
