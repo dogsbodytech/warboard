@@ -44,6 +44,9 @@ def get_prometheus_data():
     all that would need to be added would be a name parameter.
     Would like to get alerting status from the alerts section, will do this
     after
+    Total checks needs to be used to allow propper api output, since
+    successful_checks has been scrapped in favour of using alerting data this
+    is a fairly minor thing to add
     """
 
     for user in prometheus_credentials:
