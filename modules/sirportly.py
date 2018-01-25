@@ -41,7 +41,7 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
         sirportly_data['orange_percent'] = math.ceil(100*float(sirportly_data['unassigned_tickets'])/float(sirportly_data['total_tickets']))
     except ZeroDivisionError: # We will get a ZeroDivisionError generally if both of these ticket counts are 0 (normally when an API error has occured)
         sirportly_data['orange_percent'] = 0
-    sirportly_data['green_percent'] = 100-sirportly_data['red_percent']
+    sirportly_data['green_percent'] = 100-sirportly_data['red_percent'] - sirportly_data['orange_percent'] - sirportly_data['blue_percent']
     return(sirportly_data)
 
 def sirportly_ticket_multiplier(unassigned, user_data): # Calculate the multiplier needed for the length of the bars on the warboard
