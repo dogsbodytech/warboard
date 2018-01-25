@@ -94,7 +94,7 @@ def get_prometheus_data():
                     # This is temporary to handle servers that don't report
                     # memory usage so the rest of the module can be tested
                     # before resolving the issue properly
-                    prometheus_data[user][hostname]['summary']['memory'] = 0
+                    prometheus_data[user][hostname]['summary']['memory'] = float(0)
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
