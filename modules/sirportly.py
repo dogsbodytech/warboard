@@ -3,6 +3,12 @@ from redis_functions import set_data, get_data
 from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
 from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter
 
+# TODO:
+#
+# People using this code will have status_type open, on hold, closed
+# we should avoid using waiting for staff etc so that it works in as many
+# situations as possible
+
 def sirportly_filter(filterid, user): # This is used to get data for a specific filter in sirportly, it accepts a filterID and a username/False if no user needed.
     if user != False:
         endpoint = sirportly_endpoint+'/filter?filter='+filterid+'&user='+user
