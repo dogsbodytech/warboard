@@ -42,7 +42,7 @@ def get_prometheus_data():
     # IMPROVE
     # THIS QUERY IS PRETTY MUCH BUGGED SINCE IT NEEDS TO CALCULATE THE FULLEST
     # DISK NOT ALL OF THEM
-    queries['fullest_disk'] = '((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100'
+    queries['fullest_disk'] = 'max(((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100) by (instance)'
 
 
     """
