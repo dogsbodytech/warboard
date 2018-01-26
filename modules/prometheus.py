@@ -82,16 +82,17 @@ def get_prometheus_data():
                 if hostname not in prometheus_data[user]:
                     prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
-                    prometheus_data[user][hostname]['name'] = hostname
+                    # Don't display the prometheus port in the name
+                    prometheus_data[user][hostname]['name'] = hostname.rstrip(':9100')
                     prometheus_data[user][hostname]['summary'] = {}
                     # IMPROVE
                     # This is temporary to handle servers that don't report
                     # memory usage so the rest of the module can be tested
                     # before resolving the issue properly
-                    prometheus_data[user][hostname]['summary']['cpu'] = float(0)
-                    prometheus_data[user][hostname]['summary']['memory'] = float(0)
-                    prometheus_data[user][hostname]['summary']['disk_io'] = float(0)
-                    prometheus_data[user][hostname]['summary']['fullest_disk'] = float(0)
+                    prometheus_data[user][hostname]['summary']['cpu'] = 0
+                    prometheus_data[user][hostname]['summary']['memory'] = 0
+                    prometheus_data[user][hostname]['summary']['disk_io'] = 0
+                    prometheus_data[user][hostname]['summary']['fullest_disk'] = 0
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
