@@ -1,7 +1,7 @@
 # Warboard
-NOTE: The latest series of updates to add newrelic infrastructure break backwards compatability, looking at the sample config and code for the API you should be able to see any changes you need to make if you have been previously using the code.
+This is the warboard we use internally at [Dogsbody Technology Ltd.](https://www.dogsbodytechnology.com/) The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic, TICK, Prometheus, Sirportly & Google Calendar as sources.
 
-This is the warboard we use internally at [Dogsbody Technology Ltd.](https://www.dogsbodytechnology.com/) The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic, Sirportly & Google Calendar as sources.
+Modules are intended to be modular however this is not yet really the case.  We would like to allow users to provide credentials for any number of the services and have a working warboard however there are some modules that need at least an empty dictionary to loop through and others that are required.  When updating it is worth checking code changes particularly if they are to config.sample.py as config updates may well be required.
 
 ![Warboard Screenshot](https://raw.githubusercontent.com/dogsbodytech/warboard/master/static/images/warboard_medium_example.png)
 
@@ -29,10 +29,13 @@ The following filters are required:
 
 - sirportly_red_filter (Matches all these conditions: Status type is open, Priority is less than low, Status is not waiting for reply & Status is not internal)
 
+- sirportly_blue_filter (Matches all these conditions: Status type is open, Priority is less than low. Matches any of these conditions: Status is on hold, Status is waiting for reply)
+
 - sirportly_total_filter (Matches all these conditions: Status type is not closed & Priority is less than low)
 
-- sirportly_reduser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is new & status is
-waiting for staff)
+- sirportly_reduser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is new & status is waiting for staff)
+
+- sirportly_blueuser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is on hold, Status is waiting for reply)
 
 - sirportly_greenuser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status waiting for reply & status is on hold)
 
