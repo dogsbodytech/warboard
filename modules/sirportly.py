@@ -1,6 +1,6 @@
 import requests, math
 from redis_functions import set_data, get_data
-from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_resolved_filter
+from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
 from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter
 
 def sirportly_filter(filterid, user): # This is used to get data for a specific filter in sirportly, it accepts a filterID and a username/False if no user needed.
@@ -21,7 +21,7 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
     sirportly_data['unassigned_tickets'] = sirportly_filter(sirportly_unassigned_filter, False)
     sirportly_data['total_tickets'] = sirportly_filter(sirportly_total_filter, False)
     sirportly_data['red_tickets'] = sirportly_filter(sirportly_red_filter, False)
-    sirportly_data['blue_tickets'] = sirportly_filter(sirportly_blueuser_filter, False)
+    sirportly_data['blue_tickets'] = sirportly_filter(sirportly_blue_filter, False)
     sirportly_data['resolved_tickets'] = sirportly_filter(sirportly_resolved_filter, False)
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
