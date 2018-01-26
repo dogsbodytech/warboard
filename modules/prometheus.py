@@ -39,9 +39,6 @@ def get_prometheus_data():
     # but could easily be wrong in the future or in a different enviroment
     # I'm going to test it like this and consider what a good exclude line
     # would be or how we want to be notified of unexpected data
-    # IMPROVE
-    # THIS QUERY IS PRETTY MUCH BUGGED SINCE IT NEEDS TO CALCULATE THE FULLEST
-    # DISK NOT ALL OF THEM
     queries['fullest_disk'] = 'max(((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100) by (instance)'
 
 
