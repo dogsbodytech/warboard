@@ -28,9 +28,10 @@ def list_unreporting_servers():
         reporting_servers.add(host_data['name'])
 
     prometheus_data, prometheus_data_validity = get_prometheus_data()
-    for host in prometheus_data:
-        host_data = prometheus_data[host]
-        reporting_servers.add(host_data['name'])
+    for user in prometheus_data:
+        for host in prometheus_data[user]:
+            host_data = prometheus_data[user][host]
+            reporting_servers.add(host_data['name'])
 
     return found_servers - reporting_servers
 
