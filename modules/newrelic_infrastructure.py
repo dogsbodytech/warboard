@@ -17,7 +17,6 @@ def get_newrelic_infra_data():
     newrelic_infra_data_validity['failed_accounts'] = 0
     newrelic_infra_data_validity['total_accounts'] = 0
     newrelic_infra_data_validity['total_checks'] = 0
-    newrelic_infra_data_validity['successful_checks'] = 0
     for account in newrelic_main_and_insights_keys:
         newrelic_infra_data_validity['total_accounts'] += 1
         number_or_hosts_url = '{}{}/query?nrql=SELECT%20uniqueCount(fullHostname)%20FROM%20SystemSample'.format(newrelic_insights_endpoint, newrelic_main_and_insights_keys[account]['account_number'])
@@ -126,7 +125,6 @@ def get_newrelic_infra_data():
                 elif violation_level == 2:
                     infrastructure_host['health_status'] = 'red'
 
-            newrelic_infra_data_validity['successful_checks'] += 1
             newrelic_infra_data[infrastructure_host['name']] = infrastructure_host
 
     # Data will be valid for 5 minutes after the module runs

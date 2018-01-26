@@ -18,7 +18,6 @@ def get_tick_data():
     tick_data_validity['failed_accounts'] = 0
     tick_data_validity['total_accounts'] = 0
     tick_data_validity['total_checks'] = 0
-    tick_data_validity['successful_checks'] = 0
     for influx_user in influx_read_users:
         tick_data_validity['total_accounts'] += 1
         influx_query_api = '{}/query'.format(influx_user['influx_url'])
@@ -71,10 +70,6 @@ def get_tick_data():
                 metric_data_batch_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': batch_query, 'epoch': 'ms'}, timeout=influx_timeout)
                 metric_data_batch_response.raise_for_status()
             except requests.exceptions.RequestException as e:
-                # This is now a failed batch rather than account, incrementing
-                # failed accounts here could cause the output to be
-                # misinterpreted.  Failed checks will still be picked up by
-                # their absence from successful_checks.
                 log_messages('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e), 'error')
                 continue
 
@@ -164,7 +159,6 @@ def get_tick_data():
                 tick_host_data['orderby'] = 0
                 tick_host_data['health_status'] = 'blue'
 
-            tick_data_validity['successful_checks'] += 1
             tick_data[tick_host_data['name']] = tick_host_data
 
     tick_data_validity['valid_until'] = time.time() * 1000 + 300000

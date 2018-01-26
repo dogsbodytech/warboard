@@ -16,10 +16,6 @@ def get_prometheus_data():
     prometheus_validity['failed_accounts'] = 0
     prometheus_validity['total_accounts'] = 0
     prometheus_validity['total_checks'] = 0
-    # IMPROVE
-    # successful_checks will be removed but it needs to be removed in multiple
-    # places at once
-    prometheus_validity['successful_checks'] = 0
 
     queries = {}
     # Node cpu is a number of cpu cycles so we need to look at the rate
@@ -84,6 +80,7 @@ def get_prometheus_data():
             for instance_data in responses[metric]['data']['result']:
                 hostname = instance_data['metric']['instance']
                 if hostname not in prometheus_data[user]:
+                    prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
                     prometheus_data[user][hostname]['name'] = hostname
                     prometheus_data[user][hostname]['summary'] = {}
@@ -95,11 +92,6 @@ def get_prometheus_data():
                     prometheus_data[user][hostname]['summary']['memory'] = float(0)
                     prometheus_data[user][hostname]['summary']['disk_io'] = float(0)
                     prometheus_data[user][hostname]['summary']['fullest_disk'] = float(0)
-                    # IMPROVE
-                    # This may not be the best place to implement total checks
-                    # and successful_checks needs to be removed
-                    prometheus_validity['total_checks'] += 1
-                    prometheus_validity['successful_checks'] += 1
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 

@@ -16,7 +16,6 @@ def get_newrelic_servers_data():
     newrelic_servers_data_validity['failed_accounts'] = 0
     newrelic_servers_data_validity['total_accounts'] = 0
     newrelic_servers_data_validity['total_checks'] = 0
-    newrelic_servers_data_validity['successful_checks'] = 0
     for account in newrelic_servers_keys:
         newrelic_servers_data_validity['total_accounts'] += 1
         try:
@@ -51,7 +50,6 @@ def get_newrelic_servers_data():
                     'cpu': server['summary']['cpu']}
                 nr_servers_host['orderby'] = max(nr_servers_host['summary']['cpu'], nr_servers_host['summary']['memory'], nr_servers_host['summary']['fullest_disk'], nr_servers_host['summary']['disk_io'])
 
-            newrelic_servers_data_validity['successful_checks'] += 1
             newrelic_servers_data[server['name']] = nr_servers_host
 
     # Data will be valid for 5 minutes after the module runs

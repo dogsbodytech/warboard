@@ -23,7 +23,6 @@ def get_resource_results():
     resource_results['failed_accounts'] = 0
     resource_results['total_accounts'] = 0
     resource_results['total_checks'] = 0
-    successful_checks = 0
 
     # Defaults for when no data is reported, working towards having modules be
     # modular / optional
@@ -33,9 +32,9 @@ def get_resource_results():
     resource_results['green_percent'] = 0
     resource_results['working_percentage'] = 100
 
-    # Check if the data recieved from each module is still valid, if it is not
-    # then all checks from that module are counted as unsuccessful and all
-    # accounts are counted as failed
+    # Check how many accounts failed from each module and add them to the
+    # total failed accounts.  If the data from a module is considered stale
+    # then all of it's accounts will be considered failed.
     milliseconds_since_epoch = time.time() * 1000
     for module in get_all_data('resources_success:*'):
         module_success_json = get_data(module)
@@ -45,27 +44,27 @@ def get_resource_results():
         milliseconds_since_epoch_module_data_is_valid_until = module_success['valid_until']
         if milliseconds_since_epoch > milliseconds_since_epoch_module_data_is_valid_until:
             resource_results['failed_accounts'] += module_success['total_accounts']
+            log_messages('Data for {} is stale, please check the daemon is functioning properly'.format(module), 'warning')
         else:
             resource_results['failed_accounts'] += module_success['failed_accounts']
-            successful_checks += module_success['successful_checks']
 
-    resource_results['failed_checks'] = resource_results['total_checks'] - successful_checks
-
+    # We will count checks in so we can compare it against the number of checks
+    # reported by the daemon
     checks_found = 0
     # Get list of keys in the format resources:module#uuid
     for host in get_all_data('resources:*'):
         try:
-            # Storing lists with only one value since when I convert dictionarys
-            # to json and store them in redis they come back as strings, I am
-            # working around this by storing lists, ast.literal_eval also works
+            # Storing lists with only one value since when I convert
+            # dictionaries to json and store them in redis they come back as
+            # strings, I am working around this by storing lists,
+            # ast.literal_eval also works
             host_data = json.loads(get_data(host))[0]
             resource_results['checks'].append(host_data)
-            checks_found += 1
             # get the health status colour of the current check, and then add
             # one to the number of checks with that health status
             resource_results[host_data['health_status']] += 1
+            checks_found += 1
         except Exception as e:
-            resource_results['failed_checks'] += 1
             # I would rather log to uwsgi's log but I'll sort this out later
             log_messages('Data for {} is not in a valid format: {}'.format(host, e), 'error')
 
@@ -73,7 +72,17 @@ def get_resource_results():
     # are not in the total_checks variable then they have failed.
     # If we are getting back less checks than we stored then something has
     # gone really wrong or we caught the weekly cron that clears the keys.
-    resource_results['failed_checks'] += abs(resource_results['total_checks'] - checks_found)
+    if resource_results['total_checks'] != checks_found:
+        log_messages('The number of checks stored in the  database doesn\'t '\
+            'match the number reported by the daemon, it is likely some '\
+            'servers are no-longer reporting, run '\
+            'modules/resources_list_unreporting_servers.py to debug this.',
+            'warning')
+
+    # The number of checks we are outputing is authoritive over the number
+    # we expected to be there, at the moment we are just logging the fact they
+    # were different, it would be nice to have a visual display or send an
+    # email but there isn't a correct place to do this at the moment
     resource_results['total_checks'] = checks_found
 
     total_results = resource_results['green'] + resource_results['red'] + resource_results['orange'] + resource_results['blue']
@@ -85,20 +94,7 @@ def get_resource_results():
         # disposable / least affected by any rounding issues
         resource_results['green_percent'] = 100 - ( resource_results['red_percent'] + resource_results['orange_percent'] + resource_results['blue_percent'] )
 
-    # Set the working percentage to the lowest of accounts and checks, if either
-    # have a total of 0 then resources isn't working so the working percentage
-    # can be set to 0 to avoid dividing by 0
-    if resource_results['total_accounts'] != 0 and resource_results['total_checks'] != 0:
-        accounts_working_percentage = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
-        if accounts_working_percentage < resource_results['working_percentage']:
-            resource_results['working_percentage'] = accounts_working_percentage
-        checks_working_percentage = 100 - (( resource_results['failed_checks'] / resource_results['total_checks'] ) * 100 )
-        if checks_working_percentage < resource_results['working_percentage']:
-            resource_results['working_percentage'] = checks_working_percentage
-
-    else:
-        resource_results['working_percentage'] = 0
-
+    resource_results['working_percentage'] = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
     resource_results['working_accounts'] = resource_results['total_accounts'] - resource_results['failed_accounts']
     return resource_results
 
