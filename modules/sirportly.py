@@ -23,6 +23,11 @@ def get_sirportly_data(): # Get all the data we need from sirportly and store it
     sirportly_data['red_tickets'] = sirportly_filter(sirportly_red_filter, False)
     sirportly_data['blue_tickets'] = sirportly_filter(sirportly_blue_filter, False)
     sirportly_data['resolved_tickets'] = sirportly_filter(sirportly_resolved_filter, False)
+    # This is close to being able to skip the red and blue filters and just
+    # add to the total as part of each user, this wouldn't account for the
+    # status of tickets in unassigned
+    # Using a sirportly report may be a more efficient way to gather the
+    # data we need but I couldn't quickly get a query working so I left it
     for user in sirportly_users:
         sirportly_data['users'][user+'_red'] = sirportly_filter(sirportly_reduser_filter, user)
         sirportly_data['users'][user+'_green'] = sirportly_filter(sirportly_greenuser_filter, user)
