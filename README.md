@@ -21,23 +21,27 @@ pip install -r requirements.txt
 
 You will also need to setup some filters in sirportly and record their ID's in your config.py file, first of all copy the config.sample.py file to config.py.
 
+We are using an internal filter as green here, where the internal status_type is open
+
+The Warboard will also be set to ignore low priority tickets, due to them being the greatest numerical priority Priority is less then low will be used a lot.
+
 The following filters are required:
 
-- sirportly_unassigned_filter (Matches all these conditions: Assigned user is not blank & Status type is not closed)
+- sirportly_unassigned_filter (Matches all these conditions: Assigned user is blank, Status type is not closed, Priority is less than low))
 
 - sirportly_resolved_filter (Matches all these conditions: Status type is closed)
 
-- sirportly_red_filter (Matches all these conditions: Status type is open, Priority is less than low, Status is not waiting for reply & Status is not internal)
+- sirportly_red_filter (Matches all these conditions: Status type is open, Priority is less than low, Status is not internal)
 
-- sirportly_blue_filter (Matches all these conditions: Status type is open, Priority is less than low. Matches any of these conditions: Status is on hold, Status is waiting for reply)
+- sirportly_blue_filter (Matches all these conditions: Status type is open, Priority is less than low, Status type is on hold)
 
-- sirportly_total_filter (Matches all these conditions: Status type is not closed & Priority is less than low)
+- sirportly_total_filter (Matches all these conditions: Status type is not closed, Priority is less than low)
 
-- sirportly_reduser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is new & status is waiting for staff)
+- sirportly_reduser_filter (Matches all these conditions: Assigned user is current user, Priority is less than low, Status type is open, Status is not internal)
 
-- sirportly_blueuser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status is on hold, Status is waiting for reply)
+- sirportly_blueuser_filter (Matches all these conditions: Assigned user is current user, Priority is less than low, Status type is on hold)
 
-- sirportly_greenuser_filter (Matches all these conditions: Assigned user is current user & Priority is less than low. Matches any of these conditions: Status waiting for reply & status is on hold)
+- sirportly_greenuser_filter (Matches all these conditions: Assigned user is current user, Priority is less than low, Status is internal)
 
 The rest of the settings in the config file should also be filled out, the required values should be pretty self explanatory with the examples in the sample config file. Support will be added in the future for enabling and disabling different parts of the Warboard (Pingdom, NewRelic, Sirportly etc).
 
