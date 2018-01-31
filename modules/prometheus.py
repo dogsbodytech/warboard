@@ -85,14 +85,6 @@ def get_prometheus_data():
                     # Don't display the prometheus port in the name
                     prometheus_data[user][hostname]['name'] = hostname.rstrip(':9100')
                     prometheus_data[user][hostname]['summary'] = {}
-                    # IMPROVE
-                    # This is temporary to handle servers that don't report
-                    # memory usage so the rest of the module can be tested
-                    # before resolving the issue properly
-                    prometheus_data[user][hostname]['summary']['cpu'] = 0
-                    prometheus_data[user][hostname]['summary']['memory'] = 0
-                    prometheus_data[user][hostname]['summary']['disk_io'] = 0
-                    prometheus_data[user][hostname]['summary']['fullest_disk'] = 0
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
@@ -101,7 +93,12 @@ def get_prometheus_data():
             for metric in prometheus_data[user][host]['summary']:
                 values.append(prometheus_data[user][host]['summary'][metric])
 
-            prometheus_data[user][host]['orderby'] = max(values)
+            if len(values) != len(queries):
+                prometheus_data[user][host]['orderby'] = 0
+                prometheus_data[user][host]['health_status'] = 'blue'
+                log_messages('{} only returned data for the following metrics {}'.format(host, values), 'warning')
+            else:
+                prometheus_data[user][host]['orderby'] = max(values)
 
             # IMPROVE
             # we will need to check alerting to calculate health status but that
