@@ -19,7 +19,11 @@ def get_prometheus_data():
 
     queries = {}
     # Node cpu is a number of cpu cycles so we need to look at the rate
-    # to calculate the cpu usage percentage
+    # to calculate the cpu usage percentage, we previously used the last 1
+    # minute but have changed it to 10 to avoid missing data.  If having
+    # the very latest data is crucial we could get the last minute and the
+    # last 10 minutes and then use the last minute where possible, for now this
+    # doesn't seem necessary
     # We are using irate over rate as it seems more suitable for the speed
     # cpu usage will be changing at:
     # https://prometheus.io/docs/prometheus/latest/querying/functions/
