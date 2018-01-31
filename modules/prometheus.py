@@ -13,11 +13,48 @@ def get_alerting_servers(user):
     """
     alerting_servers = {}
 
-    # an issue here is that there may be alerts for metrics we aren't interested
-    # in and depending on how serverity is being used it could be difficult to
-    # determine warnings and critical alerts, I'm not sure I have a good way to
-    # write this that it will work with most situations and not be broken by
-    # changes to the user's alerts
+    try:
+        alerting_servers_response = requests.get(
+            '{}/api/v1/alerts'.format(prometheus_credentials[user]['alert_url']),
+            auth=HTTPBasicAuth(prometheus_credentials[user]['username'],
+            prometheus_credentials[user]['password']),
+            timeout=prometheus_credentials[user]['timeout'])
+        alerting_servers_response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        log_messages('Could not get prometheus alert data for {}: Error: {}'.format(user, e), 'error')
+        raise
+
+    alerting_servers_json = alerting_servers_response.json()
+
+    assert alerting_servers_json['status'] == 'success', 'Could not get prometheus alert data for {}: Response status was {}'.format(user, alerting_servers_json['status'])
+
+    for alert in alerting_servers_json['data']:
+        # I'm going to make a set of assumptions
+        # Alerts returned in this list are all active, so there is no need to
+        # check if they have ended or been acknowledged
+        # You have a custom label 'severity' which all alerts will be tagged
+        # tagged with where P4&P3 are warnings and P2&P2 are critical alerts
+        #
+        # We are returning status as an integer so that the most severe alert
+        # for each server can easily be grabbed
+        hostname = alert['labels']['instance']
+        if alert['labels']['severity'] == 'P4':
+            status = 1
+        elif alert['labels']['severity'] == 'P3':
+            status = 1
+        elif alert['labels']['severity'] == 'P2':
+            status = 2
+        elif alert['labels']['severity'] == 'P1':
+            status = 2
+        else:
+            log_messages('Invalid severity returned for {}: {}'.format(hostname, alert['labels']['severity']), 'warning')
+            continue
+
+        if hostname not in alerting_servers:
+            alerting_servers[hostname] = []
+
+        alerting_servers[hostname].append(status)
+
 
     return alerting_servers
 

@@ -74,11 +74,13 @@ influx_database_batch_size = 50
 prometheus_credentials = {  'user1': {   'username': '',
                                         'password': '',
                                         'url': '',
+                                        'alert_url': '',
                                         'timeout': 5
                                         },
                             'user2': {   'username': '',
                                         'password': '',
                                         'url': '',
+                                        'alert_url': '',
                                         'timeout': 5
                                         }
                             }
