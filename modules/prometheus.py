@@ -5,6 +5,22 @@ import time
 from misc import log_messages
 from config import prometheus_credentials
 
+def get_alerting_servers(user):
+    """
+    Returns a dictionary containing all alerting servers for a given user
+    key = server name
+    value = list of firing alerts as an integer, 1 is warning, 2 is critical
+    """
+    alerting_servers = {}
+
+    # an issue here is that there may be alerts for metrics we aren't interested
+    # in and depending on how serverity is being used it could be difficult to
+    # determine warnings and critical alerts, I'm not sure I have a good way to
+    # write this that it will work with most situations and not be broken by
+    # changes to the user's alerts
+
+    return alerting_servers
+
 def get_prometheus_data():
     """
     Collects data for all prometheus users provided in the config file and
@@ -42,6 +58,12 @@ def get_prometheus_data():
     queries['fullest_disk'] = 'max(((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100) by (instance)'
 
     for user in prometheus_credentials:
+        alerting_servers = {}
+        try:
+            alerting_servers = get_alerting_servers(user)
+        except Exception as e:
+            log_messages('The following error occured whilst getting the list of alerting servers for {}: {}'.format(user, e), 'error')
+
         prometheus_data[user] = {}
         prometheus_validity['total_accounts'] += 1
         responses = {}
@@ -80,10 +102,18 @@ def get_prometheus_data():
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         for host in prometheus_data[user]:
-            # IMPROVE
-            # we will need to check alerting to calculate health status but that
-            # is a second job for after the current code runs propperly
-            prometheus_data[user][host]['health_status'] = 'green'
+            # Check if the server is alerting and set the health status
+            health_status = 'green'
+            if host in alerting_servers:
+                alert_level = max(alerting_servers[host])
+                if alert_level == 1:
+                    health_status == 'orange'
+                if alert_level == 2:
+                    health_status == 'red'
+
+            prometheus_data[user][host]['health_status'] = health_status
+            # Calculate the order by.  If the server isn't reporting every
+            # metric flag it as unreporting and log the issue.
             values = []
             for metric in prometheus_data[user][host]['summary']:
                 values.append(metric)
@@ -95,5 +125,6 @@ def get_prometheus_data():
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
 
+    # Data should be considerd stale after 5 minutes
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
     return prometheus_data, prometheus_validity
