@@ -12,7 +12,6 @@ def get_alerting_servers(user):
     value = list of firing alerts as an integer, 1 is warning, 2 is critical
     """
     alerting_servers = {}
-
     try:
         alerting_servers_response = requests.get(
             '{}/api/v1/alerts'.format(prometheus_credentials[user]['alert_url']),
@@ -25,9 +24,7 @@ def get_alerting_servers(user):
         raise
 
     alerting_servers_json = alerting_servers_response.json()
-
     assert alerting_servers_json['status'] == 'success', 'Could not get prometheus alert data for {}: Response status was {}'.format(user, alerting_servers_json['status'])
-
     for alert in alerting_servers_json['data']:
         # I'm going to make a set of assumptions
         # Alerts returned in this list are all active, so there is no need to
@@ -54,7 +51,6 @@ def get_alerting_servers(user):
             alerting_servers[hostname] = []
 
         alerting_servers[hostname].append(status)
-
 
     return alerting_servers
 
