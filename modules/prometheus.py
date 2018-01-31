@@ -114,14 +114,16 @@ def get_prometheus_data():
             prometheus_data[user][host]['health_status'] = health_status
             # Calculate the order by.  If the server isn't reporting every
             # metric flag it as unreporting and log the issue.
+            metrics = []
             values = []
             for metric in prometheus_data[user][host]['summary']:
-                values.append(metric)
+                metrics.append(metric)
+                values.append(prometheus_data[user][host]['summary'][metric])
 
             if len(values) != len(queries):
                 prometheus_data[user][host]['orderby'] = 0
                 prometheus_data[user][host]['health_status'] = 'blue'
-                log_messages('{} only returned data for the following metrics {}'.format(host, values), 'warning')
+                log_messages('{} only returned data for the following metrics {}'.format(host, metrics), 'warning')
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
 
