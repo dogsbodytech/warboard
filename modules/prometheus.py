@@ -23,12 +23,12 @@ def get_prometheus_data():
     # We are using irate over rate as it seems more suitable for the speed
     # cpu usage will be changing at:
     # https://prometheus.io/docs/prometheus/latest/querying/functions/
-    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
+    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance)) * 100'
     queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
     # We want all data for each instance
     # We are only interested in the disk with greatest disk io
     # We are calculating disk io for each disk in the same way as cpu
-    queries['disk_io'] = 'max(avg(irate(node_disk_io_time_ms[1m])) by (instance, device)) by (instance)'
+    queries['disk_io'] = 'max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device)) by (instance)'
     # We need want to exclude temporary file systems, docker and rootfs as it
     # is reported as well as the device that it is mounted on
     # Including just ext4 and vfat covers all the systems we currently want
