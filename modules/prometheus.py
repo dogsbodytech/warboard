@@ -89,21 +89,20 @@ def get_prometheus_data():
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         for host in prometheus_data[user]:
+            # IMPROVE
+            # we will need to check alerting to calculate health status but that
+            # is a second job for after the current code runs propperly
+            prometheus_data[user][host]['health_status'] = 'green'
             values = []
             for metric in prometheus_data[user][host]['summary']:
-                values.append(prometheus_data[user][host]['summary'][metric])
+                values.append(metric)
 
             if len(values) != len(queries):
                 prometheus_data[user][host]['orderby'] = 0
                 prometheus_data[user][host]['health_status'] = 'blue'
                 log_messages('{} only returned data for the following metrics {}'.format(host, values), 'warning')
             else:
-                prometheus_data[user][host]['orderby'] = max(values)
-
-            # IMPROVE
-            # we will need to check alerting to calculate health status but that
-            # is a second job for after the current code runs propperly
-            prometheus_data[user][host]['health_status'] = 'green'
+                prometheus_data[user][host]['orderby'] = max(values)            
 
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
     return prometheus_data, prometheus_validity
