@@ -41,19 +41,6 @@ def get_prometheus_data():
     # would be or how we want to be notified of unexpected data
     queries['fullest_disk'] = 'max(((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100) by (instance)'
 
-
-    """
-    Will need to parse the data before returning it
-    Will need to store the data in redis, it would be nice to make a resources
-    store data function since it will be almost identical to the other functions
-    all that would need to be added would be a name parameter.
-    Would like to get alerting status from the alerts section, will do this
-    after
-    Total checks needs to be used to allow propper api output, since
-    successful_checks has been scrapped in favour of using alerting data this
-    is a fairly minor thing to add
-    """
-
     for user in prometheus_credentials:
         prometheus_data[user] = {}
         prometheus_validity['total_accounts'] += 1
