@@ -24,7 +24,7 @@ def get_prometheus_data():
     # cpu usage will be changing at:
     # https://prometheus.io/docs/prometheus/latest/querying/functions/
     queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[1m])) by (instance)) * 100'
-    queries['memory'] = '((node_memory_MemTotal - node_memory_MemAvailable) / node_memory_MemTotal) * 100'
+    queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
     # We want all data for each instance
     # We are only interested in the disk with greatest disk io
     # We are calculating disk io for each disk in the same way as cpu
@@ -102,7 +102,7 @@ def get_prometheus_data():
                 prometheus_data[user][host]['health_status'] = 'blue'
                 log_messages('{} only returned data for the following metrics {}'.format(host, values), 'warning')
             else:
-                prometheus_data[user][host]['orderby'] = max(values)            
+                prometheus_data[user][host]['orderby'] = max(values)
 
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
     return prometheus_data, prometheus_validity
