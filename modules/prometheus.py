@@ -81,7 +81,7 @@ def get_prometheus_data():
     # We want all data for each instance
     # We are only interested in the disk with greatest disk io
     # We are calculating disk io for each disk in the same way as cpu
-    queries['disk_io'] = 'max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device)) by (instance)'
+    queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device)) by (instance))/10'
     # We need want to exclude temporary file systems, docker and rootfs as it
     # is reported as well as the device that it is mounted on
     # Including just ext4 and vfat covers all the systems we currently want
