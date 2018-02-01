@@ -73,7 +73,7 @@ def get_resource_results():
     # If we are getting back less checks than we stored then something has
     # gone really wrong or we caught the weekly cron that clears the keys.
     if resource_results['total_checks'] != checks_found:
-        log_messages('The number of checks stored in the  database doesn\'t '\
+        log_messages('The number of checks stored in the database doesn\'t '\
             'match the number reported by the daemon, it is likely some '\
             'servers are no-longer reporting, run '\
             'modules/resources_list_unreporting_servers.py to debug this.',
