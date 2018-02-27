@@ -54,6 +54,8 @@ def get_pingdom_results():
     pingdom_results['total_checks'] = len(pingdom_results['checks'])
     for check in pingdom_results['checks']: # Categorize all the checks as up/down etc
         check['name'] = check['name'][:40] # Limit pingdom server names to 40 characters to not break the warboard layout
+        if 'lastresponsetime' not in check:
+            check['lastresponsetime'] = 0
         if check['type'] == 'httpcustom':
             check['type'] = 'custom'
         if check['status'] == 'up':
@@ -62,8 +64,6 @@ def get_pingdom_results():
             pingdom_results['pingdom_down'] +=1
         elif check['status'] == 'paused':
             pingdom_results['pingdom_paused'] +=1
-            if not 'lastresponsetime' in check:
-                check['lastresponsetime'] = 0
         elif check['status'] == 'unknown':
             check['status'] = 'paused'
             check['lastresponsetime'] = 0
