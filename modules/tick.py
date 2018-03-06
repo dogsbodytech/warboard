@@ -36,32 +36,42 @@ def get_tick_data():
             log_messages('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e), 'error')
 
         queries = {}
+        # The four metric queries limit data to the last hour but are
+        # mostly interested in the most recent data this is because the
+        # decision that the query is invalid is made based on timestamp
+        # and will ultimately tie into the deadman alerts
         queries['cpu_query'] = 'SELECT 100 - LAST("usage_idle") AS "cpu" FROM "{}"."autogen"."cpu" WHERE time > now() - 1h GROUP BY "host";'
         queries['memory_query'] = 'SELECT LAST("used_percent") AS "memory" FROM "{}"."autogen"."mem" WHERE time > now() - 1h GROUP BY "host";'
         queries['fullest_disk_query'] = 'SELECT MAX("last_used_percent") AS "fullest_disk" FROM (SELECT last("used_percent") AS "last_used_percent" FROM "{}"."autogen"."disk" WHERE time > now() - 1h GROUP BY "path") GROUP BY "host";'
-        # I'm not sure the io time is the best way to calculate disk io
-        queries['disk_io_query'] = 'SELECT MAX(latest_delta_io) AS "disk_io" FROM (SELECT LAST("delta_io") AS "latest_delta_io" FROM (SELECT derivative(last("io_time"),100ms) AS "delta_io" FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"'
-        """
-        > SELECT MAX("last_combined_io_time") AS "io_time" FROM (SELECT LAST("combined_io_time") AS "last_combined_io_time" FROM (SELECT DERIVATIVE(LAST("read_time"), 1ms)+DERIVATIVE(LAST("write_time"), 1ms) AS "combined_io_time" FROM "diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"
-        """
-        # We don't have a tag key for memory, at the moment it is the only thing without a tag so it will be seperate
-        # We actually want to pull this query from all of time since it gives the most recent alert status however the db isn't going to appreciate that to I'll grab the last 28 days for now
+        # I'm not completly sold on using the last minute of data for
+        # our rate of change (the GROUP BY time(1m) bit), we could
+        # smooth the output by using 5 minutes or taking a moving
+        # average.  It depends on if we want the most recent data or
+        # a fairly smooth value.  If we did do this we would want to
+        # move cpu usage over to a moving average.
+        queries['disk_io_query'] = 'SELECT MAX(latest_delta_io) AS "disk_io" FROM (SELECT LAST("delta_io") AS "latest_delta_io" FROM (SELECT derivative(last("io_time"),1ms) * 100 AS "delta_io" FROM "{}"."autogen"."diskio" WHERE time > now() - 1h GROUP BY time(1m)) GROUP BY "name") GROUP BY "host"'
+        # We don't have a tag key for memory, at the moment it is the
+        # only thing without a tag so it will be seperate
+        # We actually want to pull this query from all of time since it
+        # gives the most recent alert status however the db isn't going
+        # to appreciate that to I'll grab the last 28 days for now
         queries['alert_query'] = 'SELECT LAST("crit_duration") AS "crit_duration_before_alerting", LAST("warn_duration") AS "warn_duration_before_alerting" FROM "{}"."autogen"."kapacitor_alerts" WHERE time > now() - 28d GROUP BY "host","cpu","name","path"'
         list_of_queries = []
 
-        # The next two for loops are a little funky, we want to make as few
-        # requests to influx as possible whilst keeping the number low enough
-        # that we don't go over any timeouts or max request sizes
+        # The next two for loops are a little funky, we want to make as
+        # few requests to influx as possible whilst keeping the number
+        # low enough that we don't go over any timeouts or max request
+        # sizes
         for database_as_list in list_of_databases:
-            # database is the list ["$database_name"], I can't see how the list
-            # will have multiple values and would probably rather break than
-            # loop through all of the returned values
+            # database is the list ["$database_name"], I can't see how
+            # the list will have multiple values and would probably
+            # rather break than loop through all of the returned values
             database = database_as_list[0]
             for query in queries:
                 list_of_queries.append(queries[query].format(database))
 
-        # Collect in a list incase influx_database_batch_size is not a multipe
-        # of the number of queries we are running per server
+        # Collect in a list incase influx_database_batch_size is not a
+        # multipe of the number of queries we are running per server
         batches_response_list = []
         time_accepted_since = ( time.time() - influx_max_data_age ) * 1000
         for beginning_of_slice in xrange(0, len(list_of_queries), influx_database_batch_size):
@@ -86,14 +96,18 @@ def get_tick_data():
                 if 'series' not in statement:
                     continue
 
-                # Catch kapacitor alert data and set the health status accordingly
+                # Catch kapacitor alert data and set the health status
+                # accordingly
                 if statement['series'][0]['name'] == "kapacitor_alerts":
                     alerts = {}
-                    # We will create two lists and to store the crit_duration and warn_duration values in
-                    # when an alert is a warning it's warn_duration will be an integer and it's crit_duration
-                    # will be None, we will then grab to max to check if something is alerting since
-                    # crit duration has value -1 when not alerting and x when alerting where x is the kapacitor
-                    # variable critTime / warnTime
+                    # We will create two lists and to store the
+                    # crit_duration and warn_duration values in when an
+                    # alert is a warning it's warn_duration will be an
+                    # integer and it's crit_duration will be None, we
+                    # will then grab to max to check if something is
+                    # alerting since crit duration has value -1 when not
+                    # alerting and x when alerting where x is the
+                    # kapacitor variable critTime / warnTime
                     for each_measurement_with_an_alerting_status in statement['series']:
                         hostname = each_measurement_with_an_alerting_status['tags']['host']
                         if hostname not in alerts:
@@ -135,13 +149,14 @@ def get_tick_data():
 
                     # Check if we have old data
                     if host_data['values'][0][0] < time_accepted_since:
-                        # No point storing old data since we don't store old
-                        # data from the servers module
+                        # No point storing old data since we don't store
+                        # old data from the servers module
                         continue
                     if 'summary' not in hosts_data[hostname]:
                         hosts_data[hostname]['summary'] = {}
 
-                    # cpu and fullest_disk will be the first non time column
+                    # cpu and fullest_disk will be the first non time
+                    # column
                     hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         for host in hosts_data:
