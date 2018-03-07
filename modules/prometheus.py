@@ -142,9 +142,9 @@ def get_prometheus_data():
             if host in alerting_servers:
                 alert_level = max(alerting_servers[host])
                 if alert_level == 1:
-                    health_status == 'orange'
+                    health_status = 'orange'
                 if alert_level == 2:
-                    health_status == 'red'
+                    health_status = 'red'
 
             prometheus_data[user][host]['health_status'] = health_status
             # Calculate the order by.  If the server isn't reporting every
