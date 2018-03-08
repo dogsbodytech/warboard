@@ -39,7 +39,7 @@ if __name__ == '__main__':
     unreporting = list_unreporting_servers()
     if unreporting:
         print("The following servers aren't reporting:")
-        for server in list_unreporting_servers():
+        for server in unreporting:
             print("'{}'".format(server))
     else:
         print("No unreporting servers found")
