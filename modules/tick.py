@@ -129,7 +129,7 @@ def get_tick_data():
                                 # aside from the first one sent by a
                                 # each host.
                                 if each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] == 0:
-                                    alerts[hostname]['deadman'] = True
+                                    alerts[hostname]['deadman_alerting'] = True
                             elif tag_or_field == "crit_duration_before_alerting":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
                                 alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
