@@ -157,7 +157,10 @@ def get_tick_data():
                         # filter them out seems to be here by having
                         # them never leave the alerts dict to become a
                         # part of the hosts_data dict
-                        if hostname not in hosts_data and len(hostname) != 0:
+                        if hostname not in hosts_data:
+                            if len(hostname) != 0:
+                                continue
+
                             tick_data_validity['total_checks'] += 1
                             hosts_data[hostname] = {}
                             hosts_data[hostname]['name'] = hostname
