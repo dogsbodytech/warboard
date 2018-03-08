@@ -159,19 +159,20 @@ def get_tick_data():
                         hosts_data[hostname]['health_status'] = health_status
 
                 # for all other data - cpu memory disk diskio
-                for host_data in statement['series']:
-                    hostname = host_data['tags']['host']
-                    if hostname not in hosts_data:
-                        tick_data_validity['total_checks'] += 1
-                        hosts_data[hostname] = {}
-                        hosts_data[hostname]['name'] = hostname
+                else:
+                    for host_data in statement['series']:
+                        hostname = host_data['tags']['host']
+                        if hostname not in hosts_data:
+                            tick_data_validity['total_checks'] += 1
+                            hosts_data[hostname] = {}
+                            hosts_data[hostname]['name'] = hostname
 
-                    if 'summary' not in hosts_data[hostname]:
-                        hosts_data[hostname]['summary'] = {}
+                        if 'summary' not in hosts_data[hostname]:
+                            hosts_data[hostname]['summary'] = {}
 
-                    # cpu and fullest_disk will be the first non time
-                    # column
-                    hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
+                        # cpu and fullest_disk will be the first non time
+                        # column
+                        hosts_data[hostname]['summary'][host_data['columns'][1]] = host_data['values'][0][1]
 
         for host in hosts_data:
             tick_host_data = hosts_data[host]
