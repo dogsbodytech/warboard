@@ -65,6 +65,10 @@ def get_newrelic_infra_data():
                 infrastructure_host['name'] = account_infra_data['results'][0]['events'][num]['displayName']
 
             # Data older than 5 minutes will be flagged as blue
+            # We should move this over to use the "Host Not Reporting"
+            # alert data from the section below to determine if a server
+            # is not reporting rather than the time it last recoreded
+            # data
             timestamp = account_infra_data['results'][0]['events'][num]['timestamp']
             time_accepted_since = ( time.time() - newrelic_infrastructure_max_data_age ) * 1000
             infrastructure_host['orderby'] = 0
