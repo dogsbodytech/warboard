@@ -44,4 +44,4 @@ if __name__ == '__main__':
     else:
         print("No unreporting servers found")
 
-    print("It is recommended that you call this function 3 times to check you get the same result and aren't catching a trainsient issue")
+    print("It is recommended that you call this function 3 times to ensure you get a reliable result")
