@@ -151,7 +151,13 @@ def get_tick_data():
                         if alerts[hostname]['deadman_alerting']:
                             health_status = 'blue'
 
-                        if hostname not in hosts_data:
+                        # Deadman into influx alerts are causing some
+                        # data to be added to influx without a hostname
+                        # until this can be debugged the best place to
+                        # filter them out seems to be here by having
+                        # them never leave the alerts dict to become a
+                        # part of the hosts_data dict
+                        if hostname not in hosts_data and len(hostname) != 0:
                             tick_data_validity['total_checks'] += 1
                             hosts_data[hostname] = {}
                             hosts_data[hostname]['name'] = hostname
