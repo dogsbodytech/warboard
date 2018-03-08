@@ -36,12 +36,13 @@ def list_unreporting_servers():
     return found_servers - reporting_servers
 
 if __name__ == '__main__':
+    print('Checking unreporting servers this may take arround 30 seconds')
     unreporting = list_unreporting_servers()
     if unreporting:
         print("The following servers aren't reporting:")
         for server in unreporting:
             print("'{}'".format(server))
     else:
-        print("No unreporting servers found")
+        print('No unreporting servers found')
 
-    print("It is recommended that you call this function 3 times to ensure you get a reliable result")
+    print('It is recommended that you call this function 3 times to ensure you get a reliable result')
