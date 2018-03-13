@@ -41,7 +41,8 @@ def get_newrelic_servers_data():
                 nr_servers_host['health_status'] = server['health_status']
                 if nr_servers_host['health_status'] == 'unknown':
                     nr_servers_host['health_status'] = 'green'
-                    nr_servers_host['name'] = '* {}'.format(nr_servers_host['name'])
+
+                nr_servers_host['name'] = '* {}'.format(nr_servers_host['name'])
 
                 nr_servers_host['summary'] = {
                     'memory': server['summary']['memory'],
