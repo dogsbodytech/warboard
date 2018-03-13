@@ -117,7 +117,9 @@ def get_tick_data():
                             alerts[hostname]['deadman_alerting'] = False
 
                         for tag_or_field_position_in_list, tag_or_field in enumerate(each_measurement_with_an_alerting_status['columns']):
-                            if tag_or_field == "deadman_status":
+                            if tag_or_field == "time":
+                                continue
+                            elif tag_or_field == "deadman_status":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
                                 # Checking if a deadman alert is up or
                                 # down isn't particularly clear.  We are
