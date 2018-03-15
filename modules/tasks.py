@@ -3,12 +3,17 @@ from config import warboard_user
 from misc import log_messages
 from calendar_functions import store_calendar_items
 from resources import clear_resources_keys
+from resources_list_unreporting_servers import list_unreporting_servers
 
 def hourly_tasks():
     store_calendar_items()
 
 def daily_tasks():
-    return(False)
+    unreporting = list_unreporting_servers()
+    if unreporting:
+        for server in unreporting:
+            print("\t'{}'".format(server))
+
 
 def weekly_tasks():
     clear_resources_keys()
