@@ -33,5 +33,5 @@ if __name__ == '__main__':
             print('Invalid option!')
             exit(2)
     else:
-        print('Valid tasks: hourly|daily|weekly|manual')
+        print('Valid tasks: hourly|daily|weekly')
         exit(2)
