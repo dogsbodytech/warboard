@@ -3,7 +3,7 @@ import json
 import time
 from redis_functions import set_data
 from misc import log_messages, to_uuid
-from config import influx_read_users, influx_max_data_age, influx_timeout, influx_database_batch_size
+from config import influx_read_users, influx_timeout, influx_database_batch_size
 
 # Note: If two accounts share hosts with the same name this is going to make a mess
 
