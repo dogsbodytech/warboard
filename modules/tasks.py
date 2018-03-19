@@ -13,8 +13,7 @@ def daily_tasks():
 
 
 def weekly_tasks():
-    clear_resources_keys()
-
+    return
 
 if __name__ == '__main__':
     if getpass.getuser() != warboard_user:
