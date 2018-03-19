@@ -9,11 +9,7 @@ def hourly_tasks():
     store_calendar_items()
 
 def daily_tasks():
-    unreporting = list_unreporting_servers()
-    if unreporting:
-        print("The following servers aren't reporting:")
-        for server in unreporting:
-            print("\t'{}'".format(server))
+    return
 
 
 def weekly_tasks():
