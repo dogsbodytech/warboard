@@ -7,11 +7,14 @@ from config import prometheus_credentials
 
 def get_alerting_servers(user):
     """
-    Returns a dictionary containing all alerting servers for a given user
+    Returns a tuple containing two dictionaries:
+    all alerting servers for a given user
+    all down servers for a given user
     key = server name
     value = list of firing alerts as an integer, 1 is warning, 2 is critical
     """
     alerting_servers = {}
+    down_servers = []
     try:
         alerting_servers_response = requests.get(
             '{}/api/v1/alerts'.format(prometheus_credentials[user]['alert_url']),
@@ -26,6 +29,10 @@ def get_alerting_servers(user):
     alerting_servers_json = alerting_servers_response.json()
     assert alerting_servers_json['status'] == 'success', 'Could not get prometheus alert data for {}: Response status was {}'.format(user, alerting_servers_json['status'])
     for alert in alerting_servers_json['data']:
+        # catch servers that are down
+        if alert['labels']['alertname'] == 'service_down':
+            down_servers.append(hostname)
+            continue
         # I'm going to make a set of assumptions
         # Alerts returned in this list are all active, so there is no need to
         # check if they have ended or been acknowledged
@@ -52,7 +59,7 @@ def get_alerting_servers(user):
 
         alerting_servers[hostname].append(status)
 
-    return alerting_servers
+    return alerting_servers, down_servers
 
 def get_prometheus_data():
     """
@@ -95,7 +102,7 @@ def get_prometheus_data():
     for user in prometheus_credentials:
         alerting_servers = {}
         try:
-            alerting_servers = get_alerting_servers(user)
+            alerting_servers, down_servers = get_alerting_servers(user)
         except Exception as e:
             log_messages('The following error occured whilst getting the list of alerting servers for {}: {}'.format(user, e), 'error')
 
@@ -145,6 +152,9 @@ def get_prometheus_data():
                     health_status = 'orange'
                 if alert_level == 2:
                     health_status = 'red'
+
+            if host in down_servers:
+                prometheus_data[user][host]['health_status'] = 'blue'
 
             prometheus_data[user][host]['health_status'] = health_status
             # Calculate the order by.  If the server isn't reporting every
