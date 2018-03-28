@@ -170,8 +170,7 @@ def get_prometheus_data():
                 values.append(prometheus_data[user][host]['summary'][metric])
 
             if len(values) != len(queries):
-                prometheus_data[user][host]['orderby'] = 0
-                prometheus_data[user][host]['health_status'] = 'blue'
+                del prometheus_data[user][host]
                 log_messages('{} only returned data for the following metrics {}'.format(host, metrics), 'warning')
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
