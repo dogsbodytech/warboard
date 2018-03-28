@@ -141,6 +141,11 @@ def get_prometheus_data():
                     prometheus_data[user][hostname]['name'] = hostname.rstrip(':9100')
                     prometheus_data[user][hostname]['summary'] = {}
 
+                if 'intermittent_tag' in prometheus_credentials['user']:
+                    if prometheus_credentials['user']['intermittent_tag'] in instance_data['metric']:
+                        if instance_data['metric'][prometheus_credentials['user']['intermittent_tag']] == True:
+                            prometheus_data[user][hostname][volitile] = True
+
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         for host in prometheus_data[user]:

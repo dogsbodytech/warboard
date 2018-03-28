@@ -14,6 +14,17 @@ def set_data(key, value): # Used to set keys in redis
     except redis.exceptions.ConnectionError:
         log_messages('Could not set '+key+' in Redis', 'error')
 
+def set_volitile_data(key, value, ttl_seconds):
+    """
+    Sets key, value in redis with a given time to live
+    """
+    try:
+        conn = redis_connect()
+        conn.set(key, value)
+        conn.expire(key, ttl_seconds)
+    except redis.exceptions.ConnectionError:
+        log_messages('Could not set '+key+' in Redis', 'error')
+
 def get_data(key): # Used to get keys from redis
     try:
         value = redis_connect().get(key)
