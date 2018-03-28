@@ -44,7 +44,7 @@ def get_resource_results():
         milliseconds_since_epoch_module_data_is_valid_until = module_success['valid_until']
         if milliseconds_since_epoch > milliseconds_since_epoch_module_data_is_valid_until:
             resource_results['failed_accounts'] += module_success['total_accounts']
-            log_messages('Data for {} is stale, please check the daemon is functioning properly'.format(module), 'warning')
+            log_messages('Data for {} is stale, please check the daemon is functioning properly'.format(module), 'error')
         else:
             resource_results['failed_accounts'] += module_success['failed_accounts']
 
