@@ -32,7 +32,7 @@ def get_newrelic_servers_data():
             # servers returns name and host, if no dispay name is set it returns
             # the host as both name and host
             # I will crop the name in the jinja filter
-            nr_servers_host['name'] = server['name']
+            nr_servers_host['name'] = '* {}'.format(server['name'])
             # servers which are not reporting have no health_status and no
             # summary of metric data, hence we set them blue with orderby = 0
             nr_servers_host['orderby'] = 0
@@ -41,8 +41,6 @@ def get_newrelic_servers_data():
                 nr_servers_host['health_status'] = server['health_status']
                 if nr_servers_host['health_status'] == 'unknown':
                     nr_servers_host['health_status'] = 'green'
-
-                nr_servers_host['name'] = '* {}'.format(nr_servers_host['name'])
 
                 nr_servers_host['summary'] = {
                     'memory': server['summary']['memory'],
