@@ -14,7 +14,7 @@ def set_data(key, value): # Used to set keys in redis
     except redis.exceptions.ConnectionError:
         log_messages('Could not set '+key+' in Redis', 'error')
 
-def set_volitile_data(key, value, ttl_seconds):
+def set_volatile_data(key, value, ttl_seconds):
     """
     Sets key, value in redis with a given time to live
     """

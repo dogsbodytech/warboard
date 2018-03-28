@@ -108,8 +108,8 @@ def store_resource_data(module_name, data, validity):
     for account in data:
         for host in data[account]:
             uuid = to_uuid('{}{}'.format(account, host))
-            if data[account][host].get('volitile') == True:
-                set_volitile_data('resources:{}#{}'.format(module_name, uuid), json.dumps([data[account][host]]), 300)
+            if data[account][host].get('volatile') == True:
+                set_volatile_data('resources:{}#{}'.format(module_name, uuid), json.dumps([data[account][host]]), 300)
             else:
                 set_data('resources:{}#{}'.format(module_name, uuid), json.dumps([data[account][host]]))
 
