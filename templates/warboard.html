@@ -55,10 +55,10 @@
       <h1>Resources</h1>
     {% endif %}
       <div class="progress">
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
         <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ resource_results['red_percent'] }}%"></div>
         <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ resource_results['orange_percent'] }}%"></div>
         <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ resource_results['green_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
       </div>
       <table class="table">
         <thead>
