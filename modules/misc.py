@@ -6,7 +6,7 @@ import uuid
 from config import warboard_log, warboard_title
 
 def log_messages(message, priority):
-    logging.basicConfig(filename=warboard_log, level=logging.DEBUG, format='%(asctime)s {} %(levelname)s: %(message)s'.format(warboard_title), datefmt='%d-%m-%Y %H:%M:%S')
+    logging.basicConfig(filename=warboard_log, level=logging.DEBUG, format='%(asctime)s {} %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_')), datefmt='%d-%m-%Y %H:%M:%S')
     logging.getLogger('requests').setLevel(logging.CRITICAL)
     if priority == 'error':
         logging.error(message)
