@@ -76,7 +76,7 @@ def get_resource_results():
         log_messages('The number of checks stored in the database doesn\'t '\
             'match the number reported by the daemon, it is likely some '\
             'servers are no-longer reporting, run '\
-            'modules/resources_list_unreporting_servers.py to debug this.',
+            'modules/resources_list_unreporting_servers.py to look into this.',
             'warning')
 
     # The number of checks we are outputing is authoritive over the number
