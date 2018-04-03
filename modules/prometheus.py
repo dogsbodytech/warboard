@@ -152,6 +152,7 @@ def get_prometheus_data():
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
+        to_remove = []
         for host in prometheus_data[user]:
             # Check if the server is alerting and set the health status
             health_status = 'green'
@@ -163,7 +164,7 @@ def get_prometheus_data():
                     health_status = 'red'
 
             if host in down_servers:
-                prometheus_data[user][host]['health_status'] = 'blue'
+                health_status = 'blue'
 
             prometheus_data[user][host]['health_status'] = health_status
             # Calculate the order by.  If the server isn't reporting every
@@ -175,10 +176,16 @@ def get_prometheus_data():
                 values.append(prometheus_data[user][host]['summary'][metric])
 
             if len(values) != len(queries):
-                del prometheus_data[user][host]
+                # Mark servers to be removed so we don't encounter a
+                # run time error due to removing items from a dictionary
+                # we are looping through
+                to_remove.append(prometheus_data[user][host])
                 log_messages('{} only returned data for the following metrics {}'.format(host, metrics), 'warning')
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
+
+        for server_to_remove in to_remove:
+            del prometheus_data[user][server_to_remove]
 
     # Data should be considerd stale after 5 minutes
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
