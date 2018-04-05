@@ -46,7 +46,7 @@ def get_alerting_servers(user):
             if alert['labels']['severity'] == 'P4':
                 status = 1
             elif alert['labels']['severity'] == 'P3':
-                status = 1
+                status = 2
             elif alert['labels']['severity'] == 'P2':
                 status = 2
             elif alert['labels']['severity'] == 'P1':
@@ -101,7 +101,7 @@ def get_prometheus_data():
     # but could easily be wrong in the future or in a different enviroment
     # I'm going to test it like this and consider what a good exclude line
     # would be or how we want to be notified of unexpected data
-    queries['fullest_disk'] = 'max(((node_filesystem_size{fstype=~"ext4|vfat"} - node_filesystem_free{fstype=~"ext4|vfat"}) / node_filesystem_size{fstype=~"ext4|vfat"}) * 100) by (instance)'
+    queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance)'.format(prometheus_credentials[user].get('fullest_disk_tags', ''))
 
     for user in prometheus_credentials:
         alerting_servers = {}
