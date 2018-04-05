@@ -113,7 +113,7 @@ def get_prometheus_data():
         except Exception as e:
             log_messages('The following error occured whilst getting the list of alerting servers for {}: {}'.format(user, e), 'error')
 
-        log_messages('Down servers:{}\nAlerting servers{}'.format(down_servers, alerting_servers), 'debug')
+        log_messages('Down servers:{}\nAlerting servers{}'.format(down_servers, alerting_servers), 'info')
 
         prometheus_data[user] = {}
         prometheus_validity['total_accounts'] += 1
@@ -133,12 +133,12 @@ def get_prometheus_data():
 
             responses[query] = json.loads(metrics_response.text)
 
-        log_messages('Responses: {}'.format(responses), 'debug')
+        log_messages('Responses: {}'.format(responses), 'info')
         if len(responses) < len(queries):
             prometheus_validity['failed_accounts'] += 1
             continue
 
-        log_messages('Looping through responses', 'debug')
+        log_messages('Looping through responses', 'info')
         for metric in responses:
             if responses[metric]['status'] != "success":
                 continue
@@ -159,7 +159,7 @@ def get_prometheus_data():
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         to_remove = []
-        log_messages('Setting health status and orderby for servers: {}'.format(prometheus_data[user]), 'debug')
+        log_messages('Setting health status and orderby for servers: {}'.format(prometheus_data[user]), 'info')
         for host in prometheus_data[user]:
             # Check if the server is alerting and set the health status
             health_status = 'green'
@@ -191,7 +191,7 @@ def get_prometheus_data():
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
 
-        log_messages('Removing unreporting servers: {}'.format(to_remove), 'debug')
+        log_messages('Removing unreporting servers: {}'.format(to_remove), 'info')
         for server_to_remove in to_remove:
             del prometheus_data[user][server_to_remove]
 
