@@ -14,6 +14,11 @@ def log_messages(message, priority):
         logging.info(message)
     elif priority == 'warning':
         logging.warning(message)
+    elif priority == 'debug':
+        logging.debug(message)
+    else:
+        logging.error('Unexpected priority used:{} :'.format(priority, message))
+
 
 def chain_results(results):
     return(list(itertools.chain(*results))) # This chains all results together into one tuple
