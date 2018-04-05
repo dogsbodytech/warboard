@@ -186,7 +186,7 @@ def get_prometheus_data():
                 # Mark servers to be removed so we don't encounter a
                 # run time error due to removing items from a dictionary
                 # we are looping through
-                to_remove.append(prometheus_data[user][host])
+                to_remove.append(host)
                 log_messages('{} only returned data for the following metrics {}'.format(host, metrics), 'warning')
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
