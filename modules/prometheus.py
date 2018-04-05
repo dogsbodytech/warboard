@@ -95,17 +95,19 @@ def get_prometheus_data():
     # The /10 is to convert to seconds (/1000) and then to a percentage
     # (*1000)
     queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device)) by (instance))/10'
-    # We need want to exclude temporary file systems, docker and rootfs as it
-    # is reported as well as the device that it is mounted on
-    # Including just ext4 and vfat covers all the systems we currently want
-    # but could easily be wrong in the future or in a different enviroment
-    # I'm going to test it like this and consider what a good exclude line
-    # would be or how we want to be notified of unexpected data
-    queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance)'.format(prometheus_credentials[user].get('fullest_disk_tags', ''))
-
     for user in prometheus_credentials:
         alerting_servers = {}
         down_servers = []
+        # We need want to exclude temporary file systems, docker and rootfs as it
+        # is reported as well as the device that it is mounted on
+        # Including just ext4 and vfat covers all the systems we currently want
+        # but could easily be wrong in the future or in a different enviroment
+        # I'm going to test it like this and consider what a good exclude line
+        # would be or how we want to be notified of unexpected data
+        # This is configured in the config file as different set-ups may
+        # have different filesystems to monitor.  If no argument is supplied
+        # all of the disks will be monitored for each instance.
+        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance)'.format(prometheus_credentials[user].get('fullest_disk_tags', ''))
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
         except Exception as e:
