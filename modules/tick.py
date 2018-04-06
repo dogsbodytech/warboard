@@ -165,9 +165,9 @@ def get_tick_data():
             tick_host_data = hosts_data[host]
             tick_host_data['health_status'] = 'green'
             if host in alerts:
-                if alerts[hostname]['deadman_alerting']:
+                if alerts[host]['deadman_alerting']:
                     tick_host_data['health_status'] = 'blue'
-                elif max(alerts[hostname]['critical']) > 0:
+                elif max(alerts[host]['critical']) > 0:
                     tick_host_data['health_status'] = 'red'
                 elif max(alerts[host]['warning']) > 0:
                     tick_host_data['health_status'] = 'orange'
