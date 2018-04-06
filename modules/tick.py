@@ -90,6 +90,7 @@ def get_tick_data():
 
         # Key = hostname, Value = data
         hosts_data = {}
+        alerts = {}
         for batch in batches_response_list:
             for statement in batch:
                 # If we don't get data back there will be no series
@@ -99,7 +100,6 @@ def get_tick_data():
                 # Catch kapacitor alert data and set the health status
                 # accordingly
                 if statement['series'][0]['name'] == "kapacitor_alerts":
-                    alerts = {}
                     # We will create two lists and to store the
                     # crit_duration and warn_duration values in when an
                     # alert is a warning it's warn_duration will be an
@@ -145,34 +145,6 @@ def get_tick_data():
                             else:
                                 log_messages('Unexpected tag or field when parsing kapacitor alerts for host \'{}\': {}'.format(hostname, tag_or_field), 'warning')
 
-                    for hostname in alerts:
-                        health_status = 'green'
-
-                        if max(alerts[hostname]['warning']) > 0:
-                            health_status = 'orange'
-
-                        if max(alerts[hostname]['critical']) > 0:
-                            health_status = 'red'
-
-                        if alerts[hostname]['deadman_alerting']:
-                            health_status = 'blue'
-
-                        # Deadman into influx alerts are causing some
-                        # data to be added to influx without a hostname
-                        # until this can be debugged the best place to
-                        # filter them out seems to be here by having
-                        # them never leave the alerts dict to become a
-                        # part of the hosts_data dict
-                        if hostname not in hosts_data:
-                            if len(hostname) == 0:
-                                continue
-
-                            tick_data_validity['total_checks'] += 1
-                            hosts_data[hostname] = {}
-                            hosts_data[hostname]['name'] = hostname
-
-                        hosts_data[hostname]['health_status'] = health_status
-
                 # for all other data - cpu memory disk diskio
                 else:
                     for host_data in statement['series']:
@@ -191,8 +163,14 @@ def get_tick_data():
 
         for host in hosts_data:
             tick_host_data = hosts_data[host]
-            if 'health_status' not in tick_host_data:
-                tick_host_data['health_status'] = 'green'
+            tick_host_data['health_status'] = 'green'
+            if host in alerts:
+                if alerts[hostname]['deadman_alerting']:
+                    tick_host_data['health_status'] = 'blue'
+                elif max(alerts[hostname]['critical']) > 0:
+                    tick_host_data['health_status'] = 'red':
+                elif max(alerts[host]['warning']) > 0:
+                    tick_host_data['health_status'] = 'orange'
 
             try:
                 tick_host_data['orderby'] = max(
