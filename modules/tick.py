@@ -109,6 +109,10 @@ def get_tick_data():
                     # alerting and x when alerting where x is the
                     # kapacitor variable critTime / warnTime
                     for each_measurement_with_an_alerting_status in statement['series']:
+                        # Skip data that is reported without a metric tag
+                        if each_measurement_with_an_alerting_status['tags']['metric'] == '':
+                            continue
+
                         hostname = each_measurement_with_an_alerting_status['tags']['host']
                         if hostname not in alerts:
                             alerts[hostname] = {}
