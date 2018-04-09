@@ -8,16 +8,16 @@ from config import warboard_log, warboard_title
 
 def setup_logging():
     log_handler = logging.handlers.WatchedFileHandler(warboard_log)
-    formatter = logging.Formatter('%(asctime)s {} {}: %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_'), __name__), '%d-%m-%Y %H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s {}: %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_')), '%d-%m-%Y %H:%M:%S')
     log_handler.setFormatter(formatter)
-    logger = logging.getLogger(__name__)
+    #logger = logging.getLogger(__name__)
+    logger = logging.getLogger()
     logger.addHandler(log_handler)
-    logging.getLogger('requests').setLevel(logging.CRITICAL)
+    #logging.getLogger('requests').setLevel(logging.CRITICAL)
     logger.setLevel(logging.DEBUG)
-    return logging
 
 def log_messages(message, priority):
-    logging = setup_logging()
+    setup_logging()
     if priority == 'error':
         logging.error(message)
     elif priority == 'info':
