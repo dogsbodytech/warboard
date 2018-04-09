@@ -2,12 +2,21 @@ import itertools
 import datetime
 import json
 import logging
+import logging.handlers
 import uuid
 from config import warboard_log, warboard_title
 
-def log_messages(message, priority):
-    logging.basicConfig(filename=warboard_log, level=logging.DEBUG, format='%(asctime)s {}: %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_')), datefmt='%d-%m-%Y %H:%M:%S')
+def setup_logging():
+    log_handler = logging.handlers.WatchedFileHandler(warboard_log)
+    formatter = logging.Formatter('%(asctime)s {} {}: %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_'), __name__), '%d-%m-%Y %H:%M:%S')
+    log_handler.setFormatter(formatter)
+    logger = logging.getLogger()
+    logger.addHandler(log_handler)
     logging.getLogger('requests').setLevel(logging.CRITICAL)
+    logger.setLevel(logging.DEBUG)
+
+def log_messages(message, priority):
+    setup_logging()
     if priority == 'error':
         logging.error(message)
     elif priority == 'info':
