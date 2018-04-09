@@ -1,34 +1,19 @@
 import itertools
 import datetime
 import json
+import uuid
 import logging
 import logging.handlers
-import uuid
 from config import warboard_log, warboard_title
 
 def setup_logging():
     log_handler = logging.handlers.WatchedFileHandler(warboard_log)
     formatter = logging.Formatter('%(asctime)s {}: %(levelname)s: %(message)s'.format(warboard_title.lower().replace(' ', '_')), '%d-%m-%Y %H:%M:%S')
     log_handler.setFormatter(formatter)
-    #logger = logging.getLogger(__name__)
     logger = logging.getLogger()
     logger.addHandler(log_handler)
-    #logging.getLogger('requests').setLevel(logging.CRITICAL)
+    logging.getLogger('requests').setLevel(logging.CRITICAL)
     logger.setLevel(logging.DEBUG)
-
-def log_messages(message, priority):
-    setup_logging()
-    if priority == 'error':
-        logging.error(message)
-    elif priority == 'info':
-        logging.info(message)
-    elif priority == 'warning':
-        logging.warning(message)
-    elif priority == 'debug':
-        logging.debug(message)
-    else:
-        logging.error('Unexpected priority used:{} :'.format(priority, message))
-
 
 def chain_results(results):
     return(list(itertools.chain(*results))) # This chains all results together into one tuple
