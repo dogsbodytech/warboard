@@ -38,10 +38,15 @@ def get_alerting_servers(user):
             # Alerts returned in this list are all active, so there is no need to
             # check if they have ended or been acknowledged
             # You have a custom label 'severity' which all alerts will be tagged
-            # tagged with where P4&P3 are warnings and P2&P2 are critical alerts
+            # tagged with where P4 as warnings and P1&P2&P3 are critical alerts
             #
             # We are returning status as an integer so that the most severe alert
             # for each server can easily be grabbed
+
+            # We can ignore alerts that are not for a specific instance
+            if 'instance' not in alert['labels']:
+                continue
+
             hostname = alert['labels']['instance']
             if alert['labels']['severity'] == 'P4':
                 status = 1
