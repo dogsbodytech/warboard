@@ -1,6 +1,9 @@
 import sys, getpass
 from time import sleep
-from modules.misc import log_messages, refresh_time
+import logging
+import logging.handlers
+from modules.config import warboard_log, warboard_title
+from modules.misc import setup_logging, refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user
 from modules.pingdom import store_pingdom_results
@@ -12,37 +15,39 @@ from modules.resources import store_resource_data
 from modules.sirportly import store_sirportly_results
 from modules.prune_keys import prune_old_keys
 
+setup_logging()
+
 class WarboardDaemon(Daemon):
     def run(self):
         try:
             prune_old_keys()
         except Exception as e:
-            log_messages('prune_old_keys failed {}'.format(e), 'error')
+            logging.error('prune_old_keys failed {}'.format(e))
         while True:
             try:
                 store_pingdom_results()
             except Exception as e:
-                log_messages('store_pingdom_results failed {}'.format(e), 'error')
+                logging.error('store_pingdom_results failed {}'.format(e))
             try:
                 store_newrelic_servers_data(*get_newrelic_servers_data())
             except Exception as e:
-                log_messages('store_newrelic_servers_data failed {}'.format(e), 'error')
+                logging.error('store_newrelic_servers_data failed {}'.format(e))
             try:
                 store_newrelic_infra_data(*get_newrelic_infra_data())
             except Exception as e:
-                log_messages('store_newrelic_infra_data {}'.format(e), 'error')
+                logging.error('store_newrelic_infra_data {}'.format(e))
             try:
                 store_tick_data(*get_tick_data())
             except Exception as e:
-                log_messages('store_tick_data {}'.format(e), 'error')
+                logging.error('store_tick_data {}'.format(e))
             try:
                 store_resource_data('prometheus', *get_prometheus_data())
             except Exception as e:
-                log_messages('The following error occured whilst trying to store prometheus data: {}'.format(e), 'error')
+                logging.error('The following error occured whilst trying to store prometheus data: {}'.format(e))
             try:
                 store_sirportly_results()
             except Exception as e:
-                log_messages('store_sirportly_results {}'.format(e), 'error')
+                logging.error('store_sirportly_results {}'.format(e))
             sleep(refresh_time())
 
 if __name__ == '__main__':
@@ -52,13 +57,13 @@ if __name__ == '__main__':
     daemon = WarboardDaemon(warboard_pid_path)
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
-            log_messages('Warboard backend daemon started!', 'info')
+            logging.info('Warboard backend daemon started!')
             daemon.start()
         elif 'stop' == sys.argv[1]:
-            log_messages('Warboard backend daemon stopped!', 'info')
+            logging.info('Warboard backend daemon stopped!')
             daemon.stop()
         elif 'restart' == sys.argv[1]:
-            log_messages('Warboard backend daemon restarted!', 'info')
+            logging.info('Warboard backend daemon restarted!')
             daemon.restart()
         else:
             print('Invalid option!')

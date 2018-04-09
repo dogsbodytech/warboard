@@ -2,7 +2,7 @@ from __future__ import division
 import json
 import time
 from redis_functions import get_data, set_volatile_data, get_all_data, set_data, delete_data
-from misc import log_messages, to_uuid
+from misc import to_uuid
 
 def get_resource_results():
     """
@@ -44,7 +44,7 @@ def get_resource_results():
         milliseconds_since_epoch_module_data_is_valid_until = module_success['valid_until']
         if milliseconds_since_epoch > milliseconds_since_epoch_module_data_is_valid_until:
             resource_results['failed_accounts'] += module_success['total_accounts']
-            log_messages('Data for {} is stale, please check the daemon is functioning properly'.format(module), 'error')
+            logging.error('Data for {} is stale, please check the daemon is functioning properly'.format(module))
         else:
             resource_results['failed_accounts'] += module_success['failed_accounts']
 
@@ -66,18 +66,17 @@ def get_resource_results():
             checks_found += 1
         except Exception as e:
             # I would rather log to uwsgi's log but I'll sort this out later
-            log_messages('Data for {} is not in a valid format: {}'.format(host, e), 'error')
+            logging.error('Data for {} is not in a valid format: {}'.format(host, e))
 
     # If we are getting back old checks that are no-longer reporting hence
     # are not in the total_checks variable then they have failed.
     # If we are getting back less checks than we stored then something has
     # gone really wrong or we caught the weekly cron that clears the keys.
     if resource_results['total_checks'] != checks_found:
-        log_messages('The number of checks stored in the database doesn\'t '\
+        logging.warning('The number of checks stored in the database doesn\'t '\
             'match the number reported by the daemon, it is likely some '\
             'servers are no-longer reporting, run '\
-            'modules/resources_list_unreporting_servers.py to look into this.',
-            'warning')
+            'modules/resources_list_unreporting_servers.py to look into this.')
 
     # The number of checks we are outputing is authoritive over the number
     # we expected to be there, at the moment we are just logging the fact they

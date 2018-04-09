@@ -1,6 +1,6 @@
 import requests, base64, math, json
 from redis_functions import set_data, get_data
-from misc import log_messages, chain_results
+from misc import chain_results
 from config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 
 def get_pingdom_data():
@@ -32,7 +32,7 @@ def store_pingdom_results():
             set_data('pingdom_'+account, pingdom_data[account])
         else:
             failed_pingdom +=1
-            log_messages('Could not get pingdom data for '+account, 'error')
+            logging.error('Could not get pingdom data for '+account)
         total_accounts +=1
     set_data('total_pingdom_accounts', total_accounts)
     set_data('failed_pingdom', failed_pingdom)

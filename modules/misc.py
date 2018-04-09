@@ -2,9 +2,6 @@ import itertools
 import datetime
 import json
 import uuid
-import logging
-import logging.handlers
-from config import warboard_log, warboard_title
 
 def setup_logging():
     log_handler = logging.handlers.WatchedFileHandler(warboard_log)

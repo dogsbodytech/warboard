@@ -1,5 +1,8 @@
 from flask import Flask, request, render_template, jsonify
-from modules.misc import refresh_time
+import logging
+import logging.handlers
+from modules.config import warboard_log, warboard_title
+from modules.misc import setup_logging, refresh_time
 from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, latency_max_name_length
 from modules.pingdom import get_pingdom_results
 from modules.resources import get_resource_results
@@ -14,6 +17,7 @@ from modules.calendar_functions import get_calendar_items
 # Staging flag to store in a different database so testing can be done on the
 # live server without interfering with the live warboard
 
+setup_logging()
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])

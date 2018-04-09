@@ -1,6 +1,5 @@
 import datetime, json
 from time import strftime
-from misc import log_messages
 from config import calendar_export
 from redis_functions import set_data, get_data, get_all_data, delete_data
 
@@ -47,4 +46,4 @@ def store_calendar_items():
             elif item['summary'] not in current: # If a key exists but it's not the current summary it means we have two items for one date
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary']) # Append to the existing item
     else:
-        log_messages('Could not parse calendar', 'error')
+        logging.error('Could not parse calendar')

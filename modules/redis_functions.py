@@ -1,5 +1,4 @@
 import redis
-from misc import log_messages
 from config import redis_host, redis_port, redis_db
 
 def redis_connect():

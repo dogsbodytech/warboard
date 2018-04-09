@@ -1,6 +1,5 @@
 import sys, getpass
 from config import warboard_user
-from misc import log_messages
 from calendar_functions import store_calendar_items
 from resources import clear_resources_keys
 from resources_list_unreporting_servers import list_unreporting_servers
@@ -22,13 +21,13 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         if 'hourly' == sys.argv[1]:
             hourly_tasks()
-            log_messages('Hourly tasks executed', 'info')
+            logging.info('Hourly tasks executed')
         elif 'daily' == sys.argv[1]:
             daily_tasks()
-            log_messages('Daily tasks executed', 'info')
+            logging.info('Daily tasks executed')
         elif 'weekly' == sys.argv[1]:
             weekly_tasks()
-            log_messages('Weekly tasks executed', 'info')
+            logging.info('Weekly tasks executed')
         else:
             print('Invalid option!')
             exit(2)
