@@ -14,9 +14,10 @@ def setup_logging():
     logger.addHandler(log_handler)
     logging.getLogger('requests').setLevel(logging.CRITICAL)
     logger.setLevel(logging.DEBUG)
+    return logging
 
 def log_messages(message, priority):
-    setup_logging()
+    logging = setup_logging()
     if priority == 'error':
         logging.error(message)
     elif priority == 'info':
