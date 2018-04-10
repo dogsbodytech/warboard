@@ -9,26 +9,50 @@ from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
-log_handler = logging.handlers.WatchedFileHandler(warboard_log)
-formatter = logging.Formatter('%(asctime)s: warboard_webserver.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S')
-log_handler.setFormatter(formatter)
-logger = logging.getLogger(__name__)
-logger.addHandler(log_handler)
-logging.getLogger('requests').setLevel(logging.CRITICAL)
-logger.setLevel(logging.DEBUG)
-
 ## TODO:
-# Improve error logging
+# Implement logging inside modules to a greater extent
 #
 # Set a data age on monitored data - pingdom
 #
 # Staging flag to store in a different database so testing can be done on the
 # live server without interfering with the live warboard
 
+logger = logging.getLogger(__name__)
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,  # this fixes the problem
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s: warboard_webserver.%(name)s: %(levelname)s: %(message)s',
+            'datefmt': '%d-%m-%Y %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level':'DEBUG',
+            'class':'logging.handlers.WatchedFileHandler',
+            'filename': warboard_log,
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'requests.packages.urllib3': {
+            'handlers': ['file'],
+            'level': 'WARNING'
+        }
+    }
+})
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def warboard():
+    logger.debug('Serving warboard')
     return(render_template('warboard.html',
         title=warboard_title,
         refresh_time=refresh_time(),
