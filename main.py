@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 import logging
 import logging.handlers
+import logging.config
 from modules.config import warboard_log, warboard_title
 from modules.misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, latency_max_name_length
