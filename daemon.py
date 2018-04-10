@@ -76,7 +76,7 @@ if __name__ == '__main__':
             },
             'requests.packages.urllib3': {
                 'handlers': ['file'],
-                'level': 'WARNING'
+                'level': 'DEBUG'
     }
         }
     })
