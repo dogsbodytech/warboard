@@ -57,7 +57,8 @@ if __name__ == '__main__':
         'disable_existing_loggers': False,  # this fixes the problem
         'formatters': {
             'standard': {
-                'format': '%(asctime)s: warboard_daemon.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S'
+                'format': '%(asctime)s: warboard_daemon.%(name)s: %(levelname)s: %(message)s',
+                'datefmt': '%d-%m-%Y %H:%M:%S'
             },
         },
         'handlers': {
