@@ -50,7 +50,7 @@ class WarboardDaemon(Daemon):
 
 if __name__ == '__main__':
     log_handler = logging.handlers.WatchedFileHandler(warboard_log)
-    formatter = logging.Formatter('%(asctime)s: {}.%(name)s: %(levelname)s: %(message)s'.format(warboard_title), '%d-%m-%Y %H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s: warboard_daemon.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S')
     log_handler.setFormatter(formatter)
     logger = logging.getLogger(__name__)
     logger.addHandler(log_handler)

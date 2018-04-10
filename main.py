@@ -10,7 +10,7 @@ from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
 
 log_handler = logging.handlers.WatchedFileHandler(warboard_log)
-formatter = logging.Formatter('%(asctime)s: {}.%(name)s: %(levelname)s: %(message)s'.format(warboard_title), '%d-%m-%Y %H:%M:%S')
+formatter = logging.Formatter('%(asctime)s: warboard_webserver.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S')
 log_handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.addHandler(log_handler)
