@@ -4,7 +4,8 @@ from calendar_functions import store_calendar_items
 from resources import clear_resources_keys
 from resources_list_unreporting_servers import list_unreporting_servers
 import logging
-logger = logging.getLogger(__name__)
+import logging.handlers
+import logging.config
 
 def hourly_tasks():
     store_calendar_items()
@@ -17,6 +18,36 @@ def weekly_tasks():
     return
 
 if __name__ == '__main__':
+    logger = logging.getLogger(__name__)
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': False,  # this fixes the problem
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s: warboard_tasks.%(name)s: %(levelname)s: %(message)s',
+                'datefmt': '%d-%m-%Y %H:%M:%S'
+            },
+        },
+        'handlers': {
+            'file': {
+                'level':'INFO',
+                'class':'logging.handlers.WatchedFileHandler',
+                'filename': warboard_log,
+                'formatter': 'standard',
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True
+            },
+            'requests.packages.urllib3': {
+                'handlers': ['file'],
+                'level': 'WARNING'
+            }
+        }
+    })
     if getpass.getuser() != warboard_user:
         print('Please run the warboard with the correct user: '+warboard_user)
         exit(1)

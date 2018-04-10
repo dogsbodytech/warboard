@@ -32,7 +32,7 @@ logging.config.dictConfig({
     },
     'handlers': {
         'file': {
-            'level':'DEBUG',
+            'level':'INFO',
             'class':'logging.handlers.WatchedFileHandler',
             'filename': warboard_log,
             'formatter': 'standard',
