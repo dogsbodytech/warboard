@@ -4,6 +4,8 @@ import time
 from redis_functions import set_data, get_data
 from misc import to_uuid
 from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
+import logging
+logger = logging.getLogger(__name__)
 
 # This module assumes that newrelic insights returns the most recent data first
 def get_newrelic_infra_data():
@@ -25,7 +27,7 @@ def get_newrelic_infra_data():
             number_of_hosts_response.raise_for_status()
         except requests.exceptions.RequestException as e:
             newrelic_infra_data_validity['failed_accounts'] += 1
-            logging.error('Could not get NewRelic Infrastructure data for {} - error getting number of hosts from insights api: Error: {}'.format(account, e))
+            logger.error('Could not get NewRelic Infrastructure data for {} - error getting number of hosts from insights api: Error: {}'.format(account, e))
             continue
 
         # It may be possible for 3 servers to be found, one of which has not
@@ -42,7 +44,7 @@ def get_newrelic_infra_data():
             metric_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
             newrelic_infra_data_validity['failed_accounts'] += 1
-            logging.error('Could not get NewRelic Infrastructure data for {}: - error getting metric data from insights api: Error: {}'.format(account, e))
+            logger.error('Could not get NewRelic Infrastructure data for {}: - error getting metric data from insights api: Error: {}'.format(account, e))
             continue
 
         account_infra_data = json.loads(metric_data_response.text)
@@ -51,7 +53,7 @@ def get_newrelic_infra_data():
             violation_data_response.raise_for_status()
         except requests.exceptions.RequestException as e:
             newrelic_infra_data_validity['failed_accounts'] += 1
-            logging.error('Could not get NewRelic Alerts violation data for {}: - error getting open violation data from main api: Error: {}'.format(account, e))
+            logger.error('Could not get NewRelic Alerts violation data for {}: - error getting open violation data from main api: Error: {}'.format(account, e))
             continue
 
         violation_data = json.loads(violation_data_response.text)['violations']
@@ -120,7 +122,7 @@ def get_newrelic_infra_data():
                             if violation_level < 2:
                                 violation_level = 2
                         else:
-                            logging.warning('Unrecognised violation {} expected Warning or Critical'.format(violation['priority']))
+                            logger.warning('Unrecognised violation {} expected Warning or Critical'.format(violation['priority']))
 
                 if violation_level == 0:
                     infrastructure_host['health_status'] = 'green'

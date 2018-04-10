@@ -4,6 +4,8 @@ import time
 from redis_functions import set_data, get_data
 from misc import to_uuid
 from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
+import logging
+logger = logging.getLogger(__name__)
 
 def get_newrelic_servers_data():
     """
@@ -23,7 +25,7 @@ def get_newrelic_servers_data():
             nr_servers_response.raise_for_status()
         except requests.exceptions.RequestException as e:
             newrelic_servers_data_validity['failed_accounts'] += 1
-            logging.error('Could not get NewRelic Servers data for {} - error getting account data from api: Error: {}'.format(account, e))
+            logger.error('Could not get NewRelic Servers data for {} - error getting account data from api: Error: {}'.format(account, e))
             continue
 
         for server in json.loads(nr_servers_response.text)['servers']:

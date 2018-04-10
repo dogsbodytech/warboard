@@ -3,6 +3,8 @@ from requests.auth import HTTPBasicAuth
 import json
 import time
 from config import prometheus_credentials
+import logging
+logger = logging.getLogger(__name__)
 
 def get_alerting_servers(user):
     """
@@ -22,7 +24,7 @@ def get_alerting_servers(user):
             timeout=prometheus_credentials[user]['timeout'])
         alerting_servers_response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error('Could not get prometheus alert data for {}: Error: {}'.format(user, e))
+        logger.error('Could not get prometheus alert data for {}: Error: {}'.format(user, e))
         raise
 
     alerting_servers_json = alerting_servers_response.json()
@@ -56,7 +58,7 @@ def get_alerting_servers(user):
             elif alert['labels']['severity'] == 'P1':
                 status = 2
             else:
-                logging.warning('Invalid severity returned for {}: {}'.format(hostname, alert['labels']['severity']))
+                logger.warning('Invalid severity returned for {}: {}'.format(hostname, alert['labels']['severity']))
                 continue
 
             if hostname not in alerting_servers:
@@ -64,7 +66,7 @@ def get_alerting_servers(user):
 
             alerting_servers[hostname].append(status)
     except Exception as e:
-        logging.error('An unexpected error occured whilst getting alert data: {}: The json recieved was: {}'.format(e, alerting_servers_json))
+        logger.error('An unexpected error occured whilst getting alert data: {}: The json recieved was: {}'.format(e, alerting_servers_json))
         raise
 
     return alerting_servers, down_servers
@@ -115,9 +117,9 @@ def get_prometheus_data():
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
         except Exception as e:
-            logging.error('The following error occured whilst getting the list of alerting servers for {}: {}'.format(user, e))
+            logger.error('The following error occured whilst getting the list of alerting servers for {}: {}'.format(user, e))
 
-        #logging.error('Down servers:{}\nAlerting servers{}'.format(down_servers, alerting_servers), 'info')
+        #logger.error('Down servers:{}\nAlerting servers{}'.format(down_servers, alerting_servers), 'info')
 
         prometheus_data[user] = {}
         prometheus_validity['total_accounts'] += 1
@@ -132,17 +134,17 @@ def get_prometheus_data():
                     timeout=prometheus_credentials[user]['timeout'])
                 metrics_response.raise_for_status()
             except requests.exceptions.RequestException as e:
-                logging.error('Could not get prometheus data for {}: Error: {}'.format(user, e))
+                logger.error('Could not get prometheus data for {}: Error: {}'.format(user, e))
                 continue
 
             responses[query] = json.loads(metrics_response.text)
 
-        #logging.error('Responses: {}'.format(responses), 'info')
+        #logger.error('Responses: {}'.format(responses), 'info')
         if len(responses) < len(queries):
             prometheus_validity['failed_accounts'] += 1
             continue
 
-        #logging.error('Looping through responses', 'info')
+        #logger.error('Looping through responses', 'info')
         for metric in responses:
             if responses[metric]['status'] != "success":
                 continue
@@ -163,7 +165,7 @@ def get_prometheus_data():
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
 
         to_remove = []
-        #logging.error('Setting health status and orderby for servers: {}'.format(prometheus_data[user]), 'info')
+        #logger.error('Setting health status and orderby for servers: {}'.format(prometheus_data[user]), 'info')
         for host in prometheus_data[user]:
             # Check if the server is alerting and set the health status
             health_status = 'green'
@@ -191,11 +193,11 @@ def get_prometheus_data():
                 # run time error due to removing items from a dictionary
                 # we are looping through
                 to_remove.append(host)
-                logging.warning('{} only returned data for the following metrics {}'.format(host, metrics))
+                logger.warning('{} only returned data for the following metrics {}'.format(host, metrics))
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
 
-        #logging.error('Removing unreporting servers: {}'.format(to_remove), 'info')
+        #logger.error('Removing unreporting servers: {}'.format(to_remove), 'info')
         for server_to_remove in to_remove:
             del prometheus_data[user][server_to_remove]
 

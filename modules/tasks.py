@@ -3,6 +3,8 @@ from config import warboard_user
 from calendar_functions import store_calendar_items
 from resources import clear_resources_keys
 from resources_list_unreporting_servers import list_unreporting_servers
+import logging
+logger = logging.getLogger(__name__)
 
 def hourly_tasks():
     store_calendar_items()
@@ -21,13 +23,13 @@ if __name__ == '__main__':
     if len(sys.argv) == 2:
         if 'hourly' == sys.argv[1]:
             hourly_tasks()
-            logging.info('Hourly tasks executed')
+            logger.info('Hourly tasks executed')
         elif 'daily' == sys.argv[1]:
             daily_tasks()
-            logging.info('Daily tasks executed')
+            logger.info('Daily tasks executed')
         elif 'weekly' == sys.argv[1]:
             weekly_tasks()
-            logging.info('Weekly tasks executed')
+            logger.info('Weekly tasks executed')
         else:
             print('Invalid option!')
             exit(2)

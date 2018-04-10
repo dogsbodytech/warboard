@@ -4,6 +4,8 @@ import time
 from redis_functions import set_data
 from misc import to_uuid
 from config import influx_read_users, influx_timeout, influx_database_batch_size
+import logging
+logger = logging.getLogger(__name__)
 
 # Note: If two accounts share hosts with the same name this is going to make a mess
 
@@ -26,14 +28,14 @@ def get_tick_data():
             list_of_databases_response.raise_for_status()
         except requests.exceptions.RequestException as e:
             tick_data_validity['failed_accounts'] += 1
-            logging.error('Could not get TICK data for {} - error listing databases from Influx: Error: {}'.format(influx_user['influx_user'], e))
+            logger.error('Could not get TICK data for {} - error listing databases from Influx: Error: {}'.format(influx_user['influx_user'], e))
             continue
 
         try:
             list_of_databases = json.loads(list_of_databases_response.text)['results'][0]['series'][0]['values']
         except Exception as e:
             tick_data_validity['failed_accounts'] += 1
-            logging.error('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e))
+            logger.error('Could not parse TICK data for {}: Error: {}'.format(influx_user['influx_user'], e))
 
         queries = {}
         # The four metric queries limit data to the last hour but are
@@ -80,13 +82,13 @@ def get_tick_data():
                 metric_data_batch_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': batch_query, 'epoch': 'ms'}, timeout=influx_timeout)
                 metric_data_batch_response.raise_for_status()
             except requests.exceptions.RequestException as e:
-                logging.error('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e))
+                logger.error('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e))
                 continue
 
             try:
                 batches_response_list.append(json.loads(metric_data_batch_response.text)['results'])
             except:
-                logging.error('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e))
+                logger.error('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e))
 
         # Key = hostname, Value = data
         hosts_data = {}
@@ -143,7 +145,7 @@ def get_tick_data():
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
                                 alerts[hostname]['warning'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
                             else:
-                                logging.warning('Unexpected tag or field when parsing kapacitor alerts for host \'{}\': {}'.format(hostname, tag_or_field))
+                                logger.warning('Unexpected tag or field when parsing kapacitor alerts for host \'{}\': {}'.format(hostname, tag_or_field))
 
                 # for all other data - cpu memory disk diskio
                 else:
@@ -179,7 +181,7 @@ def get_tick_data():
                     tick_host_data['summary']['fullest_disk'],
                     tick_host_data['summary']['disk_io'])
             except KeyError as e:
-                logging.warning('{} did not return data for all metrics, the first missing metric was {}'.format(host, e))
+                logger.warning('{} did not return data for all metrics, the first missing metric was {}'.format(host, e))
                 tick_host_data['orderby'] = 0
                 tick_host_data['health_status'] = 'blue'
 

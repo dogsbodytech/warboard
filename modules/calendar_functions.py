@@ -2,6 +2,8 @@ import datetime, json
 from time import strftime
 from config import calendar_export
 from redis_functions import set_data, get_data, get_all_data, delete_data
+import logging
+logger = logging.getLogger(__name__)
 
 calendar_split = '</li><li class="list-group-item list-group-item-info lead">' # This should only be changed when modifying the template
 
@@ -46,4 +48,4 @@ def store_calendar_items():
             elif item['summary'] not in current: # If a key exists but it's not the current summary it means we have two items for one date
                 set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary']) # Append to the existing item
     else:
-        logging.error('Could not parse calendar')
+        logger.error('Could not parse calendar')
