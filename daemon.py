@@ -76,8 +76,8 @@ if __name__ == '__main__':
             },
             'requests.packages.urllib3': {
                 'handlers': ['file'],
-                'level': 'DEBUG'
-    }
+                'level': 'WARNING'
+            }
         }
     })
     if getpass.getuser() != warboard_user:
