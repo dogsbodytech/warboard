@@ -65,7 +65,8 @@ if __name__ == '__main__':
             'file': {
                 'level':'DEBUG',
                 'class':'logging.handlers.WatchedFileHandler',
-                'filename': warboard_log
+                'filename': warboard_log,
+                'formatter': 'standard',
             },
         },
         'loggers': {
