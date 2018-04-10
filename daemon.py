@@ -3,10 +3,9 @@ import logging
 import logging.handlers
 import logging.config
 from time import sleep
-from modules.config import warboard_log, warboard_title
 from modules.misc import refresh_time
 from modules.daemon import Daemon
-from modules.config import warboard_pid_path, warboard_user
+from modules.config import warboard_pid_path, warboard_user, warboard_log, warboard_title
 from modules.pingdom import store_pingdom_results
 from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data

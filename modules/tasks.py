@@ -1,5 +1,5 @@
 import sys, getpass
-from config import warboard_user
+from config import warboard_user, warboard_log
 from calendar_functions import store_calendar_items
 from resources import clear_resources_keys
 from resources_list_unreporting_servers import list_unreporting_servers

@@ -2,9 +2,8 @@ from flask import Flask, request, render_template, jsonify
 import logging
 import logging.handlers
 import logging.config
-from modules.config import warboard_log, warboard_title
 from modules.misc import refresh_time
-from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_title, resources_max_name_length, latency_max_name_length
+from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_log, warboard_title, resources_max_name_length, latency_max_name_length
 from modules.pingdom import get_pingdom_results
 from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
