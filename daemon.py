@@ -1,6 +1,7 @@
 import sys, getpass
 import logging
 import logging.handlers
+import logging.config
 from time import sleep
 from modules.config import warboard_log, warboard_title
 from modules.misc import refresh_time
@@ -50,14 +51,29 @@ class WarboardDaemon(Daemon):
             sleep(refresh_time())
 
 if __name__ == '__main__':
-    log_handler = logging.handlers.WatchedFileHandler(warboard_log)
-    formatter = logging.Formatter('%(asctime)s: warboard_daemon.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S')
-    log_handler.setFormatter(formatter)
     logger = logging.getLogger(__name__)
-    logger.addHandler(log_handler)
-    logging.getLogger('requests').setLevel(logging.CRITICAL)
-    logger.setLevel(logging.DEBUG)
-
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': False,  # this fixes the problem
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s: warboard_daemon.%(name)s: %(levelname)s: %(message)s', '%d-%m-%Y %H:%M:%S'
+            },
+        },
+        'handlers': {
+            'default': {
+                'level':'DEBUG',
+                'class':'logging.handlers.WatchedFileHandler(warboard_log)',
+            },
+        },
+        'loggers': {
+            '': {
+                'handlers': ['default'],
+                'level': 'DEBUG',
+                'propagate': True
+            }
+        }
+    })
     if getpass.getuser() != warboard_user:
         print('Please run the warboard with the correct user: '+warboard_user)
         exit(1)
