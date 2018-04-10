@@ -18,6 +18,8 @@ from modules.calendar_functions import get_calendar_items
 # live server without interfering with the live warboard
 
 logger = logging.getLogger(__name__)
+# We are declaring an almost identical dict twice and hardcoding
+# webserver and daemon into the name.  This will need improving
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,  # this fixes the problem
