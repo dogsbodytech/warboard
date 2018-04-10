@@ -188,6 +188,7 @@ def get_tick_data():
             tick_data[tick_host_data['name']] = tick_host_data
 
     tick_data_validity['valid_until'] = time.time() * 1000 + 300000
+    logger.debug('"tick_data is valid until {}'.format(tick_data_validity['valid_until']))
     return tick_data, tick_data_validity
 
 def store_tick_data(tick_data, tick_data_validity):
