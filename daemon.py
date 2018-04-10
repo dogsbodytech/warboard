@@ -62,7 +62,7 @@ if __name__ == '__main__':
             },
         },
         'handlers': {
-            'default': {
+            'file': {
                 'level':'DEBUG',
                 'class':'logging.handlers.WatchedFileHandler',
                 'filename': warboard_log
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         },
         'loggers': {
             '': {
-                'handlers': ['default'],
+                'handlers': ['file'],
                 'level': 'DEBUG',
                 'propagate': True
             },
