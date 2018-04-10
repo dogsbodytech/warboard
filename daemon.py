@@ -22,6 +22,7 @@ class WarboardDaemon(Daemon):
         except Exception as e:
             logger.error('prune_old_keys failed {}'.format(e))
         while True:
+            logger.debug("The daemon is looping")
             try:
                 store_pingdom_results()
             except Exception as e:
