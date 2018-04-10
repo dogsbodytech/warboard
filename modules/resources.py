@@ -118,5 +118,6 @@ def store_resource_data(module_name, data, validity):
     set_data('resources_success:{}'.format(module_name), json.dumps([validity]))
 
 def clear_resources_keys():
+    logger.info('clearing_resources_keys')
     for key in get_all_data('resources:*'):
         delete_data(key)
