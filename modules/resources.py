@@ -97,7 +97,7 @@ def get_resource_results():
 
     resource_results['working_percentage'] = 100 - (( resource_results['failed_accounts'] / resource_results['total_accounts'] ) * 100 )
     resource_results['working_accounts'] = resource_results['total_accounts'] - resource_results['failed_accounts']
-    logger.debug('working_percentage: {}'.format(working_percentage))
+    logger.debug('working_percentage: {}'.format(resource_results[working_percentage]))
     return resource_results
 
 def store_resource_data(module_name, data, validity):
