@@ -31,6 +31,11 @@ def get_alerting_servers(user):
     try:
         assert alerting_servers_json['status'] == 'success', 'Could not get prometheus alert data for {}: Response status was {}'.format(user, alerting_servers_json['status'])
         for alert in alerting_servers_json['data']:
+            # We can ignore alerts that are not for a specific instance
+            if 'instance' not in alert['labels']:
+                continue
+
+            hostname = alert['labels']['instance']
             # catch servers that are down
             if alert['labels']['alertname'] == 'service_down':
                 down_servers.append(hostname)
@@ -43,12 +48,6 @@ def get_alerting_servers(user):
             #
             # We are returning status as an integer so that the most severe alert
             # for each server can easily be grabbed
-
-            # We can ignore alerts that are not for a specific instance
-            if 'instance' not in alert['labels']:
-                continue
-
-            hostname = alert['labels']['instance']
             if alert['labels']['severity'] == 'P4':
                 status = 1
             elif alert['labels']['severity'] == 'P3':
