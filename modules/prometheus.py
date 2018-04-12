@@ -206,6 +206,7 @@ def get_prometheus_data():
                 prometheus_data[user][host]['summary'] = {}
 
             prometheus_data[user][host]['health_status'] = 'blue'
+            prometheus_data[user][host]['orderby'] = 0
 
     # Data should be considerd stale after 5 minutes
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
