@@ -37,7 +37,8 @@ def get_alerting_servers(user):
 
             hostname = alert['labels']['instance']
             # catch servers that are down
-            if alert['labels']['alertname'] == 'service_down':
+            # only check if node exporter is down
+            if alert['labels']['alertname'] == 'service_down' and hostname.endswith(':9100'):
                 down_servers.append(hostname)
                 continue
             # I'm going to make a set of assumptions
@@ -175,9 +176,6 @@ def get_prometheus_data():
                 if alert_level == 2:
                     health_status = 'red'
 
-            if host in down_servers:
-                health_status = 'blue'
-
             prometheus_data[user][host]['health_status'] = health_status
             # Calculate the order by.  If the server isn't reporting every
             # metric flag it as unreporting and log the issue.
@@ -199,6 +197,15 @@ def get_prometheus_data():
         #logger.error('Removing unreporting servers: {}'.format(to_remove), 'info')
         for server_to_remove in to_remove:
             del prometheus_data[user][server_to_remove]
+
+        for host in down_servers:
+            if host not in prometheus_data[user]:
+                prometheus_validity['total_checks'] += 1
+                prometheus_data[user][host] = {}
+                prometheus_data[user][host]['name'] = host.rstrip(':9100')
+                prometheus_data[user][host]['summary'] = {}
+
+            prometheus_data[user][host]['health_status'] = 'blue'
 
     # Data should be considerd stale after 5 minutes
     prometheus_validity['valid_until'] = time.time() * 1000 + 300000
