@@ -16,6 +16,7 @@ from modules.calendar_functions import get_calendar_items
 #
 # Staging flag to store in a different database so testing can be done on the
 # live server without interfering with the live warboard
+#
 
 logger = logging.getLogger(__name__)
 # We are declaring an almost identical dict twice and hardcoding
