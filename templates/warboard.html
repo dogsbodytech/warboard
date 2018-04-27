@@ -16,9 +16,9 @@
   <div class="row">
     <div class="col-sm-4">
     {% if port_results['failed_accounts'] > 0 %}
-      <h1>Pingdom ({{ '{:0<4}'.format('{:0.3g}'.format(port_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+      <h1>Port Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(port_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
     {% else %}
-      <h1>Pingdom</h1>
+      <h1>Port Monitoring</h1>
     {% endif %}
       <div class="progress">
         <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ port_results['down_percent'] }}%"></div>
@@ -50,9 +50,9 @@
     </div>
     <div class="col-sm-5">
     {% if resource_results['working_percentage'] != 100 %}
-      <h1>Resources ({{ '{:0<4}'.format('{:0.3g}'.format(resource_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+      <h1>Resources Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(resource_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
     {% else %}
-      <h1>Resources</h1>
+      <h1>Resources Monitoring</h1>
     {% endif %}
       <div class="progress">
         <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
