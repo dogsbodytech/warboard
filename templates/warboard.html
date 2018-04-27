@@ -15,32 +15,32 @@
   <div class="container-fluid">
   <div class="row">
     <div class="col-sm-4">
-    {% if pingdom_results['failed_pingdom'] > 0 %}
-      <h1>Pingdom ({{ '{:0<4}'.format('{:0.3g}'.format(pingdom_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+    {% if port_results['failed_accounts'] > 0 %}
+      <h1>Pingdom ({{ '{:0<4}'.format('{:0.3g}'.format(port_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
     {% else %}
       <h1>Pingdom</h1>
     {% endif %}
       <div class="progress">
-        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ pingdom_results['down_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ pingdom_results['paused_percent'] }}%"></div>
-        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ pingdom_results['up_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ port_results['down_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ port_results['paused_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ port_results['up_percent'] }}%"></div>
       </div>
       <table class="table">
         <thead>
           <tr class="lead"><th>Name</th><th>Type</th><th>Response</th></tr>
         </thead>
         <tbody>
-        {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
+        {% for check in port_results['checks']|sort(attribute='lastresponsetime')|reverse %}
           {% if check['status'] == 'down' %}
 		        <tr class="danger lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}
 		    {% endfor %}
-		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
+		    {% for check in port_results['checks']|sort(attribute='lastresponsetime')|reverse %}
 		      {% if check['status'] == 'paused' %}
 		        <tr class="info lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}
 		    {% endfor %}
-		    {% for check in pingdom_results['checks']|sort(attribute='lastresponsetime')|reverse %}
+		    {% for check in port_results['checks']|sort(attribute='lastresponsetime')|reverse %}
 		      {% if check['status'] == 'up' %}
 		        <tr class="success lead"><td>{{ check['name']|string()|truncate(latency_max_name_length) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
 		      {% endif %}

@@ -3,6 +3,7 @@ import hmac
 import base64
 import time
 import requests
+import traceback
 from config import rapidspike_credentials
 import logging
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ def rapidspike_api_call(uri, public_key, private_key):
     assert json['status']['messsage'] == 'OK'
     return json
 
-def get_rapidspike_data(public_key, private_key):
+def get_rapidspike_data_for_account(public_key, private_key):
     """
     Input credentials, returns Ping, TCP and HTTP data from RapidSpike
     """
@@ -65,10 +66,34 @@ def get_rapidspike_data(public_key, private_key):
 
     return checks
 
+def get_rapidspike_data():
+    """
+    Get RapidSpike data for all accounts in rapidspike_credentials
+    """
+    rapidspike_data = []
+    rapidspike_validity = {}
+    rapidspike_validity['failed_accounts'] = 0
+    rapidspike_validity['total_accounts'] = 0
+    rapidspike_validity['up'] = 0
+    rapidspike_validity['down'] = 0
+    rapidspike_validity['paused'] = 0
+    for account in rapidspike_credentials:
+        rapidspike_validity['total_accounts'] += 1
+        try:
+            data = get_rapidspike_data_for_account(rapidspike_credentials[account]['public_key'], rapidspike_credentials[account]['private_key'])
+        except:
+            fatal_error = traceback.format_exc()
+            logger.error("Failed to data for RapidSpike account '{}' error:\n{}".format(account, fatal_error) )
+            rapidspike_validity['failed_rapidspike'] += 1
+
+        for check in data:
+            rapidspike_validity[check['status']] += 1
+
+    return rapidspike_data, rapidspike_validity
 
 if __name__ == '__main__':
     import pprint
     import sys
     logging.basicConfig(stream=sys.stdout, level=logging.WARN)
     pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(get_rapidspike_data(rapidspike_credentials['testuser']['public_key'], rapidspike_credentials['testuser']['private_key']))
+    pp.pprint(get_rapidspike_data_for_account(rapidspike_credentials['testuser']['public_key'], rapidspike_credentials['testuser']['private_key']))

@@ -6,8 +6,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 def get_pingdom_data():
-    pingdom_data = {}
+    pingdom_data = []
+    pingdom_validity = {}
+    pingdom_validity['failed_accounts'] = 0
+    pingdom_validity['total_accounts'] = 0
+    pingdom_validity['up'] = 0
+    pingdom_validity['down'] = 0
+    pingdom_validity['paused'] = 0
     for account in pingdom_keys:
+        pingdom_validity['total_accounts'] += 1
         for key in pingdom_keys[account]:
             auth = pingdom_keys[account][key]
             if account in pingdom_multiaccounts:
@@ -17,59 +24,30 @@ def get_pingdom_data():
                 call_headers = {'App-Key': key, 'Authorization': 'Basic '+base64.b64encode(auth)}
             try:
                 r = requests.get(pingdom_endpoint, headers=call_headers, timeout=pingdom_timeout)
-                if r.status_code != requests.codes.ok:
-                    raise requests.exceptions.RequestException
-                else:
-                    pingdom_data[account] = r.text # We need to store this in redis as text and load it as json when we pull it out
+                r.raise_for_status()
             except requests.exceptions.RequestException:
-                pingdom_data[account] = None
-    return(pingdom_data)
+                logger.error('Could not get pingdom data for '+account)
+                pingdom_validity['failed_pingdom'] +=1
+                continue
 
-def store_pingdom_results():
-    failed_pingdom = 0
-    total_accounts = 0
-    pingdom_data = get_pingdom_data() # Get all the pingdom data
-    for account in pingdom_data:
-        if pingdom_data[account] != None: # If we get a don't get a None store it, otherwise log the error
-            set_data('pingdom_'+account, pingdom_data[account])
-        else:
-            failed_pingdom +=1
-            logger.error('Could not get pingdom data for '+account)
-        total_accounts +=1
-    set_data('total_pingdom_accounts', total_accounts)
-    set_data('failed_pingdom', failed_pingdom)
+            for check in r.json()['checks']:
+                check_data = {}
+                check_data['name'] = check['name']
+                check_data['lastresponsetime'] = check.get('lastresponsetime', 0)
+                check_data['type'] = check['type']
+                if check_data['type'] == 'httpcustom':
+                    check_data['type'] = 'custom'
 
-def get_pingdom_results():
-    all_results = []
-    pingdom_results = {}
-    for account in pingdom_keys:
-        result_json = json.loads(get_data('pingdom_'+account)) # Load all the pingdom keys as json and store them in the all_results list
-        all_results.append(result_json['checks'])
-    pingdom_results['pingdom_up'] = 0
-    pingdom_results['pingdom_down'] = 0
-    pingdom_results['pingdom_paused'] = 0
-    pingdom_results['total_pingdom_accounts'] = int(get_data('total_pingdom_accounts'))
-    pingdom_results['failed_pingdom'] = int(get_data('failed_pingdom'))
-    pingdom_results['working_pingdom'] = pingdom_results['total_pingdom_accounts']-pingdom_results['failed_pingdom']
-    pingdom_results['working_percentage'] = int(float(pingdom_results['working_pingdom'])/float(pingdom_results['total_pingdom_accounts'])*100)
-    pingdom_results['checks'] = chain_results(all_results) # Chain all the results together to be returned for the warboard
-    pingdom_results['total_checks'] = len(pingdom_results['checks'])
-    for check in pingdom_results['checks']: # Categorize all the checks as up/down etc
-        check['name'] = check['name'][:40] # Limit pingdom server names to 40 characters to not break the warboard layout
-        if 'lastresponsetime' not in check:
-            check['lastresponsetime'] = 0
-        if check['type'] == 'httpcustom':
-            check['type'] = 'custom'
-        if check['status'] == 'up':
-            pingdom_results['pingdom_up'] +=1
-        elif check['status'] == 'down':
-            pingdom_results['pingdom_down'] +=1
-        elif check['status'] == 'paused':
-            pingdom_results['pingdom_paused'] +=1
-        elif check['status'] == 'unknown':
-            check['status'] = 'paused'
-            check['lastresponsetime'] = 0
-    pingdom_results['down_percent'] = math.ceil(100*float(pingdom_results['pingdom_down'])/float(pingdom_results['total_checks']))
-    pingdom_results['paused_percent'] = math.ceil(100*float(pingdom_results['pingdom_paused'])/float(pingdom_results['total_checks']))
-    pingdom_results['up_percent'] = 100-pingdom_results['down_percent']-pingdom_results['paused_percent']
-    return(pingdom_results)
+                if check['status'] in ('up', 'down', 'paused'):
+                    check_data['status'] = check['status']
+                else:
+                    check_data['status'] = 'paused'
+                    if check['status'] != 'unknown':
+                        logger.warning("Pingdom returned an unknown unknown status '{}' for '{}'".format(check['status'], check_data['name']))
+
+                pingdom_validity[check_data['status']] += 1
+                pingdom_data.append(check_data)
+
+    # Data should be considerd stale after 5 minutes
+    pingdom_validity['valid_until'] = time.time() * 1000 + 300000
+    return pingdom_data, pingdom_validity
