@@ -1,6 +1,6 @@
-import requests, base64, math, json
-from redis_functions import set_data, get_data
-from misc import chain_results
+import requests
+import base64
+import time
 from config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 import logging
 logger = logging.getLogger(__name__)
