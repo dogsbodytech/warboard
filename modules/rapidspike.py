@@ -89,6 +89,8 @@ def get_rapidspike_data():
         for check in data:
             rapidspike_validity[check['status']] += 1
 
+    # Data should be considerd stale after 5 minutes
+    rapidspike_validity['valid_until'] = time.time() * 1000 + 300000
     return rapidspike_data, rapidspike_validity
 
 if __name__ == '__main__':
