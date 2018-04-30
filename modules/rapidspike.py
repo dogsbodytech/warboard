@@ -61,7 +61,14 @@ def get_rapidspike_data_for_account(public_key, private_key):
             # Get the last response
             check_data['lastresponsetime'] = check['stats']['latest_response']
             # Check the status, use blue (paused) for all unknown statuses
-            check_data['status'] = status_mapping.get(check['stats']['status'], 'paused')
+            if check['stats']['status'] in status_mapping:
+                check_data['status'] = status_mapping[check['stats']['status']]
+            else:
+                check_data['status'] = 'paused'
+                # We really need to log this rather than blindly set
+                # everything blue
+                logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['status'], check_data['name']))
+
             checks.append(check_data)
 
     return checks

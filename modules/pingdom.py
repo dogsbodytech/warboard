@@ -42,7 +42,7 @@ def get_pingdom_data():
                     check_data['status'] = check['status']
                 else:
                     check_data['status'] = 'paused'
-                    if check['status'] != 'unknown':
+                    if check['status'] != 'unknown' or 'unconfirmed_down':
                         logger.warning("Pingdom returned an unknown unknown status '{}' for '{}'".format(check['status'], check_data['name']))
 
                 pingdom_validity[check_data['status']] += 1
