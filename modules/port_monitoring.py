@@ -45,7 +45,7 @@ def get_port_monitoring_results():
     # This should save a little time and avoid dividing by zero
     if port_monitoring_results['total_checks']:
         port_monitoring_results['down_percent'] = (port_monitoring_results['down'] / port_monitoring_results['total_checks']) * 100
-        port_monitoring_results['paused_percent'] = (port_monitoring_results['up'] / port_monitoring_results['total_checks']) * 100
+        port_monitoring_results['paused_percent'] = (port_monitoring_results['paused'] / port_monitoring_results['total_checks']) * 100
         # Artificially forcing percentages to add up to 100%
         port_monitoring_results['up_percent'] = 100 - (port_monitoring_results['down_percent'] + port_monitoring_results['paused_percent'])
         port_monitoring_results['working_accounts'] = port_monitoring_results['total_accounts'] - port_monitoring_results['failed_accounts']
