@@ -87,7 +87,7 @@ def get_rapidspike_data():
             rapidspike_validity['failed_accounts'] += 1
 
         for check in data:
-            rapidspike_data.append(data)
+            rapidspike_data.append(check)
             rapidspike_validity[check['status']] += 1
 
     # Data should be considerd stale after 5 minutes
