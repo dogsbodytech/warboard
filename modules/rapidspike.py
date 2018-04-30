@@ -59,7 +59,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
             # Use custom type field falling back to type
             check_data['type'] = check['monitor'][monitor_types[monitor].get('type', 'type')]
             # Get the last response
-            check_data['latest_response'] = check['stats']['latest_response']
+            check_data['lastresponsetime'] = check['stats']['latest_response']
             # Check the status, use blue (paused) for all unknown statuses
             check_data['status'] = status_mapping.get(check['stats']['status'], 'paused')
             checks.append(check_data)
