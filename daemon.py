@@ -7,7 +7,7 @@ from modules.misc import refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user, warboard_log, warboard_title
 from modules.pingdom import get_pingdom_data
-from modules.rappidspike import get_rapidspike_data
+from modules.rapidspike import get_rapidspike_data
 from modules.port_monitoring import store_port_monitoring_results
 from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
