@@ -84,7 +84,7 @@ def get_rapidspike_data():
         except:
             fatal_error = traceback.format_exc()
             logger.error("Failed to data for RapidSpike account '{}' error:\n{}".format(account, fatal_error) )
-            rapidspike_validity['failed_rapidspike'] += 1
+            rapidspike_validity['failed_accounts'] += 1
 
         for check in data:
             rapidspike_validity[check['status']] += 1
