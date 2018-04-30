@@ -7,7 +7,7 @@ from modules.misc import refresh_time
 from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user, warboard_log, warboard_title
 from modules.pingdom import get_pingdom_data
-from modules.rappidspike import get get_rapidspike_data
+from modules.rappidspike import get_rapidspike_data
 from modules.port_monitoring import store_port_monitoring_results
 from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
@@ -26,11 +26,11 @@ class WarboardDaemon(Daemon):
         while True:
             logger.debug("The daemon is looping")
             try:
-                store_port_monitoring_results(*get_rapidspike_data())
+                store_port_monitoring_results('rapidspike', *get_rapidspike_data())
             except Exception as e:
                 logger.error('The following error occured whilst trying to store rapidspike_data {}'.format(e))
             try:
-                store_port_monitoring_results(*get_pingdom_data())
+                store_port_monitoring_results('pingdom', *get_pingdom_data())
             except Exception as e:
                 logger.error('The following error occured whilst trying to store pingdom_data {}'.format(e))
             try:
