@@ -23,6 +23,12 @@ pingdom_keys = {'account2': {'api_key': 'account2@example.org:password'},
                 'account4': {'api_key': 'account3@example.org:password'},
                 'account1': {'api_key_admin': 'adminaccount@example.org:password'}}
 
+# RapidSpike - intended to work with multiple accounts but not yet tested with more than one
+rapidspike_credentials = {  '$name': {  'public_key': '$public_key',
+                                        'private_key': '$private_key'},
+                            '$name2': { 'public_key': '$public_key2',
+                                        'private_key': '$private_key2'}}
+
 # NewRelic Servers details
 newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
 newrelic_servers_timeout = 10 # How long the warboard should wait on the newrelic API

@@ -4,7 +4,7 @@ import logging.handlers
 import logging.config
 from modules.misc import refresh_time
 from modules.config import sirportly_users, sirportly_user_order, warboard_stats_key, warboard_log, warboard_title, resources_max_name_length, latency_max_name_length
-from modules.pingdom import get_pingdom_results
+from modules.port_monitoring import get_port_monitoring_results
 from modules.resources import get_resource_results
 from modules.sirportly import get_sirportly_results
 from modules.calendar_functions import get_calendar_items
@@ -59,7 +59,7 @@ def warboard():
     return(render_template('warboard.html',
         title=warboard_title,
         refresh_time=refresh_time(),
-        pingdom_results=get_pingdom_results(),
+        port_results=get_port_monitoring_results(),
         latency_max_name_length=latency_max_name_length,
         resource_results=get_resource_results(),
         resources_max_name_length=resources_max_name_length,
@@ -75,19 +75,19 @@ def stats():
             message='API Key required')), 401
     if request.form['key'] == warboard_stats_key:
         resource_results = get_resource_results()
-        pd_results = get_pingdom_results()
+        port_results = get_port_monitoring_results()
         sp_results = get_sirportly_results()
         # This breaks backwards compatability
         return(jsonify(status='ok',
             resolved_tickets=sp_results['resolved_tickets'],
             unassigned_tickets=sp_results['unassigned_tickets'],
-            latency_checks_total=pd_results['total_checks'],
-            latency_checks_up=pd_results['pingdom_up'],
-            latency_checks_down=pd_results['pingdom_down'],
-            latency_checks_paused=pd_results['pingdom_paused'],
-            latency_accounts_total=pd_results['total_pingdom_accounts'],
-            latency_accounts_failed=pd_results['failed_pingdom'],
-            latency_accounts_working=pd_results['working_pingdom'],
+            latency_checks_total=port_results['total_checks'],
+            latency_checks_up=port_results['up'],
+            latency_checks_down=port_results['down'],
+            latency_checks_paused=port_results['paused'],
+            latency_accounts_total=port_results['total_accounts'],
+            latency_accounts_failed=port_results['failed_accounts'],
+            latency_accounts_working=port_results['working_accounts'],
             resource_checks_total=resource_results['total_checks'],
             resource_accounts_total=resource_results['total_accounts'],
             resource_accounts_failed=resource_results['failed_accounts'],

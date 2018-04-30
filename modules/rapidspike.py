@@ -3,6 +3,7 @@ import hmac
 import base64
 import time
 import requests
+import traceback
 from config import rapidspike_credentials
 import logging
 logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ def rapidspike_api_call(uri, public_key, private_key):
     now = int(time.time())
     # https://docs.rapidspike.com/system-api/authentication.html
     signature = base64.b64encode(hmac.new(private_key.encode(), '{}\n{}'.format(public_key, now).encode(), hashlib.sha1).digest())
-    r = requests.get('https://api.rapidspike.com{}'.format(uri), params={'public_key': public_key, 'time': now, 'signature': signature}, timeout=10)
+    r = requests.get('https://api.rapidspike.com{}'.format(uri), params={'public_key': public_key, 'time': now, 'signature': signature}, timeout=20)
     logging.debug(r.text)
     r.raise_for_status()
     json = r.json()
@@ -26,7 +27,7 @@ def rapidspike_api_call(uri, public_key, private_key):
     assert json['status']['messsage'] == 'OK'
     return json
 
-def get_rapidspike_data(public_key, private_key):
+def get_rapidspike_data_for_account(public_key, private_key):
     """
     Input credentials, returns Ping, TCP and HTTP data from RapidSpike
     """
@@ -38,7 +39,8 @@ def get_rapidspike_data(public_key, private_key):
                                     'name': 'website_domain'}}
     # Mapping RapidSpike statuses to the ones used by the Warboard, as
     # initially set by Pingdom
-    status_mapping = { 'passing': 'up'}
+    status_mapping = {  'passing': 'up',
+                        'failing': 'down'}
     checks = []
     for monitor in monitor_types:
         # I'm not sure if I love passing things through in the url and
@@ -58,17 +60,52 @@ def get_rapidspike_data(public_key, private_key):
             # Use custom type field falling back to type
             check_data['type'] = check['monitor'][monitor_types[monitor].get('type', 'type')]
             # Get the last response
-            check_data['latest_response'] = check['stats']['latest_response']
+            check_data['lastresponsetime'] = check['stats']['latest_response']
             # Check the status, use blue (paused) for all unknown statuses
-            check_data['status'] = status_mapping.get(check['stats']['status'], 'paused')
+            if check['stats']['status'] in status_mapping:
+                check_data['status'] = status_mapping[check['stats']['status']]
+            else:
+                check_data['status'] = 'paused'
+                # We really need to log this rather than blindly set
+                # everything blue
+                logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['stats']['status'], check_data['name']))
+
             checks.append(check_data)
 
     return checks
 
+def get_rapidspike_data():
+    """
+    Get RapidSpike data for all accounts in rapidspike_credentials
+    """
+    rapidspike_data = []
+    rapidspike_validity = {}
+    rapidspike_validity['failed_accounts'] = 0
+    rapidspike_validity['total_accounts'] = 0
+    rapidspike_validity['up'] = 0
+    rapidspike_validity['down'] = 0
+    rapidspike_validity['paused'] = 0
+    for account in rapidspike_credentials:
+        rapidspike_validity['total_accounts'] += 1
+        try:
+            data = get_rapidspike_data_for_account(rapidspike_credentials[account]['public_key'], rapidspike_credentials[account]['private_key'])
+        except:
+            fatal_error = traceback.format_exc()
+            logger.error("Failed to data for RapidSpike account '{}' error:\n{}".format(account, fatal_error) )
+            rapidspike_validity['failed_accounts'] += 1
+            continue
+
+        for check in data:
+            rapidspike_data.append(check)
+            rapidspike_validity[check['status']] += 1
+
+    # Data should be considerd stale after 5 minutes
+    rapidspike_validity['valid_until'] = time.time() * 1000 + 300000
+    return rapidspike_data, rapidspike_validity
 
 if __name__ == '__main__':
     import pprint
     import sys
     logging.basicConfig(stream=sys.stdout, level=logging.WARN)
     pp = pprint.PrettyPrinter(indent=4)
-    pp.pprint(get_rapidspike_data(rapidspike_credentials['testuser']['public_key'], rapidspike_credentials['testuser']['private_key']))
+    pp.pprint(get_rapidspike_data_for_account(rapidspike_credentials['testuser']['public_key'], rapidspike_credentials['testuser']['private_key']))
