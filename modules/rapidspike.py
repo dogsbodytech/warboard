@@ -70,6 +70,9 @@ def get_rapidspike_data_for_account(public_key, private_key):
                 # everything blue
                 logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['stats']['status'], check_data['name']))
 
+            if check['stats']['paused']:
+                check_data['status'] = 'paused'
+
             checks.append(check_data)
 
     return checks
