@@ -67,7 +67,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
                 check_data['status'] = 'paused'
                 # We really need to log this rather than blindly set
                 # everything blue
-                logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['status'], check_data['name']))
+                logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['stats']['status'], check_data['name']))
 
             checks.append(check_data)
 
@@ -92,6 +92,7 @@ def get_rapidspike_data():
             fatal_error = traceback.format_exc()
             logger.error("Failed to data for RapidSpike account '{}' error:\n{}".format(account, fatal_error) )
             rapidspike_validity['failed_accounts'] += 1
+            continue
 
         for check in data:
             rapidspike_data.append(check)
