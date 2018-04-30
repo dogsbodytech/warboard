@@ -20,7 +20,7 @@ def get_port_monitoring_results():
     port_monitoring_results['down_percent'] = 0
     port_monitoring_results['paused_percent'] = 0
     for module in get_all_data('port_monitoring:*'):
-        module_json = get_data('module')
+        module_json = get_data(module)
         module_checks = json.loads(module_json)[0]
         port_monitoring_results['checks'] += module_checks
 
