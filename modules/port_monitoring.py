@@ -25,7 +25,7 @@ def get_port_monitoring_results():
         port_monitoring_results['checks'] += module_checks
 
     for module in get_all_data('port_monitoring_success:*'):
-        module_json = get_data('module')
+        module_json = get_data(module)
         module_success = json.loads(module_json)[0]
         port_monitoring_results['up'] += module_success['up']
         port_monitoring_results['down'] += module_success['down']
