@@ -9,6 +9,7 @@ import logging.config
 
 def hourly_tasks():
     store_calendar_items()
+    logger.info('The following servers are unreporting: {}'.format(list_unreporting_servers()))
 
 def daily_tasks():
     return
