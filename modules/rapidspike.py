@@ -33,6 +33,8 @@ def get_rapidspike_data_for_account(public_key, private_key):
     """
     # Configuration options for each monitor type to avoid running an
     # almost identical for loop for each one.
+    # To be accessed with a default fall back so that only configuration
+    # options that differ from the default need to be supplied.
     monitor_types = {   'ping': {   },
                         'tcp':  {   'type': 'label'},
                         'http': {   'additional_path_to_data': 'http_monitors',
@@ -55,23 +57,23 @@ def get_rapidspike_data_for_account(public_key, private_key):
         for check in data:
             # Currently erroring on no website domain
             check_data = {}
+            # Check the status, use blue (paused) for all unknown statuses
+            check_data['status'] = 'paused'
             # Use custom name field falling back to asset_title
             check_data['name'] = check['monitor'][monitor_types[monitor].get('name', 'asset_title')]
             # Use custom type field falling back to type
             check_data['type'] = check['monitor'][monitor_types[monitor].get('type', 'type')]
             # Get the last response
-            check_data['lastresponsetime'] = check['stats']['latest_response']
-            # Check the status, use blue (paused) for all unknown statuses
-            if check['stats']['status'] in status_mapping:
-                check_data['status'] = status_mapping[check['stats']['status']]
-            else:
-                check_data['status'] = 'paused'
-                # We really need to log this rather than blindly set
-                # everything blue
-                logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['stats']['status'], check_data['name']))
-
-            if check['monitor']['paused']:
-                check_data['status'] = 'paused'
+            check_data['lastresponsetime'] = int(check['stats']['latest_response'])
+            # If the monitor is paused then we can skip the rest of this
+            # section
+            if not check['monitor']['paused']:
+                # We need to log unrecognised statuses so they can be
+                # categorised correctly rather than all being blue
+                if check['stats']['status'] in status_mapping:
+                    check_data['status'] = status_mapping[check['stats']['status']]
+                else:
+                    logger.warning("RapidSpike returned an unknown unknown status '{}' for '{}'".format(check['stats']['status'], check_data['name']))
 
             checks.append(check_data)
 
