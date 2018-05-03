@@ -190,7 +190,11 @@ def get_prometheus_data():
                 # run time error due to removing items from a dictionary
                 # we are looping through
                 to_remove.append(host)
-                logger.warning('{} only returned data for the following metrics {}'.format(host, metrics))
+                # If a server is transient this is INFO otherwise WARN
+                if prometheus_data[user][host].get('volatile') == True:
+                    logger.info('Volatile host {} only returned data for the following metrics {}'.format(host, metrics))
+                else:
+                    logger.warning('{} only returned data for the following metrics {}'.format(host, metrics))
             else:
                 prometheus_data[user][host]['orderby'] = max(values)
 
