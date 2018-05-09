@@ -42,7 +42,8 @@ def get_rapidspike_data_for_account(public_key, private_key):
     # Mapping RapidSpike statuses to the ones used by the Warboard, as
     # initially set by Pingdom
     status_mapping = {  'passing': 'up',
-                        'failing': 'down'}
+                        'failing': 'down',
+                        'pending': 'paused'}
     checks = []
     for monitor in monitor_types:
         # I'm not sure if I love passing things through in the url and
