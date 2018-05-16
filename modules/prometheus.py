@@ -93,14 +93,14 @@ def get_prometheus_data():
     # We are using irate over rate as it seems more suitable for the speed
     # cpu usage will be changing at:
     # https://prometheus.io/docs/prometheus/latest/querying/functions/
-    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance)) * 100'
+    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{})) * 100'
     queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
     # We want all data for each instance
     # We are only interested in the disk with greatest disk io
     # We are calculating disk io for each disk in the same way as cpu
     # The /10 is to convert to seconds (/1000) and then to a percentage
     # (*1000)
-    queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device)) by (instance))/10'
+    queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{})) by (instance{}))/10'
     for user in prometheus_credentials:
         alerting_servers = {}
         down_servers = []
@@ -113,7 +113,22 @@ def get_prometheus_data():
         # This is configured in the config file as different set-ups may
         # have different filesystems to monitor.  If no argument is supplied
         # all of the disks will be monitored for each instance.
-        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance)'.format(prometheus_credentials[user].get('fullest_disk_tags', ''))
+
+        # In order to pull the intermittent_tag through from any queries
+        # it is supplied to we need to specify it when grouping by
+        # things, hence this farily dirty hack.
+        # If we need to change this again it's probably worth starting
+        # over on the intermittent_tag implementation since it is a bit
+        # of an after thought.
+        group_by_to_preserve_intermittent_tag = ''
+        if 'intermittent_tag' in prometheus_credentials[user]:
+            group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
+
+        # We need to keep the {} to be substituted into next
+        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance{1})'.format(prometheus_credentials[user].get('fullest_disk_tags', ''), '{}')
+        for query in queries:
+            queries[query] = queries[query].format(group_by_to_preserve_intermittent_tag)
+
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
         except Exception as e:
