@@ -82,28 +82,27 @@ def get_prometheus_data():
     prometheus_validity['failed_accounts'] = 0
     prometheus_validity['total_accounts'] = 0
     prometheus_validity['total_checks'] = 0
-
-    queries = {}
-    # Node cpu is a number of cpu cycles so we need to look at the rate
-    # to calculate the cpu usage percentage, we previously used the last 1
-    # minute but have changed it to 10 to avoid missing data.  If having
-    # the very latest data is crucial we could get the last minute and the
-    # last 10 minutes and then use the last minute where possible, for now this
-    # doesn't seem necessary
-    # We are using irate over rate as it seems more suitable for the speed
-    # cpu usage will be changing at:
-    # https://prometheus.io/docs/prometheus/latest/querying/functions/
-    queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{})) * 100'
-    queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
-    # We want all data for each instance
-    # We are only interested in the disk with greatest disk io
-    # We are calculating disk io for each disk in the same way as cpu
-    # The /10 is to convert to seconds (/1000) and then to a percentage
-    # (*1000)
-    queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{})) by (instance{}))/10'
     for user in prometheus_credentials:
         alerting_servers = {}
         down_servers = []
+        queries = {}
+        # Node cpu is a number of cpu cycles so we need to look at the rate
+        # to calculate the cpu usage percentage, we previously used the last 1
+        # minute but have changed it to 10 to avoid missing data.  If having
+        # the very latest data is crucial we could get the last minute and the
+        # last 10 minutes and then use the last minute where possible, for now this
+        # doesn't seem necessary
+        # We are using irate over rate as it seems more suitable for the speed
+        # cpu usage will be changing at:
+        # https://prometheus.io/docs/prometheus/latest/querying/functions/
+        queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{})) * 100'
+        queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
+        # We want all data for each instance
+        # We are only interested in the disk with greatest disk io
+        # We are calculating disk io for each disk in the same way as cpu
+        # The /10 is to convert to seconds (/1000) and then to a percentage
+        # (*1000)
+        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{})) by (instance{}))/10'
         # We need want to exclude temporary file systems, docker and rootfs as it
         # is reported as well as the device that it is mounted on
         # Including just ext4 and vfat covers all the systems we currently want
@@ -127,7 +126,10 @@ def get_prometheus_data():
         # We need to keep the {} to be substituted into next
         queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance{1})'.format(prometheus_credentials[user].get('fullest_disk_tags', ''), '{}')
         for query in queries:
-            queries[query] = queries[query].format(group_by_to_preserve_intermittent_tag)
+            try:
+                queries[query] = queries[query].format(group_by_to_preserve_intermittent_tag)
+            except:
+                logger.debug(query)
 
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
