@@ -95,7 +95,7 @@ def get_prometheus_data():
         # We are using irate over rate as it seems more suitable for the speed
         # cpu usage will be changing at:
         # https://prometheus.io/docs/prometheus/latest/querying/functions/
-        queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{})) * 100'
+        queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{0})) * 100'
         queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
         # We want all data for each instance
         # We are only interested in the disk with greatest disk io
@@ -124,7 +124,7 @@ def get_prometheus_data():
             group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
 
         # We need to keep the {} to be substituted into next
-        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance{1})'.format(prometheus_credentials[user].get('fullest_disk_tags', ''), '{}')
+        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance{1})'.format(prometheus_credentials[user].get('fullest_disk_tags', ''), '{0}')
         for query in queries:
             try:
                 queries[query] = queries[query].format(group_by_to_preserve_intermittent_tag)
