@@ -123,7 +123,7 @@ def get_prometheus_data():
         if 'intermittent_tag' in prometheus_credentials[user]:
             group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
 
-        queries['fullest_disk'] = 'max(((node_filesystem_size{group_intermittent_tag} - node_filesystem_free{group_intermittent_tag}) / node_filesystem_size{group_intermittent_tag}) * 100) by (instance{fullest_disk_sub})'
+        queries['fullest_disk'] = 'max(((node_filesystem_size{fullest_disk_sub} - node_filesystem_free{fullest_disk_sub}) / node_filesystem_size{fullest_disk_sub}) * 100) by (instance{group_intermittent_tag})'
         for query in queries:
             queries[query] = queries[query].format(group_intermittent_tag = group_by_to_preserve_intermittent_tag, cpu_mode = '{mode="idle"}', fullest_disk_sub = prometheus_credentials[user].get('fullest_disk_tags', ''))
 
