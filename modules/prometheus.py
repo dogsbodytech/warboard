@@ -112,19 +112,20 @@ def get_prometheus_data():
         # This is configured in the config file as different set-ups may
         # have different filesystems to monitor.  If no argument is supplied
         # all of the disks will be monitored for each instance.
+        queries['fullest_disk'] = 'max(((node_filesystem_size{fullest_disk_sub} - node_filesystem_free{fullest_disk_sub}) / node_filesystem_size{fullest_disk_sub}) * 100) by (instance{group_intermittent_tag})'
 
-        # In order to pull the intermittent_tag through from any queries
-        # it is supplied to we need to specify it when grouping by
-        # things, hence this farily dirty hack.
-        # If we need to change this again it's probably worth starting
-        # over on the intermittent_tag implementation since it is a bit
-        # of an after thought.
+        # We will either sub in a blank string or the intermittent_tag
+        # depending on if one is present
         group_by_to_preserve_intermittent_tag = ''
         if 'intermittent_tag' in prometheus_credentials[user]:
             group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
 
-        queries['fullest_disk'] = 'max(((node_filesystem_size{fullest_disk_sub} - node_filesystem_free{fullest_disk_sub}) / node_filesystem_size{fullest_disk_sub}) * 100) by (instance{group_intermittent_tag})'
         for query in queries:
+            # CPU mode it necessary to avoid it being counted as a key
+            # fullest_disk_sub needs to be substituted here or after
+            # or it will be counted as a key
+            # We are trying to substitute the intermittent_tag into
+            # every group by in order to keep the tag
             queries[query] = queries[query].format(group_intermittent_tag = group_by_to_preserve_intermittent_tag, cpu_mode = '{mode="idle"}', fullest_disk_sub = prometheus_credentials[user].get('fullest_disk_tags', ''))
 
         try:
