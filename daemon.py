@@ -22,37 +22,37 @@ class WarboardDaemon(Daemon):
         try:
             prune_old_keys()
         except Exception as e:
-            logger.error('prune_old_keys failed {}'.format(e))
+            logger.exception(e)
         while True:
             logger.debug("The daemon is looping")
             try:
                 store_port_monitoring_results('rapidspike', *get_rapidspike_data())
             except Exception as e:
-                logger.error('The following error occured whilst trying to store rapidspike_data {}'.format(e))
+                logger.exception(e)
             try:
                 store_port_monitoring_results('pingdom', *get_pingdom_data())
             except Exception as e:
-                logger.error('The following error occured whilst trying to store pingdom_data {}'.format(e))
+                logger.exception(e)
             try:
                 store_newrelic_servers_data(*get_newrelic_servers_data())
             except Exception as e:
-                logger.error('store_newrelic_servers_data failed {}'.format(e))
+                logger.exception(e)
             try:
                 store_newrelic_infra_data(*get_newrelic_infra_data())
             except Exception as e:
-                logger.error('store_newrelic_infra_data {}'.format(e))
+                logger.exception(e)
             try:
                 store_tick_data(*get_tick_data())
             except Exception as e:
-                logger.error('store_tick_data {}'.format(e))
+                logger.exception(e)
             try:
                 store_resource_data('prometheus', *get_prometheus_data())
             except Exception as e:
-                logger.error('The following error occured whilst trying to store prometheus data: {}'.format(e))
+                logger.exception(e)
             try:
                 store_sirportly_results()
             except Exception as e:
-                logger.error('store_sirportly_results {}'.format(e))
+                logger.exception(e)
             sleep(refresh_time())
 
 if __name__ == '__main__':

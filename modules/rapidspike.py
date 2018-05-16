@@ -3,7 +3,6 @@ import hmac
 import base64
 import time
 import requests
-import traceback
 from config import rapidspike_credentials
 import logging
 logger = logging.getLogger(__name__)
@@ -95,9 +94,9 @@ def get_rapidspike_data():
         rapidspike_validity['total_accounts'] += 1
         try:
             data = get_rapidspike_data_for_account(rapidspike_credentials[account]['public_key'], rapidspike_credentials[account]['private_key'])
-        except:
-            fatal_error = traceback.format_exc()
-            logger.error("Failed to data for RapidSpike account '{}' error:\n{}".format(account, fatal_error) )
+        except Exception as e:
+            logger.error("Failed to data for RapidSpike account '{}'".format(account))
+            logger.exception(e)
             rapidspike_validity['failed_accounts'] += 1
             continue
 
