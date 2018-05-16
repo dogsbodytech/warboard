@@ -95,14 +95,14 @@ def get_prometheus_data():
         # We are using irate over rate as it seems more suitable for the speed
         # cpu usage will be changing at:
         # https://prometheus.io/docs/prometheus/latest/querying/functions/
-        queries['cpu'] = '(1 - avg(irate(node_cpu{mode="idle"}[10m])) by (instance{0})) * 100'
+        queries['cpu'] = '(1 - avg(irate(node_cpu{cpu_mode}[10m])) by (instance{group_intermittent_tag})) * 100'
         queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
         # We want all data for each instance
         # We are only interested in the disk with greatest disk io
         # We are calculating disk io for each disk in the same way as cpu
         # The /10 is to convert to seconds (/1000) and then to a percentage
         # (*1000)
-        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{0})) by (instance{0}))/10'
+        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{group_intermittent_tag})) by (instance{group_intermittent_tag}))/10'
         # We need want to exclude temporary file systems, docker and rootfs as it
         # is reported as well as the device that it is mounted on
         # Including just ext4 and vfat covers all the systems we currently want
@@ -123,14 +123,11 @@ def get_prometheus_data():
         if 'intermittent_tag' in prometheus_credentials[user]:
             group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
 
-        # We need to keep the {} to be substituted into next
-        queries['fullest_disk'] = 'max(((node_filesystem_size{0} - node_filesystem_free{0}) / node_filesystem_size{0}) * 100) by (instance{1})'.format(prometheus_credentials[user].get('fullest_disk_tags', ''), '{0}')
+        queries['fullest_disk'] = 'max(((node_filesystem_size{group_intermittent_tag} - node_filesystem_free{group_intermittent_tag}) / node_filesystem_size{group_intermittent_tag}) * 100) by (instance{})'
         for query in queries:
-            try:
-                queries[query] = queries[query].format(group_by_to_preserve_intermittent_tag)
-            except:
-                logger.debug(query)
+            queries[query] = queries[query].format(group_intermittent_tag = group_by_to_preserve_intermittent_tag, cpu_mode = '{mode="idle"}')
 
+        queries['fullest_disk'] = queries['fullest_disk'].format(prometheus_credentials[user].get('fullest_disk_tags', ''))
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
         except Exception as e:
