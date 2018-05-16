@@ -102,7 +102,7 @@ def get_prometheus_data():
         # We are calculating disk io for each disk in the same way as cpu
         # The /10 is to convert to seconds (/1000) and then to a percentage
         # (*1000)
-        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{})) by (instance{}))/10'
+        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{0})) by (instance{0}))/10'
         # We need want to exclude temporary file systems, docker and rootfs as it
         # is reported as well as the device that it is mounted on
         # Including just ext4 and vfat covers all the systems we currently want
