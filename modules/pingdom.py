@@ -27,7 +27,7 @@ def get_pingdom_data():
                 r.raise_for_status()
             except requests.exceptions.RequestException:
                 logger.error('Could not get pingdom data for '+account)
-                pingdom_validity['failed_pingdom'] +=1
+                pingdom_validity['failed_accounts'] +=1
                 continue
 
             for check in r.json()['checks']:
