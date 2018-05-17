@@ -173,7 +173,7 @@ def get_prometheus_data():
                     prometheus_data[user][hostname]['summary'] = {}
 
                 if 'intermittent_tag' in prometheus_credentials[user]:
-                    if instance_data['metric'].get(prometheus_credentials[user]['intermittent_tag'], False) == prometheus_credentials[user].get('intermittent_true_value', True):
+                    if instance_data['metric'].get(prometheus_credentials[user]['intermittent_tag']) in prometheus_credentials[user].get('intermittent_true_values', []):
                         prometheus_data[user][hostname]['volatile'] = True
 
                 prometheus_data[user][hostname]['summary'][metric] = float(instance_data['value'][1])
