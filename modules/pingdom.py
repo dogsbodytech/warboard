@@ -25,8 +25,8 @@ def get_pingdom_data():
             try:
                 r = requests.get(pingdom_endpoint, headers=call_headers, timeout=pingdom_timeout)
                 r.raise_for_status()
-            except requests.exceptions.RequestException:
-                logger.error('Could not get pingdom data for '+account)
+            except requests.exceptions.RequestException as e:
+                logger.error("Could not get pingdom data for '{}' the following error occurred: {}".format(account, e))
                 pingdom_validity['failed_accounts'] +=1
                 continue
 
