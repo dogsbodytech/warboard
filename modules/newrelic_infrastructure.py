@@ -91,15 +91,15 @@ def get_newrelic_infra_data():
                 except ValueError as e:
                     logger.error("Could not convert memory percentage to float, value '{}' Error: {}".format(memory_percentage, e))
                 try:
-                infrastructure_host['summary']['disk_io'] = float(account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'])
+                    infrastructure_host['summary']['disk_io'] = float(account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'])
                 except ValueError as e:
                     logger.error("Could not convert disk io percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'], e))
                 try:
-                infrastructure_host['summary']['fullest_disk'] = float(account_infra_data['results'][0]['events'][num]['diskUsedPercent'])
+                    infrastructure_host['summary']['fullest_disk'] = float(account_infra_data['results'][0]['events'][num]['diskUsedPercent'])
                 except ValueError as e:
                     logger.error("Could not convert disk usage percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['diskUsedPercent'], e))
                 try:
-                infrastructure_host['summary']['cpu'] = float(account_infra_data['results'][0]['events'][num]['cpuPercent'])
+                    infrastructure_host['summary']['cpu'] = float(account_infra_data['results'][0]['events'][num]['cpuPercent'])
                 except ValueError as e:
                     logger.error("Could not convert cpu percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['cpuPercent'], e))
 
