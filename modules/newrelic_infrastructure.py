@@ -81,10 +81,27 @@ def get_newrelic_infra_data():
                     memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
 
                 infrastructure_host['summary'] = {
-                    'memory': memory_percentage,
-                    'disk_io': account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'],
-                    'fullest_disk': account_infra_data['results'][0]['events'][num]['diskUsedPercent'],
-                    'cpu': account_infra_data['results'][0]['events'][num]['cpuPercent'] }
+                    'memory': 0.0,
+                    'disk_io': 0.0,
+                    'fullest_disk': 0.0,
+                    'cpu': 0.0}
+
+                try:
+                    infrastructure_host['summary']['memory'] = float(memory_percentage)
+                except ValueError as e:
+                    logger.error("Could not convert memory percentage to float, value '{}' Error: {}".format(memory_percentage, e))
+                try:
+                infrastructure_host['summary']['disk_io'] = float(account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'])
+                except ValueError as e:
+                    logger.error("Could not convert disk io percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['diskUtilizationPercent'], e))
+                try:
+                infrastructure_host['summary']['fullest_disk'] = float(account_infra_data['results'][0]['events'][num]['diskUsedPercent'])
+                except ValueError as e:
+                    logger.error("Could not convert disk usage percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['diskUsedPercent'], e))
+                try:
+                infrastructure_host['summary']['cpu'] = float(account_infra_data['results'][0]['events'][num]['cpuPercent'])
+                except ValueError as e:
+                    logger.error("Could not convert cpu percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['cpuPercent'], e))
 
                 # Setting the orderby using the same field as newrelic servers
                 infrastructure_host['orderby'] = max(
