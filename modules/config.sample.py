@@ -77,6 +77,9 @@ influx_timeout = 10
 influx_database_batch_size = 50
 
 # Prometheus details
+# There are also some optional params, look in the prometheus module if
+# you wish to use any of these as they are more likely to have backwards
+# compatability broken when they are "improved"
 prometheus_credentials = {  'user1': {   'username': '',
                                         'password': '',
                                         'url': '',
