@@ -132,7 +132,9 @@ def get_newrelic_infra_data():
                     # currently checking was the cause of the violation we are
                     # currently looping through
                     if infrastructure_host['name'] in violation['entity']['name']:
-                        if violation['priority'] == 'Warning':
+                        if violation['condition_name'] == 'Host Not Reporting':
+                            violation_level = 3
+                        elif violation['priority'] == 'Warning':
                             if violation_level < 1:
                                 violation_level = 1
                         elif violation['priority'] == 'Critical':
@@ -147,6 +149,8 @@ def get_newrelic_infra_data():
                     infrastructure_host['health_status'] = 'orange'
                 elif violation_level == 2:
                     infrastructure_host['health_status'] = 'red'
+                elif violation_level == 3:
+                    infrastructure_host['health_status'] = 'blue'
 
             newrelic_infra_data[infrastructure_host['name']] = infrastructure_host
 
