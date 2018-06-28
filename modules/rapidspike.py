@@ -17,6 +17,10 @@ def rapidspike_api_call(uri, public_key, private_key):
     now = int(time.time())
     # https://docs.rapidspike.com/system-api/authentication.html
     signature = base64.b64encode(hmac.new(private_key.encode(), '{}\n{}'.format(public_key, now).encode(), hashlib.sha1).digest())
+    while '+' in signature:
+        now = int(time.time())
+        signature = base64.b64encode(hmac.new(private_key.encode(), '{}\n{}'.format(public_key, now).encode(), hashlib.sha1).digest())
+
     r = requests.get('https://api.rapidspike.com{}'.format(uri), params={'public_key': public_key, 'time': now, 'signature': signature}, timeout=20)
     logging.debug(r.text)
     r.raise_for_status()
