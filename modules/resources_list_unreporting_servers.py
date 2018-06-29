@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import json
 from redis_functions import get_all_data, get_data
 from newrelic_servers import get_newrelic_servers_data
