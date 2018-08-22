@@ -56,7 +56,7 @@ def get_appbeat_data(appbeat_credentials):
     for account in appbeat_credentials:
         appbeat_validity['total_accounts'] += 1
         try:
-            data = get_appbeat_data_for_account(appbeat_credentials[account]['key'])
+            data = get_appbeat_data_for_account(appbeat_credentials[account])
         except Exception as e:
             logger.error("Could not get data for AppBeat account '{}'".format(account))
             logger.exception(e)

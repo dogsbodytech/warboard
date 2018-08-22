@@ -29,6 +29,10 @@ rapidspike_credentials = {  '$name': {  'public_key': '$public_key',
                             '$name2': { 'public_key': '$public_key2',
                                         'private_key': '$private_key2'}}
 
+# AppBeat - intended to work with multiple accounts but not yet tested with more than one
+appbeat_credentials = { '$name1': '$key1',
+                        '$name2': '$key2'}
+
 # NewRelic Servers details
 newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
 newrelic_servers_timeout = 10 # How long the warboard should wait on the newrelic API
