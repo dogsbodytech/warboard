@@ -29,6 +29,9 @@ def get_appbeat_data_for_account(appbeat_key):
                     check_data['status'] = status_mapping[check['Status']]
                 else:
                     logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check_data['Name']))
+            else:
+                if 'ssh' in check['Name'].lower():
+                    check_data['Status'] = 'up'
 
             # We can't pull the type without excessively calling the API
             # We could bodge it based on how we name our checks but I
