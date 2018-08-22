@@ -8,6 +8,7 @@ from modules.daemon import Daemon
 from modules.config import warboard_pid_path, warboard_user, warboard_log, warboard_title
 from modules.pingdom import get_pingdom_data
 from modules.rapidspike import get_rapidspike_data
+from modules.appbeat import get_appbeat_data
 from modules.port_monitoring import store_port_monitoring_results
 from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
@@ -31,6 +32,10 @@ class WarboardDaemon(Daemon):
                 logger.exception(e)
             try:
                 store_port_monitoring_results('pingdom', *get_pingdom_data())
+            except Exception as e:
+                logger.exception(e)
+            try:
+                store_port_monitoring_results('appbeat', *get_appbeat_data())
             except Exception as e:
                 logger.exception(e)
             try:
