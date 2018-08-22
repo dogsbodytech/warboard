@@ -78,7 +78,7 @@ def warboard_short():
     # If they are taking more than 2 seconds to return then maybe we are
     # filter runs the function for each check in our list of checks and then
     # returns the list of the ones that it is true for.
-    port_results = filter(lambda x: x['status'] != 'up' or x['lastresponsetime'] > 2000, port_results['checks'])
+    port_results['checks'] = filter(lambda x: x['status'] != 'up' or x['lastresponsetime'] > 2000, port_results['checks'])
     return(render_template('warboard.html',
         title=warboard_title,
         refresh_time=refresh_time(),
