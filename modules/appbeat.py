@@ -25,8 +25,8 @@ def get_appbeat_data_for_account(appbeat_key):
             check_data['name'] = check['Name']
             check_data['status'] = 'paused'
             if not check['IsPaused']:
-                if check['stats']['status'] in status_mapping:
-                    check_data['status'] = status_mapping[check['stats']['status']]
+                if check['Status'] in status_mapping:
+                    check_data['status'] = status_mapping[check['Status']]
                 else:
                     logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check_data['Name']))
 
