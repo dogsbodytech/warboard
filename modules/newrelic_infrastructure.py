@@ -101,7 +101,7 @@ def get_newrelic_infra_data():
                 try:
                     infrastructure_host['summary']['cpu'] = float(account_infra_data['results'][0]['events'][num]['cpuPercent'])
                 except (ValueError, TypeError) as e:
-                    logger.info("Could not convert cpu percentage to float, value '{}' Error: {}".format(account_infra_data['results'][0]['events'][num]['cpuPercent'], e))
+                    logger.info("Could not convert cpu percentage to float, host '{}', value '{}' Error: {}".format(infrastructure_host, account_infra_data['results'][0]['events'][num]['cpuPercent'], e))
 
                 # Setting the orderby using the same field as newrelic servers
                 infrastructure_host['orderby'] = max(
