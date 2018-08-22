@@ -12,7 +12,8 @@ def get_appbeat_data_for_account(appbeat_key):
     """
     r = requests.get('https://www.appbeat.io/API/v1/status', headers = {'Content-Type': 'application/json'}, params={'secret': appbeat_key})
     r.raise_for_status()
-    status_mapping = {  'Good': 'up'}
+    status_mapping = {  'Good': 'up',
+                        'SystemTimeout' : 'down'}
     # This is actually returning a load of cool timestamps that it would
     # be nice for the warboard to use.
     # Since we want a validity time for all the accounts we would need
