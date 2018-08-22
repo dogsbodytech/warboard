@@ -42,7 +42,7 @@ def get_appbeat_data_for_account(appbeat_key):
 
     return checks
 
-def get_appbeat_data(appbeat_credentials):
+def get_appbeat_data():
     """
     Get AppBeat data for all accounts in appbeat_credentials
     """
