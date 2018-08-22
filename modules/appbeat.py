@@ -28,7 +28,7 @@ def get_appbeat_data_for_account(appbeat_key):
                 if check['Status'] in status_mapping:
                     check_data['status'] = status_mapping[check['Status']]
                 else:
-                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check_data['Name']))
+                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check['Name']))
             else:
                 if 'ssh' in check['Name'].lower():
                     check_data['status'] = 'up'
