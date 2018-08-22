@@ -69,7 +69,8 @@ def warboard():
         calendar_items=get_calendar_items()))
 
 @app.route('/shorten', methods=['GET'])
-def warboard():
+@app.route('/short', methods=['GET'])
+def warboard_short():
     logger.debug('Serving shortened warboard')
     port_results = get_port_monitoring_results()
     # As I don't use filters or lambda functions I feel this needs explanation.
