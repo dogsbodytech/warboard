@@ -44,7 +44,7 @@ def get_appbeat_data_for_account(appbeat_key):
             if 'IPV6' in check_type:
                 check_type.remove('IPV6')
 
-            if check_data and len(check_type[-1]) <= 10:
+            if check_data and len(check_type[-1]) <= 5:
                 check_data['type'] = check_type[-1]
 
             # Response time isn't available over the public API
