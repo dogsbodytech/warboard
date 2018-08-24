@@ -25,21 +25,23 @@ def get_appbeat_data_for_account(appbeat_key):
     for service in r.json()['Services']:
         for check in service['Checks']:
             check_data = {}
-            check_data['name'] = check['Name']
+            check_data['name'] = '{} {}'.format(service['Name'], check['Name'])
             check_data['status'] = 'paused'
             if not check['IsPaused']:
                 if check['Status'] in status_mapping:
                     check_data['status'] = status_mapping[check['Status']]
                 else:
-                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check['Name']))
-            else:
-                if 'ssh' in check['Name'].lower():
-                    check_data['status'] = 'up'
+                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check_data['name']))
 
-            # We can't pull the type without excessively calling the API
-            # We could bodge it based on how we name our checks but I
-            # don't think that helps anyone
-            check_data['type'] = 'N/A'
+            # bodge type based on the naming convention.
+            # service will identify the site / server
+            # name will identify the check type and and additional info
+            # such as a specific site or if the check is IPv6
+            # the type should be the right most word other than IPv6
+            check_type = check['Name'][:]
+            check_type = check_type.upper()
+            check_type.split().remove('IPV6')
+            check_data['type'] = check_type[-1]
             # Response time isn't available over the public API
             # We don't get a response time, in order to sort this
             # properly we are setting it to 0
