@@ -39,8 +39,10 @@ def get_appbeat_data_for_account(appbeat_key):
             # such as a specific site or if the check is IPv6
             # the type should be the right most word other than IPv6
             check_type = check['Name'][:]
-            check_type = check_type.upper()
-            check_type.split().remove('IPV6')
+            check_type = check_type.upper().split()
+            if 'IPV6' in check_type:
+                check_type.remove('IPV6')
+                
             check_data['type'] = check_type[-1]
             # Response time isn't available over the public API
             # We don't get a response time, in order to sort this
