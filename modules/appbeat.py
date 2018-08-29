@@ -17,7 +17,7 @@ def get_appbeat_data_for_account(appbeat_key):
                         'UserTimeout' : 'down',
                         'Undefined' : 'paused',
                         'Error': 'down',
-                        'RuleMismatch', 'down'}
+                        'RuleMismatch': 'down'}
     # This is actually returning a load of cool timestamps that it would
     # be nice for the warboard to use.
     # Since we want a validity time for all the accounts we would need
