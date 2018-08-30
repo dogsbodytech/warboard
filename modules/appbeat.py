@@ -6,11 +6,11 @@ logger = logging.getLogger(__name__)
 
 #https://www.appbeat.io/automation/rest-api/getting-started
 
-def get_appbeat_data_for_account(appbeat_key):
+def get_appbeat_data_for_account(appbeat_key, timeout=20):
     """
     Input AppBeat API key, returns data formatted for the warboard
     """
-    r = requests.get('https://www.appbeat.io/API/v1/status', headers = {'Content-Type': 'application/json'}, params={'secret': appbeat_key})
+    r = requests.get('https://www.appbeat.io/API/v1/status', headers = {'Content-Type': 'application/json'}, params = {'secret': appbeat_key}, timeout = timeout)
     r.raise_for_status()
     status_mapping = {  'Good': 'up',
                         'SystemTimeout' : 'down',
