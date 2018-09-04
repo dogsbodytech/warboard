@@ -12,10 +12,11 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
     """
     r = requests.get('https://www.appbeat.io/API/v1/status', headers = {'Content-Type': 'application/json'}, params = {'secret': appbeat_key}, timeout = timeout)
     r.raise_for_status()
+    # Undefined should be pasued
     status_mapping = {  'Good': 'up',
                         'SystemTimeout' : 'down',
                         'UserTimeout' : 'down',
-                        'Undefined' : 'paused',
+                        'Undefined' : 'up',
                         'Error': 'down',
                         'RuleMismatch': 'down'}
     # This is actually returning a load of cool timestamps that it would
