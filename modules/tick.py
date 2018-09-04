@@ -197,6 +197,6 @@ def store_tick_data(tick_data, tick_data_validity):
     """
     for host in tick_data:
         host_data = tick_data[host]
-        set_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([host_data]))
+        set_volatile_data('resources:tick#{}'.format(to_uuid(host)), json.dumps([host_data]))
 
     set_data('resources_success:tick', json.dumps([tick_data_validity]))
