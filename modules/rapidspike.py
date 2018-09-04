@@ -96,9 +96,8 @@ def get_rapidspike_data():
             data = get_rapidspike_data_for_account(rapidspike_credentials[account]['public_key'], rapidspike_credentials[account]['private_key'])
         except Exception as e:
             logger.error("Could not get data for RapidSpike account '{}'".format(account))
-            if logger.isEnabledFor("debug"):
-                logger.exception(e)
-                
+            #logger.exception(e)
+
             rapidspike_validity['failed_accounts'] += 1
             continue
 
