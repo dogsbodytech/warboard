@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from redis_functions import set_data
+from redis_functions import set_data, set_volatile_data
 from misc import to_uuid
 from config import influx_read_users, influx_timeout, influx_database_batch_size
 import logging
