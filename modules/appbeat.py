@@ -28,7 +28,7 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
         for check in service['Checks']:
             check_data = {}
             check_data['name'] = '{} {}'.format(service['Name'], check['Name'])
-            check_data['status'] = 'up'
+            check_data['status'] = 'paused'
             check_data['type'] = 'N/A'
             if not check['IsPaused']:
                 if check['Status'] in status_mapping:
