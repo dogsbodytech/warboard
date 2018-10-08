@@ -52,7 +52,7 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
             # Response time isn't available over the public API
             # We don't get a response time, in order to sort this
             # properly we are setting it to 0
-            check_data['lastresponsetime'] = 0
+            check_data['lastresponsetime'] = check['ResTime']
             checks.append(check_data)
 
     return checks
