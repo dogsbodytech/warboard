@@ -77,17 +77,20 @@ def get_tick_data():
         # multipe of the number of queries we are running per server
         batches_response_list = []
         for beginning_of_slice in xrange(0, len(list_of_queries), influx_database_batch_size):
+            tick_data_validity['total_accounts'] += 1
             batch_query = ';'.join(list_of_queries[beginning_of_slice:beginning_of_slice + influx_database_batch_size])
             try:
                 metric_data_batch_response = requests.get(influx_query_api, params={'u': influx_user['influx_user'], 'p': influx_user['influx_pass'], 'q': batch_query, 'epoch': 'ms'}, timeout=influx_timeout)
                 metric_data_batch_response.raise_for_status()
             except requests.exceptions.RequestException as e:
+                tick_data_validity['failed_accounts'] += 1
                 logger.error('Could not get TICK data for {} - error getting batch of data from Influx: Error: {}'.format(influx_user['influx_user'], e))
                 continue
 
             try:
                 batches_response_list.append(json.loads(metric_data_batch_response.text)['results'])
             except:
+                tick_data_validity['failed_accounts'] += 1
                 logger.error('Could parse get TICK data for {} - error parsing data recieved from Influx: Error: {}'.format(influx_user['influx_user'], e))
 
         # Key = hostname, Value = data
