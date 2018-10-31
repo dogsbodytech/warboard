@@ -1,5 +1,5 @@
 # Warboard
-This is the warboard we use internally at [Dogsbody Technology Ltd.](https://www.dogsbodytechnology.com/) The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic, TICK, Prometheus, Sirportly & Google Calendar as sources.
+This is the warboard we use internally at [Dogsbody Technology Ltd.](https://www.dogsbody.com/) The backend is all written in Python and the frontend is Python (Flask) using the Jinja2 templating engine. The Warboard is a dashboard that can be displayed on a screen to show the current status of operations using Pingdom, NewRelic, TICK, Prometheus, Sirportly & Google Calendar as sources.
 
 Modules are intended to be modular however this is not yet really the case.  We would like to allow users to provide credentials for any number of the services and have a working warboard however there are some modules that need at least an empty dictionary to loop through and others that are required.  When updating it is worth checking code changes particularly if they are to config.sample.py as config updates may well be required.
 
