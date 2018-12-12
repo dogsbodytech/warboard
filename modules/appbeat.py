@@ -15,7 +15,7 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
     status_mapping = {  'Good': 'up',
                         'SystemTimeout' : 'down',
                         'UserTimeout' : 'down',
-                        'Undefined' : 'paused',
+                        'Undefined' : 'down',
                         'Error': 'down',
                         'RuleMismatch': 'down'}
     # This is actually returning a load of cool timestamps that it would
