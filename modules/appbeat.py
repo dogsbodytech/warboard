@@ -17,7 +17,8 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
                         'UserTimeout' : 'down',
                         'Undefined' : 'down',
                         'Error': 'down',
-                        'RuleMismatch': 'down'}
+                        'RuleMismatch': 'down',
+                        None, paused}
     # This is actually returning a load of cool timestamps that it would
     # be nice for the warboard to use.
     # Since we want a validity time for all the accounts we would need
@@ -32,10 +33,10 @@ def get_appbeat_data_for_account(appbeat_key, timeout=20):
             check_data['type'] = 'N/A'
             check_data['lastresponsetime'] = check.get('ResTime', 0)
             if not check['IsPaused']:
-                if check['Status'] in status_mapping:
+                if check.get('Status') in status_mapping:
                     check_data['status'] = status_mapping[check['Status']]
                 else:
-                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check['Status'], check_data['name']))
+                    logger.warning("AppBeat returned an unknown unknown status '{}' for '{}'".format(check.get('Status'), check_data['name']))
 
             # bodge type based on the naming convention.
             # service will identify the site / server
