@@ -46,10 +46,10 @@ class WarboardDaemon(Daemon):
                 store_newrelic_infra_data(*get_newrelic_infra_data())
             except Exception as e:
                 logger.exception(e)
-            try:
-                store_tick_data(*get_tick_data())
-            except Exception as e:
-                logger.exception(e)
+            #try:
+            #    store_tick_data(*get_tick_data())
+            #except Exception as e:
+            #    logger.exception(e)
             try:
                 store_resource_data('prometheus', *get_prometheus_data())
             except Exception as e:
