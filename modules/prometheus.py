@@ -35,6 +35,10 @@ def get_alerting_servers(user):
             if 'instance' not in alert['labels']:
                 continue
 
+            for label, value in prometheus_credentials[user].get('ignore_lables', {}).items():
+                if alert['labels'].get(label) == value:
+                    continue
+
             hostname = alert['labels']['instance']
             # catch servers that are down
             # only check if node exporter is down
