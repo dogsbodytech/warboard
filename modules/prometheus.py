@@ -99,14 +99,14 @@ def get_prometheus_data():
         # We are using irate over rate as it seems more suitable for the speed
         # cpu usage will be changing at:
         # https://prometheus.io/docs/prometheus/latest/querying/functions/
-        queries['cpu'] = '(1 - avg(irate(node_cpu{cpu_mode}[10m])) by (instance{group_intermittent_tag})) * 100'
+        queries['cpu'] = '(1 - avg(irate(node_cpu{cpu_mode}[10m])) by (instance{labels_to_filter_based_on})) * 100'
         queries['memory'] = '((node_memory_MemTotal - node_memory_MemFree) / node_memory_MemTotal) * 100'
         # We want all data for each instance
         # We are only interested in the disk with greatest disk io
         # We are calculating disk io for each disk in the same way as cpu
         # The /10 is to convert to seconds (/1000) and then to a percentage
         # (*1000)
-        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{group_intermittent_tag})) by (instance{group_intermittent_tag}))/10'
+        queries['disk_io'] = '(max(avg(irate(node_disk_io_time_ms[10m])) by (instance, device{labels_to_filter_based_on})) by (instance{labels_to_filter_based_on}))/10'
         # We need want to exclude temporary file systems, docker and rootfs as it
         # is reported as well as the device that it is mounted on
         # Including just ext4 and vfat covers all the systems we currently want
@@ -116,13 +116,16 @@ def get_prometheus_data():
         # This is configured in the config file as different set-ups may
         # have different filesystems to monitor.  If no argument is supplied
         # all of the disks will be monitored for each instance.
-        queries['fullest_disk'] = 'max(((node_filesystem_size{fullest_disk_sub} - node_filesystem_free{fullest_disk_sub}) / node_filesystem_size{fullest_disk_sub}) * 100) by (instance{group_intermittent_tag})'
+        queries['fullest_disk'] = 'max(((node_filesystem_size{fullest_disk_sub} - node_filesystem_free{fullest_disk_sub}) / node_filesystem_size{fullest_disk_sub}) * 100) by (instance{labels_to_filter_based_on})'
 
         # We will either sub in a blank string or the intermittent_tag
         # depending on if one is present
-        group_by_to_preserve_intermittent_tag = ''
+        labels_to_filter_based_on = ''
         if 'intermittent_tag' in prometheus_credentials[user]:
-            group_by_to_preserve_intermittent_tag = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
+            labels_to_filter_based_on = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
+
+        for label in prometheus_credentials[user].get('ignore_lables', {}):
+            labels_to_filter_based_on += ', {}'.format(label)
 
         for query in queries:
             # CPU mode it necessary to avoid it being counted as a key
@@ -130,7 +133,7 @@ def get_prometheus_data():
             # or it will be counted as a key
             # We are trying to substitute the intermittent_tag into
             # every group by in order to keep the tag
-            queries[query] = queries[query].format(group_intermittent_tag = group_by_to_preserve_intermittent_tag, cpu_mode = '{mode="idle"}', fullest_disk_sub = prometheus_credentials[user].get('fullest_disk_tags', ''))
+            queries[query] = queries[query].format(labels_to_filter_based_on = labels_to_filter_based_on, cpu_mode = '{mode="idle"}', fullest_disk_sub = prometheus_credentials[user].get('fullest_disk_tags', ''))
 
         try:
             alerting_servers, down_servers = get_alerting_servers(user)
@@ -172,7 +175,7 @@ def get_prometheus_data():
                 for label, value in prometheus_credentials[user].get('ignore_lables', {}).items():
                     if instance_data['labels'].get(label) == value:
                         continue
-                        
+
                 if hostname not in prometheus_data[user]:
                     prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
