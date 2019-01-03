@@ -173,7 +173,7 @@ def get_prometheus_data():
             for instance_data in responses[metric]['data']['result']:
                 hostname = instance_data['metric']['instance']
                 for label, value in prometheus_credentials[user].get('ignore_lables', {}).items():
-                    if instance_data['labels'].get(label) == value:
+                    if instance_data['metric'].get(label) == value:
                         continue
 
                 if hostname not in prometheus_data[user]:
