@@ -36,8 +36,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
     # options that differ from the default need to be supplied.
     monitor_types = {   'ping': {   },
                         'tcp':  {   'type': 'label'},
-                        'http': {   'additional_path_to_data': 'http_monitors',
-                                    'name': 'website_domain'}}
+                        'http': {   'name': 'website_domain'}}
     # Mapping RapidSpike statuses to the ones used by the Warboard, as
     # initially set by Pingdom
     status_mapping = {  'passing': 'up',
@@ -49,10 +48,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
         # in the params rather than all in the params but it all ends up
         # at the same place
         api_response = rapidspike_api_call('/v1/{}monitors?stats=status, latest_response'.format(monitor), public_key, private_key)
-        if 'additional_path_to_data' in monitor_types[monitor]:
-            data = api_response['data'][monitor_types[monitor]['additional_path_to_data']]
-        else:
-            data = api_response['data']
+        data = api_response['data']['{}_monitors'.format(monitor)]
 
         for check in data:
             # Currently erroring on no website domain
