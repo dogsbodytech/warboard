@@ -50,10 +50,10 @@ newrelic_insights_timeout = 10
 # NewRelic api endpoint to pull out current alerting data
 newrelic_main_api_violation_endpoint = 'https://api.newrelic.com/v2/alerts_violations.json?only_open=true'
 newrelic_main_api_timeout = 10
-# Specify how long (seconds) metric data recieved from the newrelic insights
+# Specify how long (seconds) metric data received from the newrelic insights
 # api is valid for, after this time servers will be shown as not reporting
 newrelic_infrastructure_max_data_age = 300
-# Two set's of keys are required - one to get the metric data, one to check
+# Two sets of keys are required - one to get the metric data, one to check
 # if the servers are alerting
 newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'number_here',
                                                         'main_api_key': 'key_here',
@@ -66,7 +66,7 @@ newrelic_main_and_insights_keys =   {'account_name1':  {'account_number': 'numbe
 # Credentials for a user that has read access to every database you wish to
 # monitor telegraf clients on
 # If you have multiple users or influx instances to monitor you can list them
-# as a list of dictionarys
+# as a list of dictionaries
 influx_read_users = [{'influx_url': 'https://example.com:8086',
                       'influx_user': 'username1',
                       'influx_pass': 'password1'},
@@ -83,7 +83,7 @@ influx_database_batch_size = 50
 # Prometheus details
 # There are also some optional params, look in the prometheus module if
 # you wish to use any of these as they are more likely to have backwards
-# compatability broken when they are "improved"
+# compatibility broken when they are "improved"
 prometheus_credentials = {  'user1': {   'username': '',
                                         'password': '',
                                         'url': '',
