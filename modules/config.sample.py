@@ -104,6 +104,7 @@ sirportly_token = 'token_here'
 sirportly_key = 'key_here'
 # These are the filter ID's in sirportly to get the stats needed, info on setting these up is in the Readme.
 sirportly_unassigned_filter = '1'
+sirportly_waitingstaff_filter = '72'
 sirportly_resolved_filter = '4'
 sirportly_red_filter = '33'
 sirportly_blue_filter = '65'
