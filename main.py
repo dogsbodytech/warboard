@@ -104,6 +104,7 @@ def stats():
         return(jsonify(status='ok',
             resolved_tickets=sp_results['resolved_tickets'],
             unassigned_tickets=sp_results['unassigned_tickets'],
+            waitingstaff_tickets=sp_results['waitingstaff_tickets'],
             latency_checks_total=port_results['total_checks'],
             latency_checks_up=port_results['up'],
             latency_checks_down=port_results['down'],

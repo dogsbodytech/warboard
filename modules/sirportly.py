@@ -1,7 +1,7 @@
 import requests, math
 from redis_functions import set_data, get_data
 from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
-from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter
+from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter, sirportly_waitingstaff_filter
 
 def sirportly_filter(filterid, user): # This is used to get data for a specific filter in sirportly, it accepts a filterID and a username/False if no user needed.
     if user != False:
@@ -19,6 +19,7 @@ def sirportly_filter(filterid, user): # This is used to get data for a specific 
 def get_sirportly_data(): # Get all the data we need from sirportly and store it in a dict
     sirportly_data = {'users': {}}
     sirportly_data['unassigned_tickets'] = sirportly_filter(sirportly_unassigned_filter, False)
+    sirportly_data['waitingstaff_tickets'] = sirportly_filter(sirportly_waitingstaff_filter, False)
     sirportly_data['total_tickets'] = sirportly_filter(sirportly_total_filter, False)
     sirportly_data['red_tickets'] = sirportly_filter(sirportly_red_filter, False)
     sirportly_data['blue_tickets'] = sirportly_filter(sirportly_blue_filter, False)
@@ -73,6 +74,7 @@ def store_sirportly_results(): # Store all the sirportly data in redis
 def get_sirportly_results(): # Get all the sirportly data to pass to the warboard, some things need to be ints for Jinja2 to do calcs
     sirportly_results = {'users': {}}
     sirportly_results['unassigned_tickets'] = int(get_data('unassigned_tickets'))
+    sirportly_results['waitingstaff_tickets'] = int(get_data('waitingstaff_tickets'))
     sirportly_results['resolved_tickets'] = int(get_data('resolved_tickets'))
     sirportly_results['red_percent'] = get_data('red_percent')
     sirportly_results['green_percent'] = get_data('green_percent')
