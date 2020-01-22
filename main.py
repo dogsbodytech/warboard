@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, request, render_template, jsonify
 import logging
 import logging.handlers
