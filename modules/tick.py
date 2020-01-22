@@ -1,9 +1,9 @@
 import requests
 import json
 import time
-from redis_functions import set_data, set_volatile_data
-from misc import to_uuid
-from config import influx_read_users, influx_timeout, influx_database_batch_size
+from .redis_functions import set_data, set_volatile_data
+from .misc import to_uuid
+from .config import influx_read_users, influx_timeout, influx_database_batch_size
 import logging
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ def get_tick_data():
         # Collect in a list incase influx_database_batch_size is not a
         # multipe of the number of queries we are running per server
         batches_response_list = []
-        for beginning_of_slice in xrange(0, len(list_of_queries), influx_database_batch_size):
+        for beginning_of_slice in range(0, len(list_of_queries), influx_database_batch_size):
             tick_data_validity['total_accounts'] += 1
             batch_query = ';'.join(list_of_queries[beginning_of_slice:beginning_of_slice + influx_database_batch_size])
             try:

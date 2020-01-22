@@ -1,5 +1,5 @@
 import redis
-from config import redis_host, redis_port, redis_db
+from .config import redis_host, redis_port, redis_db
 import logging
 logger = logging.getLogger(__name__)
 

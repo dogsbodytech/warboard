@@ -1,6 +1,6 @@
 import time
 import requests
-from config import appbeat_credentials
+from .config import appbeat_credentials
 import logging
 logger = logging.getLogger(__name__)
 

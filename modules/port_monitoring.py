@@ -1,7 +1,7 @@
 from __future__ import division
 import json
 import time
-from redis_functions import get_data, get_all_data, set_data
+from .redis_functions import get_data, get_all_data, set_data
 import logging
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import json
 import time
-from config import prometheus_credentials
+from .config import prometheus_credentials
 import logging
 logger = logging.getLogger(__name__)
 

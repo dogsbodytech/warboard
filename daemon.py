@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys, getpass
 import logging
 import logging.handlers

@@ -1,9 +1,9 @@
 import requests
 import json
 import time
-from redis_functions import set_data, get_data
-from misc import to_uuid
-from config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
+from .redis_functions import set_data, get_data
+from .misc import to_uuid
+from .config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 import logging
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ def get_newrelic_infra_data():
             if timestamp > time_accepted_since:
                 memory_percentage = None
                 if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
-                    memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
+                    memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] // account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
 
                 infrastructure_host['summary'] = {
                     'memory': 0.0,

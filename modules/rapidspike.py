@@ -3,7 +3,7 @@ import hmac
 import base64
 import time
 import requests
-from config import rapidspike_credentials
+from .config import rapidspike_credentials
 import logging
 logger = logging.getLogger(__name__)
 

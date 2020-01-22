@@ -1,9 +1,9 @@
 import requests
 import json
 import time
-from redis_functions import set_data, get_data
-from misc import to_uuid
-from config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
+from .redis_functions import set_data, get_data
+from .misc import to_uuid
+from .config import newrelic_servers_keys, newrelic_servers_timeout, newrelic_servers_endpoint
 import logging
 logger = logging.getLogger(__name__)
 

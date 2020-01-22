@@ -1,7 +1,8 @@
-import requests, math
-from redis_functions import set_data, get_data
-from config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
-from config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter, sirportly_waitingstaff_filter
+import requests
+import math
+from .redis_functions import set_data, get_data
+from .config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
+from .config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter, sirportly_waitingstaff_filter
 
 def sirportly_filter(filterid, user): # This is used to get data for a specific filter in sirportly, it accepts a filterID and a username/False if no user needed.
     if user != False:
