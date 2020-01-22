@@ -120,9 +120,11 @@ def get_tick_data():
 
                         hostname = each_measurement_with_an_alerting_status['tags']['host']
                         if hostname not in alerts:
+                            # Systems are assumed not to be alerting, if they have any critcal, warning or deadman alerts these
+                            # fields will be updated.  Once a field becomes true it will not be reset to false
                             alerts[hostname] = {}
-                            alerts[hostname]['critical'] = [None]
-                            alerts[hostname]['warning'] = [None]
+                            alerts[hostname]['critical'] = False
+                            alerts[hostname]['warning'] = False
                             alerts[hostname]['deadman_alerting'] = False
 
                         for tag_or_field_position_in_list, tag_or_field in enumerate(each_measurement_with_an_alerting_status['columns']):
@@ -141,12 +143,15 @@ def get_tick_data():
                                 # each host.
                                 if each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] == 0:
                                     alerts[hostname]['deadman_alerting'] = True
+                            # The most recent x_duration_before_alerting tags in kapacitor will have a positive value if an alert is currently active
                             elif tag_or_field == "crit_duration_before_alerting":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
-                                alerts[hostname]['critical'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
+                                if each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] and each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] > 0:
+                                    alerts[hostname]['critical'] = True
                             elif tag_or_field == "warn_duration_before_alerting":
                                 assert len(each_measurement_with_an_alerting_status['values']) == 1
-                                alerts[hostname]['warning'].append(each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list])
+                                if each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] and each_measurement_with_an_alerting_status['values'][0][tag_or_field_position_in_list] > 0:
+                                    alerts[hostname]['warning'] = True
                             else:
                                 logger.warning('Unexpected tag or field when parsing kapacitor alerts for host \'{}\': {}'.format(hostname, tag_or_field))
 
@@ -170,11 +175,12 @@ def get_tick_data():
             tick_host_data = hosts_data[host]
             tick_host_data['health_status'] = 'green'
             if host in alerts:
+                # Alert status can only be one colour, deadman alerts take precedence over critical alerts which in turn are prioritised over warnings.
                 if alerts[host]['deadman_alerting']:
                     tick_host_data['health_status'] = 'blue'
-                elif max(alerts[host]['critical']) > 0:
+                elif alerts[host]['critical']:
                     tick_host_data['health_status'] = 'red'
-                elif max(alerts[host]['warning']) > 0:
+                elif alerts[host]['warning']:
                     tick_host_data['health_status'] = 'orange'
 
             try:
