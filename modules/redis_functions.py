@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def redis_connect():
-    rcon = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db)
+    rcon = redis.StrictRedis(host=redis_host, port=redis_port, db=redis_db, charset="utf-8", decode_responses=True)
     # All redis connection errors will be logged when getting/setting as when setting redis_connect() you will never receive an Exception
     # unless the redis module isn't installed.
     return(rcon)

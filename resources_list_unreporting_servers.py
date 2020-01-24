@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import json
-from redis_functions import get_all_data, get_data
-from newrelic_servers import get_newrelic_servers_data
-from newrelic_infrastructure import get_newrelic_infra_data
-from prometheus import get_prometheus_data
-from tick import get_tick_data
+from modules.redis_functions import get_all_data, get_data
+from modules.newrelic_servers import get_newrelic_servers_data
+from modules.newrelic_infrastructure import get_newrelic_infra_data
+from modules.prometheus import get_prometheus_data
+from modules.tick import get_tick_data
 
 def list_unreporting_servers():
     found_servers = set()

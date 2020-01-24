@@ -1,7 +1,8 @@
-import datetime, json
+import datetime
+import json
 from time import strftime
-from config import calendar_export
-from redis_functions import set_data, get_data, get_all_data, delete_data
+from .config import calendar_export
+from .redis_functions import set_data, get_data, get_all_data, delete_data
 import logging
 logger = logging.getLogger(__name__)
 
@@ -41,11 +42,11 @@ def store_calendar_items():
                 except ValueError:
                     start_time = datetime.datetime.strptime(item['start']['dateTime'].split('T')[1], '%H:%M:%S+01:00').strftime('%H:%M') # To work with DST times
                     end_time = datetime.datetime.strptime(item['end']['dateTime'].split('T')[1], '%H:%M:%S+01:00').strftime('%H:%M: ')
-                item['summary'] = start_time+' - '+end_time+current_summary # Add the start and end time to the summary
-            current = get_data('calendar_'+item['start']['date']) # Check if an existing key exists for the date in question
+                item['summary'] = '{} - {}{}'.format(start_time, end_time, current_summary) # Add the start and end time to the summary
+            current = get_data('calendar_{}'.format(item['start']['date'])) # Check if an existing key exists for the date in question
             if current == None:
-                set_data('calendar_'+item['start']['date'], item['summary']) # If a date doesn't exist create one
+                set_data('calendar_{}'.format(item['start']['date']), item['summary']) # If a date doesn't exist create one
             elif item['summary'] not in current: # If a key exists but it's not the current summary it means we have two items for one date
-                set_data('calendar_'+item['start']['date'], current+calendar_split+item['summary']) # Append to the existing item
+                set_data('calendar_{}'.format(item['start']['date']), '{}{}{}'.format(current, calendar_split, item['summary'])) # Append to the existing item
     else:
         logger.error('Could not parse calendar')
