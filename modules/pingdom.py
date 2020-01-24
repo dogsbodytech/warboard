@@ -17,7 +17,7 @@ def get_pingdom_data():
         pingdom_validity['total_accounts'] += 1
         for key in pingdom_keys[account]:
             auth = pingdom_keys[account][key]
-            call_headers = {'App-Key': key, 'Authorization': 'Basic {}'.format(base64.b64encode(auth.encode('utf-8')))}
+            call_headers = {'App-Key': key, 'Authorization': 'Basic {}'.format(base64.b64encode(auth.encode('utf-8')).decode('utf-8'))}
             if account in pingdom_multiaccounts:
                 email = pingdom_multiaccounts[account][key]
                 call_headers['Account-Email'] = email
