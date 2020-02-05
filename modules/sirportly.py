@@ -14,7 +14,7 @@ def sirportly_filter(filter_id, user=None):
     if user:
         params['user'] = user
 
-    r = requests.get(f'{sirportly_endpoint}/filter', params=params headers=headers)
+    r = requests.get(f'{sirportly_endpoint}/filter', params=params, headers=headers)
     r.raise_for_status()
 
     return r.json()['pagination']['total_records']
