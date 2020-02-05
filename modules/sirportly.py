@@ -47,7 +47,7 @@ def get_sirportly_data():
     sirportly_data['blue_percent'] = 0
     sirportly_data['orange_percent'] = 0
     if sirportly_data['total_tickets']:
-        sirportly_data['red_percent'] = math.ceil(100 * sirportly_data['red_tickets']) / sirportly_data['total_tickets'])
+        sirportly_data['red_percent'] = math.ceil(100 * sirportly_data['red_tickets'] / sirportly_data['total_tickets'])
         sirportly_data['blue_percent'] = math.ceil(100 * sirportly_data['blue_tickets'] / sirportly_data['total_tickets'])
         sirportly_data['orange_percent'] = math.ceil(100 * (sirportly_data['unassigned_tickets'] + sirportly_data['waitingstaff_tickets']) / sirportly_data['total_tickets'])
 
