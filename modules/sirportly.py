@@ -80,7 +80,7 @@ def store_sirportly_results():
         if key == 'users':
             for user in sirportly_data['users']:
                 for key in sirportly_data['users'][user]:
-                    set_data(f'{user}_{key}', sirportly_data['users'][key])
+                    set_data(f'{user}_{key}', sirportly_data['users'][user][key])
         else:
             set_data(key, sirportly_data[key])
 
