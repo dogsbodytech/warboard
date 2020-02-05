@@ -62,7 +62,7 @@ def sirportly_ticket_multiplier(sirportly_data):
     ticket_counts.append(sirportly_data['unassigned_tickets'])
     ticket_counts.append(sirportly_data['waitingstaff_tickets'])
     for user in sirportly_data['users']:
-        ticket_counts.append(user['total'])
+        ticket_counts.append(sirportly_data['users'][user]['total'])
 
     most_tickets = max(ticket_counts)
     multiplier = 1
