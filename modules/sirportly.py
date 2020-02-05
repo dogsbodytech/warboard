@@ -101,9 +101,9 @@ def get_sirportly_results():
     sirportly_results['red_tickets'] = get_data('red_tickets')
     sirportly_results['total_tickets'] = get_data('total_tickets')
     for user in sirportly_users:
-        sirportly_results['users'][user]['red'] = int(get_data(f'{user}_red'))
-        sirportly_results['users'][user]['green'] = int(get_data(f'{user}_green'))
-        sirportly_results['users'][user]['blue'] = int(get_data(f'{user}_blue'))
-        sirportly_results['users'][user]['total'] = get_data(f'{user}_total')
+        sirportly_results['users'][f'{user}_red'] = int(get_data(f'{user}_red'))
+        sirportly_results['users'][f'{user}_green'] = int(get_data(f'{user}_green'))
+        sirportly_results['users'][f'{user}_blue'] = int(get_data(f'{user}_blue'))
+        sirportly_results['users'][f'{user}_total'] = get_data(f'{user}_total')
 
     return sirportly_results
