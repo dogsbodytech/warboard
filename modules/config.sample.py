@@ -33,16 +33,6 @@ rapidspike_credentials = {  '$name': {  'public_key': '$public_key',
 appbeat_credentials = { '$name1': '$key1',
                         '$name2': '$key2'}
 
-# NewRelic Servers details
-newrelic_servers_endpoint = 'https://api.newrelic.com/v2/servers.json'
-newrelic_servers_timeout = 10 # How long the warboard should wait on the newrelic API
-# All you need for adding newrelic accounts is the API key.
-# You can split the account name with a pipe '|' for a subcustomer, support for this will be added in future versions. e.g account1|subcustomer
-newrelic_servers_keys = {'account1': 'api_key',
-                         'account2': 'api_key',
-                         'account3': 'api_key',
-                         'account1|subcustomer': 'api_key',}
-
 # NewRelic Infrastructure details
 # NewRelic Insights api endpoint to pull out NewRelic Infrastructure data
 newrelic_insights_endpoint = 'https://insights-api.newrelic.com/v1/accounts/'

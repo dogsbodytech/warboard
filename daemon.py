@@ -11,7 +11,6 @@ from modules.pingdom import get_pingdom_data
 from modules.rapidspike import get_rapidspike_data
 from modules.appbeat import get_appbeat_data
 from modules.port_monitoring import store_port_monitoring_results
-from modules.newrelic_servers import get_newrelic_servers_data, store_newrelic_servers_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
 from modules.tick import get_tick_data, store_tick_data
 from modules.prometheus import get_prometheus_data
@@ -37,10 +36,6 @@ class WarboardDaemon(Daemon):
                 logger.exception(e)
             try:
                 store_port_monitoring_results('appbeat', *get_appbeat_data())
-            except Exception as e:
-                logger.exception(e)
-            try:
-                store_newrelic_servers_data(*get_newrelic_servers_data())
             except Exception as e:
                 logger.exception(e)
             try:
