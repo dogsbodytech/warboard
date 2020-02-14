@@ -120,6 +120,3 @@ def store_resource_data(module_name, data, validity):
 def clear_resources_keys():
     for key in get_all_data('resources:*'):
         delete_data(key)
-
-if __name__ == "__main__":
-    clear_resources_keys()
