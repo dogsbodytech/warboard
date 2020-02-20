@@ -62,7 +62,7 @@
       </div>
       <table class="table">
         <thead>
-          <tr class="lead"><th>Name</th><th>CPU</th><th>Memory</th><th>Disk IO</th><th>Disk Space</th></tr>
+          <tr class="lead"><th>Name</th><th>CPU</th><th>Memory</th><th>Disk IO</th><th>Space</th></tr>
         </thead>
         <tbody>
         {% for check in resource_results['checks']|sort(attribute='name') %}
