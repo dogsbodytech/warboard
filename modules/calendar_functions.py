@@ -1,8 +1,8 @@
 import datetime
 import json
 from time import strftime
-from .config import calendar_export
-from .redis_functions import set_data, get_data, get_all_data, delete_data
+from modules.config import calendar_export
+from modules.redis_functions import set_data, get_data, get_all_data, delete_data
 import logging
 logger = logging.getLogger(__name__)
 

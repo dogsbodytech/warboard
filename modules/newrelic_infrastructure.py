@@ -1,9 +1,9 @@
 import requests
 import json
 import time
-from .redis_functions import set_data, get_data
-from .misc import to_uuid
-from .config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
+from modules.redis_functions import set_data, get_data
+from modules.misc import to_uuid
+from modules.config import newrelic_insights_endpoint, newrelic_insights_timeout, newrelic_main_and_insights_keys, newrelic_infrastructure_max_data_age, newrelic_main_api_violation_endpoint, newrelic_main_api_timeout
 import logging
 logger = logging.getLogger(__name__)
 

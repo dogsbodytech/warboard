@@ -1,5 +1,5 @@
-from .config import pingdom_keys
-from .redis_functions import get_all_data, delete_data
+from modules.config import pingdom_keys
+from modules.redis_functions import get_all_data, delete_data
 
 def prune_old_keys():
     for key in get_all_data('pingdom_*'):

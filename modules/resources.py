@@ -1,8 +1,8 @@
 from __future__ import division
 import json
 import time
-from .redis_functions import get_data, set_volatile_data, get_all_data, set_data, delete_data
-from .misc import to_uuid
+from modules.redis_functions import get_data, set_volatile_data, get_all_data, set_data, delete_data
+from modules.misc import to_uuid
 import logging
 logger = logging.getLogger(__name__)
 

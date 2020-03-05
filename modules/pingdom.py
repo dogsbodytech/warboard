@@ -1,7 +1,7 @@
 import requests
 import base64
 import time
-from .config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
+from modules.config import pingdom_keys, pingdom_multiaccounts, pingdom_endpoint, pingdom_timeout
 import logging
 logger = logging.getLogger(__name__)
 
