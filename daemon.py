@@ -54,6 +54,10 @@ class WarboardDaemon(Daemon):
                 store_sirportly_results()
             except Exception as e:
                 logger.exception(e)
+            try:
+                store_calendar_items()
+            except Exception as e:
+                logger.exception(e)
             sleep(refresh_time())
 
 if __name__ == '__main__':
