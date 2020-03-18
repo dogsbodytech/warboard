@@ -16,6 +16,7 @@ from modules.tick import get_tick_data, store_tick_data
 from modules.prometheus import get_prometheus_data
 from modules.resources import store_resource_data
 from modules.sirportly import store_sirportly_results
+from modules.calendar_functions import store_calendar_items
 from modules.prune_keys import prune_old_keys
 
 class WarboardDaemon(Daemon):
@@ -52,6 +53,10 @@ class WarboardDaemon(Daemon):
                 logger.exception(e)
             try:
                 store_sirportly_results()
+            except Exception as e:
+                logger.exception(e)
+            try:
+                store_calendar_items()
             except Exception as e:
                 logger.exception(e)
             sleep(refresh_time())

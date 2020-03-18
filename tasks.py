@@ -2,7 +2,6 @@
 import sys
 import getpass
 from modules.config import warboard_user, warboard_log
-from modules.calendar_functions import store_calendar_items
 from modules.resources import clear_resources_keys
 from resources_list_unreporting_servers import list_unreporting_servers
 import logging
@@ -10,7 +9,6 @@ import logging.handlers
 import logging.config
 
 def hourly_tasks():
-    store_calendar_items()
     logger.info('The following servers are unreporting: {}'.format(list_unreporting_servers()))
 
 def daily_tasks():
