@@ -1,7 +1,7 @@
 import requests
 import time
 from modules.redis_functions import set_data, get_data
-from modules.config import datadog_url, datadog_orgs
+from modules.config import datadog_orgs
 from modules.misc import to_uuid
 
 # TODO:
@@ -25,6 +25,7 @@ def get_datadog_data():
     datadog_data_validity['total_checks'] = 0
     for org in datadog_orgs:
         datadog_data_validity['total_accounts'] += 1
+        datadog_url = datadog_orgs[org]['datadog_url']
         datadog_api_key = datadog_orgs[org]['datadog_api_key']
         datadog_app_key = datadog_orgs[org]['datadog_app_key']
         headers = { 'DD-API-KEY': datadog_api_key,
