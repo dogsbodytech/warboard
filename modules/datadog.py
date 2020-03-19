@@ -1,9 +1,6 @@
 import requests
 import time
-import json
-from modules.redis_functions import set_data, get_data
 from modules.config import datadog_orgs
-from modules.misc import to_uuid
 
 # TODO:
 # Add specific error handling for common errors, when errors are caught,
@@ -24,6 +21,7 @@ def get_datadog_data():
     datadog_data_validity['total_accounts'] = 0
     datadog_data_validity['total_checks'] = 0
     for org in datadog_orgs:
+        datadog_data[org] = {}
         datadog_data_validity['total_accounts'] += 1
         datadog_url = datadog_orgs[org]['datadog_url']
         datadog_api_key = datadog_orgs[org]['datadog_api_key']
@@ -48,20 +46,20 @@ def get_datadog_data():
                 # containing lists in the form timestamp, value
                 metric_value = host['pointlist'][-1][1]
                 # Hostnames are assumed to be globally unique even across orgs
-                if hostname not in datadog_data:
-                    datadog_data[hostname] = {}
-                    datadog_data[hostname]['summary'] = {}
-                    datadog_data[hostname]['health_status'] = 'blue'
+                if hostname not in datadog_data[org]:
+                    datadog_data[org][hostname] = {}
+                    datadog_data[org][hostname]['summary'] = {}
+                    datadog_data[org][hostname]['health_status'] = 'blue'
 
-                datadog_data[hostname]['name'] = hostname
-                datadog_data[hostname]['summary'][query_name] = metric_value
+                datadog_data[org][hostname]['name'] = hostname
+                datadog_data[org][hostname]['summary'][query_name] = metric_value
 
-        for hostname in datadog_data:
-            datadog_data[hostname]['orderby'] = max(
-                datadog_data[hostname]['summary']['cpu'],
-                datadog_data[hostname]['summary']['memory'],
-                datadog_data[hostname]['summary']['fullest_disk'],
-                datadog_data[hostname]['summary']['disk_io'])
+        for hostname in datadog_data[org]:
+            datadog_data[org][hostname]['orderby'] = max(
+                datadog_data[org][hostname]['summary']['cpu'],
+                datadog_data[org][hostname]['summary']['memory'],
+                datadog_data[org][hostname]['summary']['fullest_disk'],
+                datadog_data[org][hostname]['summary']['disk_io'])
 
         # Query alerting status and use it to set health status
         params = {'group_states': 'all'}
@@ -80,25 +78,14 @@ def get_datadog_data():
 
         for hostname, states in hosts_with_an_alerting_status.items():
             if 'No Data' in states:
-                datadog_data[hostname]['health_status'] = 'blue'
+                datadog_data[org][hostname]['health_status'] = 'blue'
             elif 'Alert' in states:
-                datadog_data[hostname]['health_status'] = 'red'
+                datadog_data[org][hostname]['health_status'] = 'red'
             elif 'Warn' in states:
-                datadog_data[hostname]['health_status'] = 'orange'
+                datadog_data[org][hostname]['health_status'] = 'orange'
             elif 'OK' in states:
-                datadog_data[hostname]['health_status'] = 'green'
+                datadog_data[org][hostname]['health_status'] = 'green'
 
     # Data will be valid for 5 minutes after the module runs
     datadog_data_validity['valid_until'] = time.time() * 1000 + 300000
     return datadog_data, datadog_data_validity
-
-def store_datadog_data(datadog_data, datadog_data_validity):
-    """
-    Store data returned by get_datadog_data in redis as key value pairs
-    """
-    for host in datadog_data:
-        host_data = datadog_data[host]
-        set_data('resources:datadog#{}'.format(to_uuid(host)),
-            json.dumps([host_data]))
-
-    set_data('resources_success:datadog', json.dumps([datadog_data_validity]))

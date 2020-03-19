@@ -14,6 +14,7 @@ from modules.port_monitoring import store_port_monitoring_results
 from modules.newrelic_infrastructure import get_newrelic_infra_data, store_newrelic_infra_data
 from modules.tick import get_tick_data, store_tick_data
 from modules.prometheus import get_prometheus_data
+from modules.datadog import get_datadog_data
 from modules.resources import store_resource_data
 from modules.sirportly import store_sirportly_results
 from modules.calendar_functions import store_calendar_items
@@ -49,6 +50,10 @@ class WarboardDaemon(Daemon):
                 logger.exception(e)
             try:
                 store_resource_data('prometheus', *get_prometheus_data())
+            except Exception as e:
+                logger.exception(e)
+            try:
+                store_resource_data('datadog', *get_datadog_data())
             except Exception as e:
                 logger.exception(e)
             try:
