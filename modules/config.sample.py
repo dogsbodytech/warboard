@@ -71,7 +71,10 @@ influx_timeout = 10
 influx_database_batch_size = 50
 
 # Datadog details
-datadog_orgs = {'<org name>': {'datadog_url': 'https://api.datadoghq.com/api/', 'datadog_api_key': '<api key>', 'datadog_app_key': '<app key>'}}
+datadog_orgs = {'<org name>': { 'datadog_url': 'https://api.datadoghq.com/api',
+                                'datadog_api_key': '<api key>',
+                                'datadog_app_key': '<app key>',
+                                'datadog_timeout': 15}}
 
 # Prometheus details
 # There are also some optional params, look in the prometheus module if
