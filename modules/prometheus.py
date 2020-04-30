@@ -16,11 +16,12 @@ def get_alerting_servers(user):
     """
     alerting_servers = {}
     down_servers = []
+    username = prometheus_credentials[user].get('alert_username', prometheus_credentials[user]['username'])
+    password = prometheus_credentials[user].get('alert_password', prometheus_credentials[user]['password'])
     try:
         alerting_servers_response = requests.get(
             '{}/api/v1/alerts'.format(prometheus_credentials[user]['alert_url']),
-            auth=HTTPBasicAuth(prometheus_credentials[user]['username'],
-            prometheus_credentials[user]['password']),
+            auth=HTTPBasicAuth(username, password),
             timeout=prometheus_credentials[user]['timeout'])
         alerting_servers_response.raise_for_status()
     except requests.exceptions.RequestException as e:
