@@ -37,10 +37,6 @@ def get_alerting_servers(user):
             if 'instance' not in alert['labels']:
                 continue
 
-            for label, value in prometheus_credentials[user].get('ignore_lables', {}).items():
-                if alert['labels'].get(label) == value:
-                    continue
-
             hostname = alert['labels']['instance']
             # catch servers that are down
             # only check if node exporter is down
@@ -130,9 +126,6 @@ def get_prometheus_data():
         if 'intermittent_tag' in prometheus_credentials[user]:
             labels_to_filter_based_on = ', {}'.format(prometheus_credentials[user]['intermittent_tag'])
 
-        for label in prometheus_credentials[user].get('ignore_lables', {}):
-            labels_to_filter_based_on += ', {}'.format(label)
-
         for query in queries:
             # CPU mode it necessary to avoid it being counted as a key
             # fullest_disk_sub needs to be substituted here or after
@@ -178,10 +171,6 @@ def get_prometheus_data():
 
             for instance_data in responses[metric]['data']['result']:
                 hostname = instance_data['metric']['instance']
-                for label, value in prometheus_credentials[user].get('ignore_lables', {}).items():
-                    if instance_data['metric'].get(label) == value:
-                        continue
-
                 if hostname not in prometheus_data[user]:
                     prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
