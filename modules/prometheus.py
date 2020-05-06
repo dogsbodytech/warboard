@@ -118,7 +118,7 @@ def get_prometheus_data():
         # This is configured in the config file as different set-ups may
         # have different filesystems to monitor.  If no argument is supplied
         # all of the disks will be monitored for each instance.
-        queries['fullest_disk'] = 'max((((node_filesystem_size_bytes{fullest_disk_sub} or node_filesystem_size{fullest_disk_sub}) - (node_filesystem_free_bytes{fullest_disk_sub} or node_filesystem_free_bytes{fullest_disk_sub})) / (node_filesystem_size_bytes{fullest_disk_sub} or node_filesystem_size{fullest_disk_sub})) * 100) by (instance{labels_to_filter_based_on})'
+        queries['fullest_disk'] = 'max((((node_filesystem_size_bytes{fullest_disk_sub} or node_filesystem_size{fullest_disk_sub}) - (node_filesystem_free_bytes{fullest_disk_sub} or node_filesystem_free{fullest_disk_sub})) / (node_filesystem_size_bytes{fullest_disk_sub} or node_filesystem_size{fullest_disk_sub})) * 100) by (instance{labels_to_filter_based_on})'
 
         # We will either sub in a blank string or the intermittent_tag
         # depending on if one is present
