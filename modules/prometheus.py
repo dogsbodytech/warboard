@@ -1,6 +1,7 @@
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+import re
 import time
 from modules.config import prometheus_credentials
 import logging
@@ -43,7 +44,7 @@ def get_alerting_servers(user):
             hostname = alert['labels']['instance']
             # catch servers that are down
             # only check if node exporter is down
-            if alert['labels']['alertname'] == 'service_down' and hostname.endswith(':9100'):
+            if 'down' in alert['labels']['alertname'].lower():
                 down_servers.append(hostname)
                 continue
             # I'm going to make a set of assumptions
@@ -61,6 +62,10 @@ def get_alerting_servers(user):
             elif alert['labels']['severity'] == 'P2':
                 status = 2
             elif alert['labels']['severity'] == 'P1':
+                status = 2
+            elif alert['labels']['severity'] == 'warning':
+                status = 1
+            elif alert['labels']['severity'] == 'critical':
                 status = 2
             else:
                 logger.warning('Invalid severity returned for {}: {}'.format(hostname, alert['labels']['severity']))
@@ -101,7 +106,7 @@ def get_prometheus_data():
         # cpu usage will be changing at:
         # https://prometheus.io/docs/prometheus/latest/querying/functions/
         queries['cpu'] = '(1 - ((avg(irate(node_cpu_seconds_total{cpu_mode}[10m])) by (instance{labels_to_filter_based_on})) or (avg(irate(node_cpu{cpu_mode}[10m])) by (instance{labels_to_filter_based_on})))) * 100'
-        queries['memory'] = '(((node_memory_MemTotal_bytes or node_memory_MemTotal) - (node_memory_MemFree_bytes or node_memory_MemFree)) / (node_memory_MemTotal_bytes or node_memory_MemTotal)) * 100'
+        queries['memory'] = '(1 - ((node_memory_MemAvailable_bytes or node_memory_MemAvailable) / (node_memory_MemTotal_bytes or node_memory_MemTotal))) * 100'
         # We want all data for each instance
         # We are only interested in the disk with greatest disk io
         # We are calculating disk io for each disk in the same way as cpu
@@ -180,8 +185,8 @@ def get_prometheus_data():
                 if hostname not in prometheus_data[user]:
                     prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
-                    # Don't display the prometheus port in the name
-                    prometheus_data[user][hostname]['name'] = hostname.rstrip(':9100')
+                    # Strip the port number if it exists from the hostname
+                    prometheus_data[user][hostname]['name'] = re.match('(^.*?)(:\d{1,5})?$', hostname)
                     prometheus_data[user][hostname]['summary'] = {}
 
                 if 'intermittent_tag' in prometheus_credentials[user]:
