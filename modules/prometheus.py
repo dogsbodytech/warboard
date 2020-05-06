@@ -46,26 +46,13 @@ def get_alerting_servers(user):
             # I'm going to make a set of assumptions
             # Alerts returned in this list are all active, so there is no need to
             # check if they have ended or been acknowledged
-            # You have a custom label 'severity' which all alerts will be tagged
-            # tagged with where P4 as warnings and P1&P2&P3 are critical alerts
             #
             # We are returning status as an integer so that the most severe alert
             # for each server can easily be grabbed
-            if alert['labels']['severity'] == 'P4':
+            # Assume alerts are critical unless told otherwise
+            status = 2
+            if alert['labels'].get('severity') == 'warning':
                 status = 1
-            elif alert['labels']['severity'] == 'P3':
-                status = 2
-            elif alert['labels']['severity'] == 'P2':
-                status = 2
-            elif alert['labels']['severity'] == 'P1':
-                status = 2
-            elif alert['labels']['severity'] == 'warning':
-                status = 1
-            elif alert['labels']['severity'] == 'critical':
-                status = 2
-            else:
-                logger.warning('Invalid severity returned for {}: {}'.format(hostname, alert['labels']['severity']))
-                continue
 
             if hostname not in alerting_servers:
                 alerting_servers[hostname] = []
