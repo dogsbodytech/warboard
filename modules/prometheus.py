@@ -175,7 +175,7 @@ def get_prometheus_data():
                     prometheus_validity['total_checks'] += 1
                     prometheus_data[user][hostname] = {}
                     # Strip the port number if it exists from the hostname
-                    prometheus_data[user][hostname]['name'] = re.match('(^.*?)(:\d{1,5})?$', hostname)
+                    prometheus_data[user][hostname]['name'] = re.match('(^.*?)(:\d{1,5})?$', hostname).group(1)
                     prometheus_data[user][hostname]['summary'] = {}
 
                 if 'intermittent_tag' in prometheus_credentials[user]:
