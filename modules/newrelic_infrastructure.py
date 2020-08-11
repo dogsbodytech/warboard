@@ -78,7 +78,7 @@ def get_newrelic_infra_data():
             if timestamp > time_accepted_since:
                 memory_percentage = None
                 if account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] != None and account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] != None:
-                    memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] // account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
+                    memory_percentage = ( account_infra_data['results'][0]['events'][num]['memoryUsedBytes'] / account_infra_data['results'][0]['events'][num]['memoryTotalBytes'] ) * 100
 
                 infrastructure_host['summary'] = {
                     'memory': 0.0,
