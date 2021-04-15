@@ -4,6 +4,7 @@ from modules.redis_functions import get_all_data, get_data
 from modules.newrelic_infrastructure import get_newrelic_infra_data
 from modules.prometheus import get_prometheus_data
 from modules.tick import get_tick_data
+from modules.datadog import get_datadog_data
 
 def list_unreporting_servers():
     found_servers = set()
@@ -26,6 +27,12 @@ def list_unreporting_servers():
     for user in prometheus_data:
         for host in prometheus_data[user]:
             host_data = prometheus_data[user][host]
+            reporting_servers.add(host_data['name'])
+
+    datadog_data, datadog_data_validity = get_datadog_data()
+    for user in datadog_data:
+        for host in datadog_data[user]:
+            host_data = datadog_data[user][host]
             reporting_servers.add(host_data['name'])
 
     return found_servers - reporting_servers
