@@ -81,15 +81,17 @@ def get_datadog_data():
                 datadog_data[org][hostname] = {}
                 datadog_data[org][hostname]['summary'] = {}
                 datadog_data[org][hostname]['name'] = hostname
-
-            if 'No Data' in states:
+                datadog_data[org][hostname]['orderby'] = 0
                 datadog_data[org][hostname]['health_status'] = 'blue'
-            elif 'Alert' in states:
-                datadog_data[org][hostname]['health_status'] = 'red'
-            elif 'Warn' in states:
-                datadog_data[org][hostname]['health_status'] = 'orange'
-            elif 'OK' in states:
-                datadog_data[org][hostname]['health_status'] = 'green'
+            else:
+                if 'No Data' in states:
+                    datadog_data[org][hostname]['health_status'] = 'blue'
+                elif 'Alert' in states:
+                    datadog_data[org][hostname]['health_status'] = 'red'
+                elif 'Warn' in states:
+                    datadog_data[org][hostname]['health_status'] = 'orange'
+                elif 'OK' in states:
+                    datadog_data[org][hostname]['health_status'] = 'green'
 
     # Data will be valid for 5 minutes after the module runs
     datadog_data_validity['valid_until'] = time.time() * 1000 + 300000
