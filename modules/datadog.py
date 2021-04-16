@@ -87,7 +87,7 @@ def get_datadog_data():
                 status = 'green'
             if hostname not in datadog_data[org]:
                 if status == 'green':
-                    pass
+                    continue
                 else:
                     datadog_data[org][hostname] = {}
                     datadog_data[org][hostname]['summary'] = {}
