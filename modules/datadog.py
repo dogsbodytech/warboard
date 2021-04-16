@@ -77,6 +77,11 @@ def get_datadog_data():
                 hosts_with_an_alerting_status[hostname].append(state['status'])
 
         for hostname, states in hosts_with_an_alerting_status.items():
+            if hostname not in datadog_data[org]:
+                datadog_data[org][hostname] = {}
+                datadog_data[org][hostname]['summary'] = {}
+                datadog_data[org][hostname]['name'] = hostname
+
             if 'No Data' in states:
                 datadog_data[org][hostname]['health_status'] = 'blue'
             elif 'Alert' in states:
