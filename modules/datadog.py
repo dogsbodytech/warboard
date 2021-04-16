@@ -77,21 +77,23 @@ def get_datadog_data():
                 hosts_with_an_alerting_status[hostname].append(state['status'])
 
         for hostname, states in hosts_with_an_alerting_status.items():
+            if 'No Data' in states:
+                status = 'blue'
+            elif 'Alert' in states:
+                status = 'red'
+            elif 'Warn' in states:
+                status = 'orange'
+            elif 'OK' in states:
+                status = 'green'
             if hostname not in datadog_data[org]:
-                datadog_data[org][hostname] = {}
-                datadog_data[org][hostname]['summary'] = {}
-                datadog_data[org][hostname]['name'] = hostname
-                datadog_data[org][hostname]['orderby'] = 0
-                datadog_data[org][hostname]['health_status'] = 'blue'
-            else:
-                if 'No Data' in states:
-                    datadog_data[org][hostname]['health_status'] = 'blue'
-                elif 'Alert' in states:
-                    datadog_data[org][hostname]['health_status'] = 'red'
-                elif 'Warn' in states:
-                    datadog_data[org][hostname]['health_status'] = 'orange'
-                elif 'OK' in states:
-                    datadog_data[org][hostname]['health_status'] = 'green'
+                if status == 'green':
+                    pass
+                else:
+                    datadog_data[org][hostname] = {}
+                    datadog_data[org][hostname]['summary'] = {}
+                    datadog_data[org][hostname]['name'] = hostname
+                    datadog_data[org][hostname]['orderby'] = 0
+            datadog_data[org][hostname]['health_status'] = status
 
     # Data will be valid for 5 minutes after the module runs
     datadog_data_validity['valid_until'] = time.time() * 1000 + 300000
