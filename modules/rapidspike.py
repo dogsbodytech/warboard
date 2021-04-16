@@ -36,7 +36,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
     # options that differ from the default need to be supplied.
     monitor_types = {   'ping': {   },
                         'tcp':  {   'type': 'label'},
-                        'http': {   'name': 'website_domain'}}
+                        'http': {   'additional_params': '&website=true'}}
     # Mapping RapidSpike statuses to the ones used by the Warboard, as
     # initially set by Pingdom
     status_mapping = {  'passing': 'up',
@@ -47,7 +47,7 @@ def get_rapidspike_data_for_account(public_key, private_key):
         # I'm not sure if I love passing things through in the url and
         # in the params rather than all in the params but it all ends up
         # at the same place
-        api_response = rapidspike_api_call('/v1/{}monitors?stats=status, latest_response'.format(monitor), public_key, private_key)
+        api_response = rapidspike_api_call('/v1/{}monitors?stats=status, latest_response{}'.format(monitor, monitor_types[monitor].get('additional_params', '')), public_key, private_key)
         data = api_response['data']['{}_monitors'.format(monitor)]
 
         for check in data:
@@ -56,7 +56,10 @@ def get_rapidspike_data_for_account(public_key, private_key):
             # Check the status, use blue (paused) for all unknown statuses
             check_data['status'] = 'paused'
             # Use custom name field falling back to asset_title
-            check_data['name'] = check['monitor'][monitor_types[monitor].get('name', 'asset_title')]
+            if monitor == 'http':
+                check_data['name'] = check['monitor']['website']['domain_name']
+            else:
+                check_data['name'] = check['monitor']['asset_title']
             # Use custom type field falling back to type
             check_data['type'] = check['monitor'][monitor_types[monitor].get('type', 'type')]
             # Get the last response
