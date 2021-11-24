@@ -131,17 +131,22 @@ def get_newrelic_infra_data():
                     # The best I can do to match check if the server / host we are
                     # currently checking was the cause of the violation we are
                     # currently looping through
-                    if infrastructure_host['name'] in violation['entity']['name']:
-                        if violation['condition_name'] == 'Host Not Reporting':
-                            violation_level = 3
-                        elif violation['priority'] == 'Warning':
-                            if violation_level < 1:
-                                violation_level = 1
-                        elif violation['priority'] == 'Critical':
-                            if violation_level < 2:
-                                violation_level = 2
-                        else:
-                            logger.warning('Unrecognised violation {} expected Warning or Critical'.format(violation['priority']))
+                    try:
+                        if infrastructure_host['name'] in violation['entity']['name']:
+                            if violation['condition_name'] == 'Host Not Reporting':
+                                violation_level = 3
+                            elif violation['priority'] == 'Warning':
+                                if violation_level < 1:
+                                    violation_level = 1
+                            elif violation['priority'] == 'Critical':
+                                if violation_level < 2:
+                                    violation_level = 2
+                            else:
+                                logger.warning('Unrecognised violation {} expected Warning or Critical'.format(violation['priority']))
+                    except:
+                        logger.warning('Unrecognised violation bad input data for {}, from {}'.format(account, infrastructure_host))
+                        # 24-11-2021 12:56:30: warboard_daemon.modules.newrelic_infrastructure: WARNING: Unrecognised violation bad input data for {'name': None, 'orderby': 49.64794311361705, 'health_status': 'blue', 'summary': {'memory': 49.64794311361705, 'disk_io': 0.2433389169458473, 'fullest_disk': 48.53858019761348, 'cpu': 1.215955413371545}}
+
 
                 if violation_level == 0:
                     infrastructure_host['health_status'] = 'green'
