@@ -107,6 +107,14 @@
             </td>
           </tr>
           <tr class="lead">
+            <td class="col-sm-4">Daily <span class="pull-right">{{ sirportly_results['daily_tickets'] }}</span></td>
+            <td class="col-sm-8">
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['daily_tickets'] * sirportly_results['multiplier'] }}%"></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="lead">
             <td class="col-sm-4">Waiting <span class="pull-right">{{ sirportly_results['waitingstaff_tickets'] }}</span></td>
             <td class="col-sm-8">
               <div class="progress">

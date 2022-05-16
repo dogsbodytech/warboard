@@ -2,7 +2,7 @@ import requests
 import math
 from modules.redis_functions import set_data, get_data
 from modules.config import sirportly_key, sirportly_token, sirportly_users, sirportly_endpoint, sirportly_red_filter, sirportly_blue_filter, sirportly_resolved_filter
-from modules.config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter, sirportly_waitingstaff_filter
+from modules.config import sirportly_total_filter, sirportly_reduser_filter, sirportly_greenuser_filter, sirportly_blueuser_filter, sirportly_unassigned_filter, sirportly_waitingstaff_filter, sirportly_daily_filter
 
 def sirportly_filter(filter_id, user=None):
     """
@@ -25,6 +25,7 @@ def get_sirportly_data():
     """
     sirportly_data = {'users': {}}
     sirportly_data['unassigned_tickets'] = sirportly_filter(sirportly_unassigned_filter)
+    sirportly_data['daily_tickets'] = sirportly_filter(sirportly_daily_filter)
     sirportly_data['waitingstaff_tickets'] = sirportly_filter(sirportly_waitingstaff_filter)
     sirportly_data['total_tickets'] = sirportly_filter(sirportly_total_filter)
     sirportly_data['red_tickets'] = sirportly_filter(sirportly_red_filter)
@@ -60,6 +61,7 @@ def sirportly_ticket_multiplier(sirportly_data):
     """
     ticket_counts = []
     ticket_counts.append(sirportly_data['unassigned_tickets'])
+    ticket_counts.append(sirportly_data['daily_tickets'])
     ticket_counts.append(sirportly_data['waitingstaff_tickets'])
     for user in sirportly_data['users']:
         ticket_counts.append(sirportly_data['users'][user]['total'])
@@ -91,6 +93,7 @@ def get_sirportly_results():
     """
     sirportly_results = {'users': {}}
     sirportly_results['unassigned_tickets'] = int(get_data('unassigned_tickets'))
+    sirportly_results['daily_tickets'] = int(get_data('daily_tickets'))
     sirportly_results['waitingstaff_tickets'] = int(get_data('waitingstaff_tickets'))
     sirportly_results['resolved_tickets'] = int(get_data('resolved_tickets'))
     sirportly_results['red_percent'] = get_data('red_percent')
