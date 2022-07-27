@@ -30,5 +30,8 @@
 		"vite": "^3.0.0"
 	},
 	"type": "module",
-	"packageManager": "pnpm@7.5.0"
+	"packageManager": "pnpm@7.5.0",
+	"dependencies": {
+		"redis": "^4.2.0"
+	}
 }

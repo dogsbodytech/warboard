@@ -1,2 +1,34 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script type="ts">
+	export let portmon: any[];
+	export let resmon: any[];
+	console.log(portmon);
+	console.log(resmon);
+</script>
+
+<!-- {#each portmon as table} -->
+<table>
+	{#each portmon as item}
+		<tr>
+			{#each Object.keys(item) as key}
+				<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
+			{/each}
+		</tr>
+	{/each}
+</table>
+<!-- {/each} -->
+<table>
+	{#each resmon as item}
+		<tr>
+			{#each Object.keys(item) as key}
+				<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
+			{/each}
+		</tr>
+	{/each}
+</table>
+
+<style>
+	table,
+	td {
+		border: 1px solid;
+	}
+</style>
