@@ -32,6 +32,8 @@
 	"type": "module",
 	"packageManager": "pnpm@7.5.0",
 	"dependencies": {
+		"@onsvisual/svelte-charts": "^0.1.35",
+		"layercake": "^7.0.0",
 		"redis": "^4.2.0"
 	}
 }
