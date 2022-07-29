@@ -1,63 +1,122 @@
-<script type="ts">
+<script lang="ts">
 	// import ScatterChart from "@onsvisual/svelte-charts/src/charts/ScatterChart.svelte"
 
 	import { LayerCake, Svg } from 'layercake';
 	import PercentLayer from '$lib/percentLayer.svelte';
+	import merge from 'lodash.merge';
 
-	export let portmon: {
+	import { onMount } from 'svelte';
+
+	export let data: any = {};
+	// $: console.log(data);
+
+	let portmon_modules_checked = 0;
+
+	let portmon: {
 		lastresponsetime: number;
 		mod: string;
 		name: string;
 		status: 'up' | 'paused' | 'down';
 		type: string;
-	}[];
-	export let resmon: any[];
-	export let portmon_ag_results: {
-		up: number;
-		down: number;
-		paused: number;
+	}[] = [];
 
-		total_accounts: number;
-		failed_accounts: number;
+	$: {
+		let t: any[] = [];
+		Object.entries(data.port_monitoring).forEach((e) => {
+			let [mod, element]: [string, any[]] = e as [string, any[]];
+			t.push(
+				element.map((i: any) => {
+					i.mod = mod;
+					return i;
+				})
+			);
+		});
+
+		portmon = t.flat(1);
+		portmon_modules_checked = t.length;
+
+		// console.log(portmon);
+	}
+
+	let portmon_ag_results = {
+		up: 0,
+		down: 0,
+		paused: 0,
+
+		total_accounts: 0,
+		failed_accounts: 0
 	};
 
-	let portmon_total = portmon_ag_results.up + portmon_ag_results.down + portmon_ag_results.paused;
+	$: {
+		let t = {
+			up: 0,
+			down: 0,
+			paused: 0,
 
-	let resmon_total = 0;
+			total_accounts: 0,
+			failed_accounts: 0
+		};
+		Object.entries(data.port_monitoring_success).forEach((e) => {
+			let [mod, dat]: [string, any] = e;
+			t.up += dat.up;
+			t.down += dat.down;
+			t.paused += dat.paused;
+			t.total_accounts += dat.total_accounts;
+			// console.log(mod, dat.valid_until < Date.now())
+			if (dat.valid_until < Date.now()) {
+				t.failed_accounts += dat.total_accounts;
+			} else {
+				t.failed_accounts += dat.failed_accounts;
+			}
+		});
+		portmon_ag_results = t;
+	}
+
 	let resmon_green = 0;
 	let resmon_orange = 0;
 	let resmon_blue = 0;
 	let resmon_red = 0;
-	$: resmon.forEach((res) => {
-		resmon_total += 1;
-		switch (res.health_status) {
-			case 'green':
-				resmon_green += 1;
-				break;
-			case 'orange':
-				resmon_orange += 1;
-				break;
-			case 'red':
-				resmon_red += 1;
-				break;
-			case 'blue':
-				resmon_blue += 1;
-				break;
 
-			default:
-				break;
-		}
-	});
+	let resmon: any[] = [];
+
+	$: {
+		let t: any[] = [];
+		Object.entries(data.resources).forEach((e) => {
+			let [mod, element]: [string, any] = e;
+			Object.entries(element).forEach((res) => {
+				let [id, dat]: [string, any] = res;
+				t.push(dat);
+				switch (dat.health_status) {
+					case 'green':
+						resmon_green += 1;
+						break;
+					case 'orange':
+						resmon_orange += 1;
+						break;
+					case 'red':
+						resmon_red += 1;
+						break;
+					case 'blue':
+						resmon_blue += 1;
+						break;
+
+					default:
+						break;
+				}
+			});
+		});
+		resmon = t;
+	}
 
 	function getIcon(mod: string): string {
 		switch (mod) {
-			case 'port_monitoring:rapidspike':
+			case 'rapidspike':
 				return 'rapidspike.png';
 				break;
-			case 'port_monitoring:appbeat':
+			case 'appbeat':
 				return 'appbeat.ico';
 				break;
-			case 'port_monitoring:pingdom':
+			case 'pingdom':
 				return 'pingdom.png';
 				break;
 
@@ -66,6 +125,39 @@
 				break;
 		}
 	}
+
+	async function streamDat() {
+		let response = await fetch('./stream').catch((e) => {
+			console.error(e);
+			setTimeout(streamDat, 500);
+		});
+		// Retrieve its body as ReadableStream
+		const reader = response?.body?.getReader();
+		if (!reader) return;
+
+		// console.log(response)
+
+		let decoder = new TextDecoder();
+
+		let done,
+			value,
+			textbuf = '';
+		while (!done) {
+			({ value, done } = await reader?.read());
+			if (done) {
+				break;
+			}
+			textbuf += decoder.decode(value);
+			let arr = textbuf.split('\n');
+			if (arr.length) textbuf = arr.pop() as string;
+
+			arr.forEach((s) => {
+				// console.log(JSON.parse(s))
+				data = merge(data, JSON.parse(s));
+			});
+		}
+	}
+	onMount(streamDat);
 </script>
 
 <div class="grid">
@@ -92,34 +184,34 @@
 		<div class="panel-inner">
 			<table class="portmon">
 				<thead>
-					<td class="icon"></td>
+					<td class="icon" />
 					<td class="name l">Name</td>
 					<td class="time r">Latency</td>
 					<td class="type l">Type</td>
 				</thead>
 				<tbody>
-				{#each portmon
-					.sort((a, b) => b.lastresponsetime - a.lastresponsetime)
-					.sort((a, b) => {
-						if (a.status === b.status) {
-							return 0;
-						} else if (a.status > b.status) {
-							return 1;
-						} else {
-							return -1;
-						}
-					}) as item}
-					<tr class={item.status}>
-						<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
-						<td class="name l">{item.name}</td>
-						<td class="time r">{item.lastresponsetime}ms</td>
-						<td class="type l">{item.type.toUpperCase()}</td>
-						<!-- {#each Object.keys(item).sort() as key}
+					{#each portmon
+						.sort((a, b) => b.lastresponsetime - a.lastresponsetime)
+						.sort((a, b) => {
+							if (a.status === b.status) {
+								return 0;
+							} else if (a.status > b.status) {
+								return 1;
+							} else {
+								return -1;
+							}
+						}) as item}
+						<tr class={item.status}>
+							<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
+							<td class="name l">{item.name}</td>
+							<td class="time r">{item.lastresponsetime}ms</td>
+							<td class="type l">{item.type.toUpperCase()}</td>
+							<!-- {#each Object.keys(item).sort() as key}
 						<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
 					{/
 				ssr={true}each} -->
-					</tr>
-				{/each}
+						</tr>
+					{/each}
 				</tbody>
 			</table>
 		</div>
@@ -139,7 +231,7 @@
 				z="c"
 			>
 				<Svg>
-					<PercentLayer/>
+					<PercentLayer />
 				</Svg>
 			</LayerCake>
 		</div>
@@ -153,18 +245,18 @@
 					<td class="disk_io r">Disk IO</td>
 				</thead>
 				<tbody>
-				{#each resmon.sort((a, b) => b.orderby - a.orderby) as item}
-					<tr class="{item.health_status}">
-						<!-- {#each Object.keys(item).sort() as key}
+					{#each resmon.sort((a, b) => b.orderby - a.orderby) as item}
+						<tr class={item.health_status}>
+							<!-- {#each Object.keys(item).sort() as key}
 							<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
 						{/each} -->
-						<td class="name l">{item.name}</td>
-						<td class="cpu r">{Math.round(item.summary.cpu)}%</td>
-						<td class="memory r">{Math.round(item.summary.memory)}%</td>
-						<td class="fullest_disk r">{Math.round(item.summary.fullest_disk)}%</td>
-						<td class="disk_io r">{Math.round(item.summary.disk_io)}%</td>
-					</tr>
-				{/each}
+							<td class="name l">{item.name}</td>
+							<td class="cpu r">{Math.round(item.summary.cpu)}%</td>
+							<td class="memory r">{Math.round(item.summary.memory)}%</td>
+							<td class="fullest_disk r">{Math.round(item.summary.fullest_disk)}%</td>
+							<td class="disk_io r">{Math.round(item.summary.disk_io)}%</td>
+						</tr>
+					{/each}
 				</tbody>
 			</table>
 		</div>
@@ -236,33 +328,38 @@
 		padding-right: 0.5rem;
 	}
 
-
 	.time {
 		width: 6em;
 	}
 
-	.cpu, .memory, .fullest_disk, .disk_io {
-		width: 4em
+	.cpu,
+	.memory,
+	.fullest_disk,
+	.disk_io {
+		width: 4em;
 	}
 
 	@keyframes downBlink {
 		0% {
-			background-color: rgb(254 226 226);
+			background-color: #fef2f2;
 		}
 		100% {
-			background-color: white;
+			background-color: #fee2e2;
 		}
 	}
-	.up, .green {
+	.up,
+	.green {
 		background-color: rgb(220 252 231);
 	}
-	.paused, .blue {
+	.paused,
+	.blue {
 		background-color: #e0f2fe;
 	}
 	.orange {
-		background-color: #FEF9C3;
+		background-color: #fef9c3;
 	}
-	.down, .red {
+	.down,
+	.red {
 		background-color: rgb(254 226 226); /* 100 */
 		animation: downBlink 1s infinite alternate-reverse;
 	}

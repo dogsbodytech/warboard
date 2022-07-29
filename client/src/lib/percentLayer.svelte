@@ -1,52 +1,56 @@
 <!-- { filename: './components/Scatter.svelte' } -->
-<script type=ts>
-    // Import the getContext function from svelte
-    import { getContext } from 'svelte';
-  
-    // Access the context using the 'LayerCake' keyword
-    // Grab some helpful functions
-    const { colours, data, x, z } = getContext('LayerCake');
-  
-    // Customizable defaults
-    export let height = 24;
+<script lang=ts>
+	// Import the getContext function from svelte
+	import { getContext } from 'svelte';
 
+	// Access the context using the 'LayerCake' keyword
+	// Grab some helpful functions
+	const { colours, data, x, z } = getContext('LayerCake');
 
-    let percents: {
-        xDist: number,
-        width: number,
-        fill: string
-    }[] = [];
+	// Customizable defaults
+	export let height = 24;
 
-    let w = 1;
+	let percents: {
+		xDist: number;
+		width: number;
+		fill: string;
+	}[] = [];
 
-    $: {
-        let xDist = 0
-        percents = $data
-            // .sort((a, b) => {
-            //     if (a.name === b.name) {
-            //         return 0;
-            //     } else if (a.name > b.name) {
-            //         return 1;
-            //     } else {
-            //         return -1;
-            //     }
+	let w = 1;
+
+	$: {
+		let xDist = 0;
+		percents = $data
+			// .sort((a, b) => {
+			//     if (a.name === b.name) {
+			//         return 0;
+			//     } else if (a.name > b.name) {
+			//         return 1;
+			//     } else {
+			//         return -1;
+			//     }
 			// 	})
-            .map((d: any)=> {
-                let i: any = {}
-                i.xDist = xDist;
-                i.width = $x(d)
-                i.fill = $z(d)
-                xDist += i.width
-                return i
-            })
-        w = xDist
-    }
-  </script>
-  
-  <g>
-    {#each percents as d, i}
+			.map((d: any) => {
+				let i: any = {};
+				i.xDist = xDist;
+				i.width = $x(d);
+				i.fill = $z(d);
+				xDist += i.width;
+				return i;
+			});
+		w = xDist;
+	}
+</script>
 
-        <rect class="percentage-segment" fill="{d.fill}" {height} x="{d.xDist * 100 / w}%" y="0" width="{d.width * 100 / w}%"></rect>
-
-    {/each}
-  </g>
+<g>
+	{#each percents as d, i}
+		<rect
+			class="percentage-segment"
+			fill={d.fill}
+			{height}
+			x="{(d.xDist * 100) / w}%"
+			y="0"
+			width="{(d.width * 100) / w}%"
+		/>
+	{/each}
+</g>
