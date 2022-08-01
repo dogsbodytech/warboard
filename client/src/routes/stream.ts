@@ -14,9 +14,11 @@ subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) 
     let keyComponents = /^__keyspace@0__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/.exec(channel) || []
 
     let returnDat: any = {};
+
     returnDat[keyComponents[1]] = {}
     switch (keyComponents[1]) {
         case "port_monitoring":
+            console.log(message, channel)
             // .map((i: any) => {i.mod = keyComponents[2]; return i});
             returnDat[keyComponents[1]][keyComponents[2]] =
                 JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
@@ -39,11 +41,18 @@ subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) 
             console.log(channel)
             break;
     }
-    streamList.forEach((controller) => controller.enqueue(JSON.stringify(returnDat) + '\n'))
+
+    streamList.forEach((controller, index) => {
+        try {
+            controller.enqueue(JSON.stringify(returnDat) + '\n')
+        } catch (error) {
+            console.log(index, error, controller)
+        }
+    })
     // console.log(channel, message)
 })
 
-let streamList: Map<number, ReadableStreamController<any>> = new Map()
+let streamList: Map<string, ReadableStreamController<any>> = new Map()
 let streamCount = 0;
 
 interface RedisStreamSource extends UnderlyingSource {
@@ -54,7 +63,7 @@ interface RedisStreamSource extends UnderlyingSource {
 const streamSource: RedisStreamSource = {
     index: 0,
     start(controller) {
-        streamList.set(streamCount, controller)
+        streamList.set("" + streamCount, controller)
         this.index = streamCount;
         streamCount++
     },
@@ -62,7 +71,10 @@ const streamSource: RedisStreamSource = {
         // We don't really need a pull 
     },
     cancel() {
-        streamList.delete(this.index)
+        let c = streamList.get("" + this.index)
+        streamList.delete("" + this.index)
+        console.log("deleted", this.index)
+        c?.close()
     },
     // type,
     // autoAllocateChunkSize,
@@ -140,7 +152,7 @@ const streamSource: RedisStreamSource = {
 
 export async function GET() {
     let body = new ReadableStream(streamSource, {
-        highWaterMark: 3,
+        highWaterMark: 6,
         size: () => 1,
     });
 

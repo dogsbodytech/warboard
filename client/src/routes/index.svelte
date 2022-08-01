@@ -128,7 +128,7 @@
 
 	async function streamDat() {
 		let response = await fetch('./stream').catch((e) => {
-			console.error(e);
+			console.error("stream start", e);
 			setTimeout(streamDat, 500);
 		});
 		// Retrieve its body as ReadableStream
@@ -153,7 +153,12 @@
 
 			arr.forEach((s) => {
 				// console.log(JSON.parse(s))
-				data = merge(data, JSON.parse(s));
+				try {
+					data = merge(data, JSON.parse(s));
+				} catch (error) {
+					console.log("stream error", s, error)
+				}
+				
 			});
 		}
 	}
