@@ -8,6 +8,8 @@
 	import { onMount } from 'svelte';
 
 	export let data: any = {};
+
+	let dataError = false
 	// $: console.log(data);
 
 	let portmon_modules_checked = 0;
@@ -127,8 +129,10 @@
 	}
 
 	async function streamDat() {
+		dataError = false
 		let response = await fetch('./stream').catch((e) => {
 			console.error("stream start", e);
+			dataError = e
 			setTimeout(streamDat, 500);
 		});
 		// Retrieve its body as ReadableStream
@@ -164,6 +168,10 @@
 	}
 	onMount(streamDat);
 </script>
+
+{#if dataError}
+	<div style="background-color: lightcoral;">{JSON.stringify(dataError)}</div>
+{/if}
 
 <div class="grid">
 	<!-- {#each portmon as table} -->
