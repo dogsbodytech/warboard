@@ -4,8 +4,14 @@
 	import { LayerCake, Svg } from 'layercake';
 	import PercentLayer from '$lib/percentLayer.svelte';
 	import merge from 'lodash.merge';
+	import colours from '$lib/colours';
 
 	import { onMount } from 'svelte';
+
+	let chDown = colours.red[600];
+	let chWarn = colours.yellow[600];
+	let chUp = colours.green[600];
+	let chInfo = colours.sky[600];
 
 	export let data: any = {};
 
@@ -187,9 +193,9 @@
 				ssr={true}
 				percentRange={false}
 				data={[
-					{ w: portmon_ag_results.down, c: 'rgb(153 27 27)' },
-					{ w: portmon_ag_results.paused, c: '#075985' },
-					{ w: portmon_ag_results.up, c: 'rgb(22 101 52)' }
+					{ w: portmon_ag_results.down, c: chDown },
+					{ w: portmon_ag_results.paused, c: chInfo },
+					{ w: portmon_ag_results.up, c: chUp }
 				]}
 				x="w"
 				z="c"
@@ -240,10 +246,10 @@
 			<LayerCake
 				ssr={true}
 				data={[
-					{ w: resmon_red, c: 'rgb(153 27 27)' },
-					{ w: resmon_orange, c: '#854D0E' },
-					{ w: resmon_blue, c: '#075985' },
-					{ w: resmon_green, c: 'rgb(22 101 52)' }
+					{ w: resmon_red, c: chDown },
+					{ w: resmon_orange, c: chWarn },
+					{ w: resmon_blue, c: chInfo },
+					{ w: resmon_green, c: chUp }
 				]}
 				x="w"
 				z="c"
