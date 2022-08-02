@@ -9,7 +9,7 @@
 
 	export let data: any = {};
 
-	let dataError = false
+	let dataError: boolean | any = false;
 	// $: console.log(data);
 
 	let portmon_modules_checked = 0;
@@ -129,10 +129,10 @@
 	}
 
 	async function streamDat() {
-		dataError = false
-		let response = await fetch('./stream').catch((e) => {
-			console.error("stream start", e);
-			dataError = e
+		dataError = false;
+		let response = await fetch('./stream').catch((e: Error) => {
+			console.error('stream start', e);
+			dataError = e.message;
 			setTimeout(streamDat, 500);
 		});
 		// Retrieve its body as ReadableStream
@@ -147,7 +147,13 @@
 			value,
 			textbuf = '';
 		while (!done) {
-			({ value, done } = await reader?.read());
+			({ value, done } = await reader?.read().catch((e) => {
+				console.error('stream continuity', e);
+				dataError = e.message;
+				setTimeout(streamDat, 500);
+				return { done: true, value: undefined }
+			}));
+
 			if (done) {
 				break;
 			}
@@ -160,9 +166,8 @@
 				try {
 					data = merge(data, JSON.parse(s));
 				} catch (error) {
-					console.log("stream error", s, error)
+					console.log('stream error', s, error);
 				}
-				
 			});
 		}
 	}
@@ -258,7 +263,16 @@
 					<td class="disk_io r">Disk IO</td>
 				</thead>
 				<tbody>
-					{#each resmon.sort((a, b) => b.orderby - a.orderby) as item}
+					{#each resmon.sort((a, b) => b.orderby - a.orderby)
+						.sort((b, a) => {
+							if (a.health_status === b.health_status) {
+								return 0;
+							} else if (a.health_status > b.health_status) {
+								return 1;
+							} else {
+								return -1;
+							}
+						}) as item}
 						<tr class={item.health_status}>
 							<!-- {#each Object.keys(item).sort() as key}
 							<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
