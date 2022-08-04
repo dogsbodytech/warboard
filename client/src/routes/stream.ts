@@ -46,7 +46,7 @@ subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) 
         try {
             controller.enqueue(JSON.stringify(returnDat) + '\n')
         } catch (error) {
-            console.log(index, error, controller)
+            // console.log(index, error, controller)
         }
     })
     // console.log(channel, message)
@@ -149,7 +149,7 @@ const streamSource: RedisStreamSource = {
 
 
 
-
+/** @type {import('./__types/items').RequestHandler} */
 export async function GET() {
     let body = new ReadableStream(streamSource, {
         highWaterMark: 6,
