@@ -72,7 +72,7 @@
                 return [item]
             } else {
                 let itArray = []
-                for (var d = new Date(item.start.date); d <= new Date(item.end.date); d.setDate(d.getDate() + 1)) {
+                for (var d = new Date(item.start.date); d <= new Date(new Date(item.end.date).getTime()-1000); d.setDate(d.getDate() + 1)) {
                     let newItem: any = {}
                     Object.assign(newItem, item)
                     newItem.date = new Date(d).toISOString().split("T")[0];
