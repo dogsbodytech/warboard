@@ -3,7 +3,7 @@ Node v16+ required. Run `corepack enable`. (enables the package manager manager)
 
 # create-svelte
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+If deploying, go here: [DEPLOY.md](DEPLOY.md)
 
 ## Developing
 
