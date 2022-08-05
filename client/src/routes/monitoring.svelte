@@ -187,6 +187,9 @@
 <div class="grid">
 	<!-- {#each portmon as table} -->
 	<div class="panel portmon-panel">
+		{#if portmon_ag_results?.failed_accounts !== 0}
+			<div>{((portmon_ag_results.total_accounts - portmon_ag_results.failed_accounts) * 100) / portmon_ag_results.total_accounts}% success fetching port monitoring</div>
+		{/if}
 		<div class="percent-container">
 			<!-- 800 -->
 			<LayerCake
