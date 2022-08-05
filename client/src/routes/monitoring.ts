@@ -1,5 +1,4 @@
 import { createClient } from 'redis';
-import { saveToken } from "./calendar/2AccountToken"
 
 const client = createClient()
 await client.connect()
@@ -10,19 +9,6 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 /** @type {import('./__types/items').RequestHandler} */
 export async function GET(reqe: RequestEvent) {
-    let code = reqe.url.searchParams.get("code")
-    if (code) {
-
-        await saveToken(reqe.url.searchParams.get("state"), code)
-        // await saveToken(code)
-        return {
-            status: 303,
-            headers: {
-              location: `/calendar/2AccountToken?credentials=` + reqe.url.searchParams.get("state")
-            },
-            body: {  }
-        }
-    }
 
     let port_monitoring: any = {};
     let port_monitoring_success: any = {};
