@@ -18,6 +18,7 @@
 		"@types/lodash.merge": "^4.6.7",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
+		"esbuild": "^0.14.53",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-plugin-svelte3": "^4.0.0",

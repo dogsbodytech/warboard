@@ -17,6 +17,12 @@ npmp run dev -- --open
 ```
 
 ## Building
+ensure `node_modules/@sveltejs/adapter-node/files/handler-393b2283.js` line 1055 is
+
+```js
+const __dirname = __dirname || path.dirname(fileURLToPath(import.meta.url));
+```
+
 
 To create a production version of your app:
 
