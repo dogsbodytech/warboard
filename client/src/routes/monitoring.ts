@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 
 const client = createClient()
-await client.connect()
+client.connect() // await
 
 const keyRegex = /^([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/
 

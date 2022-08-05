@@ -1,15 +1,14 @@
 import { createClient } from 'redis';
 
 const client = createClient()
-await client.connect()
 
 client.on('error', (err) => console.log('Redis Client Error', err));
-
-
-const subscriber = client.duplicate();
-await subscriber.connect()
-
-subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) => {
+let subscriber: any;
+client.connect().then(() => {
+    subscriber = client.duplicate()
+    subscriber.connect()
+}).then(()=> {
+    subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) => {
     // "pmessage","__key*__:*","__keyspace@0__:foo","set"
     let keyComponents = /^__keyspace@0__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/.exec(channel) || []
 
@@ -52,7 +51,7 @@ subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) 
         }
     })
     // console.log(channel, message)
-})
+})})
 
 let streamList: Map<string, ReadableStreamController<any>> = new Map()
 let streamCount = 0;
