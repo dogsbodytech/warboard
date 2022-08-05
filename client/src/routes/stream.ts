@@ -11,7 +11,7 @@ client.connect().then(() => {
 }).then(()=> {
     subscriber.pSubscribe("__keyspace@" + process.env.REDIS_DB_NUMBER +"__:*", async (message: any, channel: string) => {
     // "pmessage","__key*__:*","__keyspace@0__:foo","set"
-    let keyComponents = /^__keyspace@0__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/.exec(channel) || []
+    let keyComponents = new RegExp("^__keyspace@" + process.env.REDIS_DB_NUMBER + "__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?").exec(channel) || []
 
     let returnDat: any = {};
 
