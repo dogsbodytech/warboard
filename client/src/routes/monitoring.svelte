@@ -16,7 +16,7 @@
 	export let data: any = {};
 
 	let dataError: boolean | any = false;
-	// $: console.log(data);
+	$: console.log(data);
 
 	let portmon_modules_checked = 0;
 
