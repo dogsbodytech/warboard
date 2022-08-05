@@ -94,7 +94,7 @@
 <h2>{dateString}</h2>
 <ul>
 {#each (events) as event}
-<li>{event.summary}: {event.description}</li>
+<li><a href="{event.htmlLink}">{event.summary}: {event.description}</a></li>
 {/each}
 </ul>
 {/each}
