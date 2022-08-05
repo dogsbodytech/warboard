@@ -51,6 +51,11 @@ set the user to the user it should be run under.
 See <https://github.com/sveltejs/kit/tree/master/packages/adapter-node#environment-variables> for options on the server.
 More should be set depending on configuration of the reverse proxy.
 
+enable keyspace in redis
+
+```bash
+redis-cli config set notify-keyspace-events Kgsx
+```
 
 Refresh systemd so it picks up the file:
 
