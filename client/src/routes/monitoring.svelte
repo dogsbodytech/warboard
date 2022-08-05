@@ -213,8 +213,8 @@
 				<thead>
 					<td class="icon" />
 					<td class="name l">Name</td>
-					<td class="time r">Latency</td>
 					<td class="type l">Type</td>
+					<td class="time r">Latency</td>
 				</thead>
 				<tbody>
 					{#each portmon
@@ -231,8 +231,8 @@
 						<tr class={item.status}>
 							<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
 							<td class="name l">{item.name}</td>
-							<td class="time r">{item.lastresponsetime}ms</td>
 							<td class="type l">{item.type.toUpperCase()}</td>
+							<td class="time r">{item.lastresponsetime}ms</td>
 							<!-- {#each Object.keys(item).sort() as key}
 						<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
 					{/
