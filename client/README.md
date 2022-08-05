@@ -20,16 +20,42 @@ npmp run dev -- --open
 ensure `node_modules/@sveltejs/adapter-node/files/handler-393b2283.js` line 1055 is
 
 ```js
-const __dirname = __dirname || path.dirname(fileURLToPath(import.meta.url));
+let __dirname;
+try {
+  __dirname = path.dirname(fileURLToPath(import.meta.url))
+} catch (e) {
+  try {
+    __dirname = path.dirname(resolve(".", process.argv[1] ))
+  } catch (e) { }
+}
 ```
-
 
 To create a production version of your app:
 
 ```bash
-npmp run build
+pnpm run build
 ```
 
-You can preview the production build with `npm run preview`.
+ensure bundlebuild/client is empty, then:
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+```bash
+pnpm exec esbuild build/index.js --bundle --minify --platform=node --target=node18 --outdir=bundledbuild --external:build/client/*
+cp -r build/client bundledbuild/client
+```
+
+then copy to server:
+
+```bash
+# if running silently prefix with
+# sshpass -p "pass"
+scp -r ./bundledbuild/* root@joeltest.dogshost.com:/root/deploy/
+```
+
+on the server run:
+
+```bash
+# enuse you explicitly reference index.js, rather than just the directory
+# because the code that picks up the directory it's in relies on argv.
+node deploy/index.js
+```
+
