@@ -41,8 +41,10 @@ client.connect().then(() => {
 
         default:
             console.log(channel)
+            return
             break;
     }
+    console.log(returnDat)
 
     streamList.forEach((controller, index) => {
         try {
