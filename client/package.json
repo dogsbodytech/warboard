@@ -6,7 +6,6 @@
 		"build": "vite build",
 		"package": "svelte-kit package",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
@@ -40,5 +39,10 @@
 		"lodash.merge": "^4.6.2",
 		"redis": "^4.2.0",
 		"tailwindcss": "^3.1.7"
+	},
+	"pnpm": {
+		"patchedDependencies": {
+			"@sveltejs/adapter-node@1.0.0-next.85": "patches/@sveltejs__adapter-node@1.0.0-next.85.patch"
+		}
 	}
 }
