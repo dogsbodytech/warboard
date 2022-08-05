@@ -398,7 +398,7 @@
 		width: 4em;
 	}
 
-	@keyframes downBlink {
+	@keyframes pulsing {
 		0% {
 			background-color: #fef2f2;
 		}
@@ -420,7 +420,7 @@
 	.down,
 	.red {
 		background-color: rgb(254 226 226); /* 100 */
-		animation: downBlink 1s infinite alternate-reverse;
+		/* animation: pulsing 1s infinite alternate-reverse; */
 	}
 	.r {
 		text-align: right;
