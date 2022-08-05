@@ -234,7 +234,7 @@
 								}
 							}) as item}
 							<tr class={item.status}>
-								<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
+								<td class="icon"><img width="20" src="/images/{getIcon(item.mod)}" alt={item.mod} /></td>
 								<td class="name l">{item.name}</td>
 								<td class="type l">{item.type.toUpperCase()}</td>
 								<td class="time r">{item.lastresponsetime}ms</td>
