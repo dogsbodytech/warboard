@@ -11,9 +11,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - run: npm install
-      - run: npm run build
-      - run: npm exec -- esbuild build/index.js --bundle --minify --platform=node --target=node18 --outdir=bundledbuild --external:build/client/*
+      - run: corepack enable
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm exec -- esbuild build/index.js --bundle --minify --platform=node --target=node18 --outdir=bundledbuild --external:build/client/*
       - run: cp -r build/client bundledbuild/client
       - uses: actions/upload-artifact@v3
         with:
