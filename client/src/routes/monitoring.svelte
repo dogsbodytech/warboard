@@ -186,124 +186,134 @@
 
 <div class="grid">
 	<!-- {#each portmon as table} -->
-	<div class="panel portmon-panel">
-		{#if portmon_ag_results?.failed_accounts !== 0}
-			<div>
-				{((portmon_ag_results.total_accounts - portmon_ag_results.failed_accounts) * 100) /
-					portmon_ag_results.total_accounts}% success fetching port monitoring
+	<div>
+		<h2>
+			Port monitoring
+			{#if portmon_ag_results?.failed_accounts !== 0}
+				({(portmon_ag_results.failed_accounts * 100) / portmon_ag_results.total_accounts}% failed to
+				fetch!)
+			{/if}
+		</h2>
+		<div class="panel portmon-panel">
+			<div class="percent-container">
+				<!-- 800 -->
+				<LayerCake
+					ssr={true}
+					percentRange={false}
+					data={[
+						{ w: portmon_ag_results.down, c: chDown },
+						{ w: portmon_ag_results.paused, c: chInfo },
+						{ w: portmon_ag_results.up, c: chUp }
+					]}
+					x="w"
+					z="c"
+				>
+					<Svg>
+						<PercentLayer />
+					</Svg>
+				</LayerCake>
 			</div>
-		{/if}
-		<div class="percent-container">
-			<!-- 800 -->
-			<LayerCake
-				ssr={true}
-				percentRange={false}
-				data={[
-					{ w: portmon_ag_results.down, c: chDown },
-					{ w: portmon_ag_results.paused, c: chInfo },
-					{ w: portmon_ag_results.up, c: chUp }
-				]}
-				x="w"
-				z="c"
-			>
-				<Svg>
-					<PercentLayer />
-				</Svg>
-			</LayerCake>
-		</div>
-		<div class="panel-inner">
-			<table class="portmon">
-				<thead>
-					<td class="icon" />
-					<td class="name l">Name</td>
-					<td class="type l">Type</td>
-					<td class="time r">Latency</td>
-				</thead>
-				<tbody>
-					{#each portmon
-						.sort((a, b) => b.lastresponsetime - a.lastresponsetime)
-						.sort((a, b) => {
-							if (a.status === b.status) {
-								return 0;
-							} else if (a.status > b.status) {
-								return 1;
-							} else {
-								return -1;
-							}
-						}) as item}
-						<tr class={item.status}>
-							<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
-							<td class="name l">{item.name}</td>
-							<td class="type l">{item.type.toUpperCase()}</td>
-							<td class="time r">{item.lastresponsetime}ms</td>
-							<!-- {#each Object.keys(item).sort() as key}
+			<div class="panel-inner">
+				<table class="portmon">
+					<thead>
+						<td class="icon" />
+						<td class="name l">Name</td>
+						<td class="type l">Type</td>
+						<td class="time r">Latency</td>
+					</thead>
+					<tbody>
+						{#each portmon
+							.sort((a, b) => b.lastresponsetime - a.lastresponsetime)
+							.sort((a, b) => {
+								if (a.status === b.status) {
+									return 0;
+								} else if (a.status > b.status) {
+									return 1;
+								} else {
+									return -1;
+								}
+							}) as item}
+							<tr class={item.status}>
+								<td class="icon"><img width="20" src="/{getIcon(item.mod)}" alt={item.mod} /></td>
+								<td class="name l">{item.name}</td>
+								<td class="type l">{item.type.toUpperCase()}</td>
+								<td class="time r">{item.lastresponsetime}ms</td>
+								<!-- {#each Object.keys(item).sort() as key}
 						<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
 					{/
 				ssr={true}each} -->
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 	<!-- {/each} -->
-	<div class="panel resmon-panel">
-		<div class="percent-container">
-			<LayerCake
-				ssr={true}
-				data={[
-					{ w: resmon_red, c: chDown },
-					{ w: resmon_orange, c: chWarn },
-					{ w: resmon_blue, c: chInfo },
-					{ w: resmon_green, c: chUp }
-				]}
-				x="w"
-				z="c"
-			>
-				<Svg>
-					<PercentLayer />
-				</Svg>
-			</LayerCake>
-		</div>
-		<div class="panel-inner">
-			<table class="resmon">
-				<thead>
-					<td class="name l">Name</td>
-					<td class="cpu r">CPU</td>
-					<td class="memory r">Memory</td>
-					<td class="fullest_disk r" title="Fullest Disk">Space</td>
-					<td class="disk_io r">Disk IO</td>
-				</thead>
-				<tbody>
-					{#each resmon
-						.sort((a, b) => b.orderby - a.orderby)
-						.sort((b, a) => {
-							if (a.health_status === b.health_status) {
-								return 0;
-							} else if (a.health_status > b.health_status) {
-								return 1;
-							} else {
-								return -1;
-							}
-						}) as item}
-						<tr class={item.health_status}>
-							<!-- {#each Object.keys(item).sort() as key}
+	<div>
+		<h2>Resource monitoring</h2>
+		<div class="panel resmon-panel">
+			<div class="percent-container">
+				<LayerCake
+					ssr={true}
+					data={[
+						{ w: resmon_red, c: chDown },
+						{ w: resmon_orange, c: chWarn },
+						{ w: resmon_blue, c: chInfo },
+						{ w: resmon_green, c: chUp }
+					]}
+					x="w"
+					z="c"
+				>
+					<Svg>
+						<PercentLayer />
+					</Svg>
+				</LayerCake>
+			</div>
+			<div class="panel-inner">
+				<table class="resmon">
+					<thead>
+						<td class="name l">Name</td>
+						<td class="cpu r">CPU</td>
+						<td class="memory r">Memory</td>
+						<td class="fullest_disk r" title="Fullest Disk">Space</td>
+						<td class="disk_io r">Disk IO</td>
+					</thead>
+					<tbody>
+						{#each resmon
+							.sort((a, b) => b.orderby - a.orderby)
+							.sort((b, a) => {
+								if (a.health_status === b.health_status) {
+									return 0;
+								} else if (a.health_status > b.health_status) {
+									return 1;
+								} else {
+									return -1;
+								}
+							}) as item}
+							<tr class={item.health_status}>
+								<!-- {#each Object.keys(item).sort() as key}
 							<td>{JSON.stringify(key)}: {JSON.stringify(item[key])}</td>
 						{/each} -->
-							<td class="name l">{item.name}</td>
-							<td class="cpu r">{Math.round(item.summary.cpu)}%</td>
-							<td class="memory r">{Math.round(item.summary.memory)}%</td>
-							<td class="fullest_disk r">{Math.round(item.summary.fullest_disk)}%</td>
-							<td class="disk_io r">{Math.round(item.summary.disk_io)}%</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+								<td class="name l">{item.name}</td>
+								<td class="cpu r">{Math.round(item.summary.cpu)}%</td>
+								<td class="memory r">{Math.round(item.summary.memory)}%</td>
+								<td class="fullest_disk r">{Math.round(item.summary.fullest_disk)}%</td>
+								<td class="disk_io r">{Math.round(item.summary.disk_io)}%</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>
 
 <style>
+	div > h2 {
+		margin: 0;
+		margin-bottom: .5rem
+	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(1, 1fr);
@@ -321,13 +331,13 @@
 		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 		border-radius: 0.5rem;
 	}
-	.panel-inner {
+	/* .panel-inner {
 		border-top: rgb(211, 213, 218);
-		/* padding-top: 1.25rem;
+		padding-top: 1.25rem;
 		padding-bottom: 1.25rem;
 		padding-left: 1rem;
-		padding-right: 1rem; */
-	}
+		padding-right: 1rem;
+	} */
 
 	/* @media (min-width: 640px) {
 		.panel-inner {
