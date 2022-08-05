@@ -157,7 +157,7 @@
 				console.error('stream continuity', e);
 				dataError = e.message;
 				setTimeout(streamDat, 500);
-				return { done: true, value: undefined }
+				return { done: true, value: undefined };
 			}));
 
 			if (done) {
@@ -188,7 +188,10 @@
 	<!-- {#each portmon as table} -->
 	<div class="panel portmon-panel">
 		{#if portmon_ag_results?.failed_accounts !== 0}
-			<div>{((portmon_ag_results.total_accounts - portmon_ag_results.failed_accounts) * 100) / portmon_ag_results.total_accounts}% success fetching port monitoring</div>
+			<div>
+				{((portmon_ag_results.total_accounts - portmon_ag_results.failed_accounts) * 100) /
+					portmon_ag_results.total_accounts}% success fetching port monitoring
+			</div>
 		{/if}
 		<div class="percent-container">
 			<!-- 800 -->
@@ -272,7 +275,8 @@
 					<td class="disk_io r">Disk IO</td>
 				</thead>
 				<tbody>
-					{#each resmon.sort((a, b) => b.orderby - a.orderby)
+					{#each resmon
+						.sort((a, b) => b.orderby - a.orderby)
 						.sort((b, a) => {
 							if (a.health_status === b.health_status) {
 								return 0;
@@ -332,7 +336,7 @@
 	} */
 
 	.percent-container {
-		height: 24px;
+		height: 1.5rem;
 		width: 100%;
 	}
 	table,
@@ -343,6 +347,15 @@
 	}
 	tr {
 		border-top: 1px solid rgb(208, 208, 208);
+	}
+	table tr,
+	table tr > td {
+		height: 1.75rem;
+	}
+	table tr > td:first-child,
+	table tr > td:last-child {
+		padding-left: 0.25rem;
+		padding-right: 0.25rem;
 	}
 
 	table {
@@ -403,6 +416,6 @@
 		text-align: right;
 	}
 	.l {
-		text-align: lefft;
+		text-align: left;
 	}
 </style>
