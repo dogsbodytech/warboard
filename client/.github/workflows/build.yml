@@ -1,0 +1,18 @@
+name: build-client
+on: [push]
+jobs:
+  build-artefact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run build
+      - run: npm exec -- esbuild build/index.js --bundle --minify --platform=node --target=node18 --outdir=bundledbuild --external:build/client/*
+      - run: cp -r build/client bundledbuild/client
+      - uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: bundledbuild
