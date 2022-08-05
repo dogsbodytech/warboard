@@ -5,10 +5,11 @@ const client = createClient()
 client.on('error', (err) => console.log('Redis Client Error', err));
 let subscriber: any;
 client.connect().then(() => {
+    client.select(parseInt(process.env.REDIS_DB_NUMBER || "0"))
     subscriber = client.duplicate()
     subscriber.connect()
 }).then(()=> {
-    subscriber.pSubscribe("__keyspace@0__:*", async (message: any, channel: string) => {
+    subscriber.pSubscribe("__keyspace@" + process.env.REDIS_DB_NUMBER +"__:*", async (message: any, channel: string) => {
     // "pmessage","__key*__:*","__keyspace@0__:foo","set"
     let keyComponents = /^__keyspace@0__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/.exec(channel) || []
 

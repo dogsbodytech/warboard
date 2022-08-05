@@ -34,7 +34,7 @@ Description=Warboard client server
 After=network.target
 
 [Service]
-Environment="HOST=127.0.0.1"
+Environment="HOST=127.0.0.1 REDIS_DB_NUMBER=$N"
 Type=simple
 User=ubuntu
 ExecStart=/usr/bin/node $CLIENT_DEPLOY_DIR/index.js
@@ -43,6 +43,8 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 ```
+
+set REDIS_DB_NUMBER to whatever the config for the python server has it as.
 
 See <https://github.com/sveltejs/kit/tree/master/packages/adapter-node#environment-variables> for options on the server.
 More should be set depending on configuration of the reverse proxy.

@@ -2,6 +2,7 @@ import { createClient } from 'redis';
 
 const client = createClient()
 client.connect() // await
+client.select(parseInt(process.env.REDIS_DB_NUMBER || "0"))
 
 const keyRegex = /^([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?/
 
