@@ -18,13 +18,13 @@ client.connect().then(() => {
     returnDat[keyComponents[1]] = {}
     switch (keyComponents[1]) {
         case "port_monitoring":
-            console.log(message, channel)
+            // console.log(message, channel)
             // .map((i: any) => {i.mod = keyComponents[2]; return i});
             returnDat[keyComponents[1]][keyComponents[2]] =
                 JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
             break;
         case "port_monitoring_success":
-            console.log(message, channel)
+            // console.log(message, channel)
             returnDat[keyComponents[1]][keyComponents[2]] =
                 JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
             break
@@ -34,7 +34,7 @@ client.connect().then(() => {
                 JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2] + "#" + keyComponents[3]) || '[]')[0]
             break
         case "resources_success":
-            console.log(message, channel)
+            // console.log(message, channel)
             returnDat[keyComponents[1]][keyComponents[2]] =
                 JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
             break
@@ -44,7 +44,7 @@ client.connect().then(() => {
             return
             break;
     }
-    console.log(returnDat)
+    // console.log(returnDat)
 
     streamList.forEach((controller, index) => {
         try {
@@ -77,7 +77,7 @@ const streamSource: RedisStreamSource = {
     cancel() {
         let c = streamList.get("" + this.index)
         streamList.delete("" + this.index)
-        console.log("deleted", this.index)
+        // console.log("deleted", this.index)
         try {
             c?.close()
         } catch (e) {}
