@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ title }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="{{ refresh_time }}">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/warboard.css">
+  <link rel="icon" href="/static/images/favicon.png" type="image/png">
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-4">
+    {% if port_results['failed_accounts'] > 0 %}
+      <h1>Port Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(port_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+    {% else %}
+      <h1>Port Monitoring</h1>
+    {% endif %}
+      <div class="progress">
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ port_results['down_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ port_results['paused_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ port_results['up_percent'] }}%"></div>
+      </div>
+      <h2><a href="https://warboard.dogsbody.com/monitoring">Please look at other screen</a></h2>
+    {% if resource_results['working_percentage'] != 100 %}
+      <h1>Resources Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(resource_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+    {% else %}
+      <h1>Resources Monitoring</h1>
+    {% endif %}
+      <div class="progress">
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ resource_results['red_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ resource_results['orange_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ resource_results['green_percent'] }}%"></div>
+      </div>
+      <h2><a href="https://warboard.dogsbody.com/monitoring">Please look at other screen</a></h2>
+    </div>
+    <div class="col-sm-4">
+      <h1>Sirportly Queues</h1>
+      <div class="progress">
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['orange_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ sirportly_results['red_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ sirportly_results['blue_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ sirportly_results['green_percent'] }}%"></div>
+      </div>
+      <table class="table table-bordered">
+        <tbody>
+          <tr class="lead">
+            <td class="col-sm-4">New <span class="pull-right">{{ sirportly_results['unassigned_tickets'] }}</span></td>
+            <td class="col-sm-8">
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['unassigned_tickets'] * sirportly_results['multiplier'] }}%"></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="lead">
+            <td class="col-sm-4">Daily <span class="pull-right">{{ sirportly_results['daily_tickets'] }}</span></td>
+            <td class="col-sm-8">
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['daily_tickets'] * sirportly_results['multiplier'] }}%"></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="lead">
+            <td class="col-sm-4">Waiting <span class="pull-right">{{ sirportly_results['waitingstaff_tickets'] }}</span></td>
+            <td class="col-sm-8">
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ sirportly_results['waitingstaff_tickets'] * sirportly_results['multiplier'] }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% for user in sirportly_user_order %}
+          <tr class="lead">
+            <td class="col-sm-4">{{ sirportly_users[user] }}<span class="pull-right">{{ sirportly_results['users'][user+'_total'] }}</span></td>
+            <td class="col-sm-8">
+              <div class="progress">
+                <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ sirportly_results['users'][user+'_red'] * sirportly_results['multiplier'] }}%"></div>
+                <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ sirportly_results['users'][user+'_blue'] * sirportly_results['multiplier'] }}%"></div>
+                <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ sirportly_results['users'][user+'_green'] * sirportly_results['multiplier'] }}%"></div>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-4">
+      <h1>Calendar</h1>
+      {% for item in calendar_items %}
+        {% for date in item %}
+        <h3>{{ date }}</h3>
+        <ul class="list-group">
+        <li class="list-group-item list-group-item-info lead">{{ item[date]|safe }}</li>
+        </ul>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+</body>
+</html>

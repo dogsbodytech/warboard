@@ -92,6 +92,21 @@ def warboard_short():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
+@app.route('/temporary', methods=['GET'])
+def warboard_temporary():
+    logger.debug('Serving temporary warboard')
+    return(render_template('warboard_temp.html',
+        title=warboard_title,
+        refresh_time=refresh_time(),
+        port_results=get_port_monitoring_results(),
+        latency_max_name_length=latency_max_name_length,
+        resource_results=get_resource_results(),
+        resources_max_name_length=resources_max_name_length,
+        sirportly_results=get_sirportly_results(),
+        sirportly_users=sirportly_users,
+        sirportly_user_order=sirportly_user_order,
+        calendar_items=get_calendar_items()))
+
 @app.route('/stats', methods=['POST'])
 def stats():
     if 'key' not in request.form:
