@@ -98,3 +98,26 @@
 {/each}
 </ul>
 {/each}
+
+<style>
+    ul {
+        border: 1px solid gray;
+        border-radius: 10px;
+        padding: 0;
+        background: aliceblue;
+        list-style: none;
+    }
+
+    li {
+        padding: 1em;
+    }
+
+    li:not(:first-child) {
+        border-top: 1px solid gray;
+        /* margin-top: 1em; */
+    }
+    
+    a {
+        color: inherit;
+    }
+</style>
