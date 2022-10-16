@@ -310,10 +310,6 @@
 </div>
 
 <style>
-	div > h2 {
-		margin: 0;
-		margin-bottom: .5rem
-	}
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(1, 1fr);
@@ -324,6 +320,10 @@
 		.grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
+	}
+	div > h2 {
+		margin: 0;
+		margin-bottom: .5rem
 	}
 	.panel {
 		background-color: white;
