@@ -1,100 +1,125 @@
 import { createClient } from 'redis';
 
-const client = createClient()
+const client = createClient();
 
 client.on('error', (err) => console.log('Redis Client Error', err));
-let subscriber: any;
-client.connect().then(() => {
-    client.select(parseInt(process.env.REDIS_DB_NUMBER || "0"))
-    subscriber = client.duplicate()
-    subscriber.connect()
-}).then(()=> {
-    subscriber.pSubscribe("__keyspace@" + process.env.REDIS_DB_NUMBER +"__:*", async (message: any, channel: string) => {
-    // "pmessage","__key*__:*","__keyspace@0__:foo","set"
-    let keyComponents = new RegExp("^__keyspace@" + process.env.REDIS_DB_NUMBER + "__:([a-z_]+):([a-z_]+)(?:#([0-9a-z\-]+))?").exec(channel) || []
+client
+	.connect()
+	.then(() => {
+		client.select(parseInt(process.env.REDIS_DB_NUMBER || '0'));
+		const subscriber = client.duplicate();
+		subscriber.connect();
+		return subscriber;
+	})
+	.then((subscriber) => {
+		subscriber.pSubscribe(
+			'__keyspace@' + process.env.REDIS_DB_NUMBER + '__:*',
+			async (message: string, channel: string) => {
+                console.log(channel)
+				// "pmessage","__key*__:*","__keyspace@0__:foo","set"
 
-    let returnDat: any = {};
+				// eslint-disable-next-line no-useless-escape
+				const keyComponents =
+					new RegExp(
+						'^__keyspace@' +
+							process.env.REDIS_DB_NUMBER +
+							'__:([a-z_]+):([a-z_]+)(?:#([0-9a-z-]+))?'
+					).exec(channel) || [];
 
-    returnDat[keyComponents[1]] = {}
-    switch (keyComponents[1]) {
-        case "port_monitoring":
-            // console.log(message, channel)
-            // .map((i: any) => {i.mod = keyComponents[2]; return i});
-            returnDat[keyComponents[1]][keyComponents[2]] =
-                JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
-            break;
-        case "port_monitoring_success":
-            // console.log(message, channel)
-            returnDat[keyComponents[1]][keyComponents[2]] =
-                JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
-            break
-        case "resources":
-            returnDat[keyComponents[1]][keyComponents[2]] = {}
-            returnDat[keyComponents[1]][keyComponents[2]][keyComponents[3]] =
-                JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2] + "#" + keyComponents[3]) || '[]')[0]
-            break
-        case "resources_success":
-            // console.log(message, channel)
-            returnDat[keyComponents[1]][keyComponents[2]] =
-                JSON.parse(await client.get(keyComponents[1] + ":" + keyComponents[2]) || '[]')[0]
-            break
+				const returnDat: any = {};
 
-        default:
-            console.log(channel)
-            return
-            break;
-    }
-    // console.log(returnDat)
+				returnDat[keyComponents[1]] = {};
+				switch (keyComponents[1]) {
+					case 'port_monitoring':
+						// console.log(message, channel)
+						// .map((i: any) => {i.mod = keyComponents[2]; return i});
+						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+						)[0];
+						break;
+					case 'port_monitoring_success':
+						// console.log(message, channel)
+						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+						)[0];
+						break;
+					case 'resources':
+						returnDat[keyComponents[1]][keyComponents[2]] = {};
+						returnDat[keyComponents[1]][keyComponents[2]][keyComponents[3]] = JSON.parse(
+							(await client.get(
+								keyComponents[1] + ':' + keyComponents[2] + '#' + keyComponents[3]
+							)) || '[]'
+						)[0];
+						break;
+					case 'resources_success':
+						// console.log(message, channel)
+						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+						)[0];
+						break;
 
-    streamList.forEach((controller, index) => {
-        try {
-            controller.enqueue(JSON.stringify(returnDat) + '\n')
-        } catch (error) {
-            // console.log(index, error, controller)
-        }
-    })
-    // console.log(channel, message)
-})})
+					default:
+						console.log(channel);
+						return;
+						break;
+				}
+				// console.log(returnDat)
 
-let streamList: Map<string, ReadableStreamController<any>> = new Map()
+				streamList.forEach((controller) => {
+					try {
+						controller.enqueue(JSON.stringify(returnDat) + '\n');
+					} catch (error) {
+						// console.log(index, error, controller)
+					}
+				});
+				// console.log(channel, message)
+			}
+		);
+	});
+
+const streamList: Map<string, ReadableStreamController<unknown>> = new Map();
 let streamCount = 0;
 
-interface RedisStreamSource extends UnderlyingSource {
-    index: any;
-}
 
-
-const streamSource: RedisStreamSource = {
-    index: 0,
-    start(controller) {
-        streamList.set("" + streamCount, controller)
-        this.index = streamCount;
-        streamCount++
-    },
-    pull(controller) {
-        // We don't really need a pull 
-    },
-    cancel() {
-        let c = streamList.get("" + this.index)
-        streamList.delete("" + this.index)
-        // console.log("deleted", this.index)
-        try {
-            c?.close()
-        } catch (e) {}
-    },
-    // type,
-    // autoAllocateChunkSize,
-}
+// NOTE: there is ONE UnderlyingSource for ALL the 
+// ReadableStreams by default, and there is no easy 
+// way to tell which stream is calling the source.
+// instead, let's make a function that returns 
+// a new source for each stream, so that it can be tracked.
+function streamSource(): UnderlyingSource {
+    let index: string;
+    return {
+        start(controller) {
+            index = streamCount.toString();
+            streamList.set(index, controller);
+            streamCount++;
+        },
+        pull(controller) {
+            // We don't really need a pull
+        },
+        cancel() {
+            const c = streamList.get(index);
+            streamList.delete(index);
+            // console.log("deleted", this.index)
+            try {
+                c?.close();
+            } catch (e) {
+                // console.log(`Failed to close stream ${index}: `, e);
+            }
+        }
+    }
+	// type,
+	// autoAllocateChunkSize,
+};
 
 // subscriber.pUnsubscribe("__keyspace@0__:*")
 // subscriber.quit()
-
 
 // let portmon_modules_checked = 0
 
 // const portmon = (await Promise.all(
 //     (await client.keys("port_monitoring:*"))
-//         .map(async (mod) => { 
+//         .map(async (mod) => {
 //             portmon_modules_checked += 1
 //             let ret: any[] = JSON.parse(await client.get(mod) || '')
 //             let dat = ret[0].map((i: any) => {i.mod = mod; return i});
@@ -106,12 +131,12 @@ const streamSource: RedisStreamSource = {
 //     down: 0,
 //     paused: 0,
 
-//     total_accounts: 0, 
+//     total_accounts: 0,
 //     failed_accounts: 0,
 // };
 
 // (await client.keys("port_monitoring_success:*"))
-//     .map(async (mod: string) => { 
+//     .map(async (mod: string) => {
 //         let ret: any[] = JSON.parse(await client.get(mod) || '')
 //         let dat = ret[0];
 //         portmon_ag_results.up += dat.up
@@ -129,7 +154,7 @@ const streamSource: RedisStreamSource = {
 // let resmon_ag_results: any = {};
 
 // (await client.keys("resources_success:*"))
-//     .map(async (mod: string) => { 
+//     .map(async (mod: string) => {
 //         let ret: any[] = JSON.parse(await client.get(mod) || '')
 //         let dat = ret[0];
 //         resmon_ag_results.total_checks += dat.total_checks
@@ -144,7 +169,7 @@ const streamSource: RedisStreamSource = {
 
 // const resmon = await Promise.all(
 //     (await client.keys("resources:*"))
-//         .map(async (mod) => { 
+//         .map(async (mod) => {
 //             let ret: any[] = JSON.parse(await client.get(mod) || '')
 //             let dat = ret[0];
 //             dat.key = mod
@@ -153,20 +178,18 @@ const streamSource: RedisStreamSource = {
 
 //     )
 
-
-
 /** @type {import('./__types/items').RequestHandler} */
 export async function GET() {
-    let body = new ReadableStream(streamSource, {
-        highWaterMark: 6,
-        size: () => 1,
-    });
+	const body = new ReadableStream(streamSource(), {
+		highWaterMark: 6,
+		size: () => 1
+	});
 
-    return {
-        headers: {
-            'transfer-encoding': 'chunked'
-        },
-        // body: { portmon, resmon, portmon_ag_results, resmon_ag_results }
-        body: body
-    }
+	return {
+		headers: {
+			'transfer-encoding': 'chunked'
+		},
+		// body: { portmon, resmon, portmon_ag_results, resmon_ag_results }
+		body: body
+	};
 }
