@@ -1,0 +1,23 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 info pnpm": {
+    "err": {
+      "name": "Error",
+      "message": "not found: esbuild",
+      "code": "ENOENT",
+      "stack": "Error: not found: esbuild\n    at getNotFoundError (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41575:51)\n    at Function.whichSync [as sync] (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41652:13)\n    at getCommandAbsolutePathSync (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43217:44)\n    at default_1 (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43226:32)\n    at /usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:178151:39"
+    }
+  },
+  "2 error pnpm": {
+    "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
+    "prefix": "/home/joel",
+    "err": {
+      "name": "pnpm",
+      "message": "not found: esbuild",
+      "code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
+      "stack": "Error: not found: esbuild\n    at getNotFoundError (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41575:51)\n    at Function.whichSync [as sync] (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:41652:13)\n    at getCommandAbsolutePathSync (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43217:44)\n    at default_1 (/usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:43226:32)\n    at /usr/local/pnpm-global/5/node_modules/.pnpm/pnpm@6.32.1/node_modules/pnpm/dist/pnpm.cjs:178151:39"
+    }
+  }
+}
