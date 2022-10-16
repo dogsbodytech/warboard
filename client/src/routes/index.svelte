@@ -1,0 +1,1 @@
+<a href="/monitoring">Monitoring dashboard</a>
