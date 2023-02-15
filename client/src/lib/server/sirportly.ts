@@ -27,21 +27,12 @@ export const SIRPORTLY_USER_FILTERS = {
     blue_filter: '30',
 }
 
-// def sirportly_filter(filter_id, user=None):
-//     """
-//     This is used to get data for a specific filter in sirportly
-//     it accepts a filterID and a username/False if no user needed.
-//     """
-//     headers = {'X-Auth-Token': sirportly_token, 'X-Auth-Secret': sirportly_key}
-//     params = {'filter': filter_id}
-//     if user:
-//         params['user'] = user
 
-//     r = requests.get(f'{sirportly_endpoint}/filter', params=params, headers=headers)
-//     r.raise_for_status()
 
-//     return r.json()['pagination']['total_records']
-
+// This is used to get data for a specific filter in sirportly
+// it accepts a filterID and a username/False if no user needed.
+// it returns a promise that resolves to a json object
+// view.pagination.total_records for the total number of records
 export async function getSirportlyView(filterId: string, user?: string): Promise<any> {
     const headers = new Headers();
     SIRPORTLY_TOKEN ? headers.append('X-Auth-Token', SIRPORTLY_TOKEN) : 0
