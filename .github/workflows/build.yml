@@ -14,9 +14,8 @@ jobs:
       - run: corepack enable
       - run: pnpm install
       - run: pnpm run build
-      - run: pnpm exec -- esbuild build/index.js --bundle --minify --platform=node --target=node18 --outdir=bundledbuild --external:build/client/*
-      - run: cp -r build/client bundledbuild/client
+      - run: cp ./package.json ./build/
       - uses: actions/upload-artifact@v3
         with:
           name: app
-          path: ./client/bundledbuild
+          path: ./client/build

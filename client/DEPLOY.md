@@ -7,11 +7,12 @@ Upload this to the server.
 `$CLIENT_DEPLOY_DIR` should be replaced in all below snippets with where you uploaded it.
 
 
-If you've already set it up once and are just updating, run the below and then stop: 
-
-```
-sudo systemctl start warboard_client
-```
+> If you've already set it up once and are just updating, run the below in the deploy directory and then stop: 
+>
+> ```
+> npm i --omit=dev
+> sudo systemctl start warboard_client
+> ```
 
 
 First, install a recent version of node.
@@ -36,6 +37,8 @@ After=network.target
 [Service]
 Environment="HOST=127.0.0.1"
 Environment="REDIS_DB_NUMBER=$N"
+Environment="SIRPORTLY_TOKEN=$TOKEN"
+Environment="SIRPORTLY_KEY=$KEY"
 Type=simple
 User=warboard
 ExecStart=/usr/bin/node $CLIENT_DEPLOY_DIR/index.js
@@ -45,13 +48,14 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-set REDIS_DB_NUMBER to whatever the config for the python server has it as.
+set `REDIS_DB_NUMBER` to whatever the config for the python server has it as.
 set the user to the user it should be run under.
+Set `SIRPORTLY_TOKEN` and `SIRPORTLY_key` to the values acquired from your instance.
 
-See <https://github.com/sveltejs/kit/tree/master/packages/adapter-node#environment-variables> for options on the server.
+See <https://github.com/sveltejs/kit/tree/master/packages/adapter-node#environment-variables> for additional options on the server.
 More should be set depending on configuration of the reverse proxy.
 
-enable keyspace in redis
+enable keyspace in redis <!-- TODO: Is this the right config value? -->
 
 ```bash
 redis-cli config set notify-keyspace-events Kgsx
