@@ -1,4 +1,5 @@
 <script lang=ts>
+
     import "$lib/groupBy"
 	// data: {
 	//     kind: 'calendar#events',
@@ -52,7 +53,8 @@
     // "transparency": "transparent",
     // "visibility": "publ// @ts-ignorelt"
     // }
-	export let eventList: any;
+	export let data: any;
+	let { eventList }: any = data;
     $: eventCalList = eventList.items as any[]
 
     $: calendar = Object.entries(eventCalList

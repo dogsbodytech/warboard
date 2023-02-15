@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	// import ScatterChart from "@onsvisual/svelte-charts/src/charts/ScatterChart.svelte"
 
 	import { LayerCake, Svg } from 'layercake';
@@ -13,7 +14,8 @@
 	let chUp = colours.green[600];
 	let chInfo = colours.sky[600];
 
-	export let data: any = {};
+	export let data;
+	let dataReceived: any = data.data;
 
 	let dataError: boolean | any = false;
 	// $: console.log(data);
@@ -30,7 +32,7 @@
 
 	$: {
 		let t: any[] = [];
-		Object.entries(data.port_monitoring).forEach((e) => {
+		Object.entries(dataReceived.port_monitoring).forEach((e) => {
 			let [mod, element]: [string, any[]] = e as [string, any[]];
 			t.push(
 				element.map((i: any) => {
@@ -64,7 +66,7 @@
 			total_accounts: 0,
 			failed_accounts: 0
 		};
-		Object.entries(data.port_monitoring_success).forEach((e) => {
+		Object.entries(dataReceived.port_monitoring_success).forEach((e) => {
 			let [mod, dat]: [string, any] = e;
 			t.up += dat.up;
 			t.down += dat.down;
@@ -89,7 +91,7 @@
 
 	$: {
 		let t: any[] = [];
-		Object.entries(data.resources).forEach((e) => {
+		Object.entries(dataReceived.resources).forEach((e) => {
 			let [mod, element]: [string, any] = e;
 			Object.entries(element).forEach((res) => {
 				let [id, dat]: [string, any] = res;
@@ -170,7 +172,7 @@
 			arr.forEach((s) => {
 				// console.log(JSON.parse(s))
 				try {
-					data = merge(data, JSON.parse(s));
+					dataReceived = merge(dataReceived, JSON.parse(s));
 				} catch (error) {
 					console.log('stream error', s, error);
 				}

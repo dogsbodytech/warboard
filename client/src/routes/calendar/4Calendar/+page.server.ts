@@ -3,7 +3,7 @@ import os from 'node:os'
 import path from 'node:path'
 // readdir, mkdir
 
-import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
+import type { PageServerLoad, RequestEvent } from '@sveltejs/kit';
 
 import { google } from "googleapis"
 
@@ -15,7 +15,7 @@ let id = () => {
         .substring(1);
 }
 
-export async function GET(reqe: RequestEvent) {
+export async function load(reqe: RequestEvent) {
     // console.log(reqe.url.searchParams.get("credentials"))
     let list;
 
@@ -75,21 +75,15 @@ export async function GET(reqe: RequestEvent) {
 
 
 
-            return {
-                body: { calendarId, code, gid, eventList: eventList.data  }
-            }
+            return { calendarId, code, gid, eventList: eventList.data  }
             
         } else {
-            return {
-                body: { error: { code: "E_NO_TOKEN" } }
-            }
+            return { error: { code: "E_NO_TOKEN" } }
         }
 
     } else {
         console.log("E bad code", code, newList)
 
-        return {
-            body: { error: { code: "CRED_CODE_INVALID" } }
-        }
+        return { error: { code: "CRED_CODE_INVALID" } }
     }
 }

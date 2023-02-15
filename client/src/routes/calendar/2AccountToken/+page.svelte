@@ -1,6 +1,6 @@
 <script lang=ts>
-    export let projectTokenList: any;
-    export let authUrl: any;
+    export let data: any;
+    let { projectTokenList, authUrl }: any = data;
     
 </script>
 <a href="{authUrl}">new account</a>

@@ -1,5 +1,7 @@
 <script lang=ts>
-    export let projectCredentialList: any;
+
+    export let data;
+    let { projectCredentialList }: any = data;
 
     let fileInput: HTMLInputElement;
     let files: FileList|null|undefined;

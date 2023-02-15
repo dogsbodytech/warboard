@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	import { LayerCake, Svg } from 'layercake';
 	import PercentLayer from '$lib/percentLayer.svelte';
 	import colours from '$lib/colours';
@@ -8,15 +9,17 @@
 	let green = colours.green[600];
 	let blue = colours.sky[600];
 
-	export let data: any = {};
+	export let data;
+	
+	let dataDestructured: any = data?.data || {};
 
-	$: console.log(data);
+	$: console.log(dataDestructured);
 
-	$: total_filter = data.filters.find((e: any[]) => e[0] == "total_filter")[1]
+	$: total_filter = dataDestructured.filters.find((e: any[]) => e[0] == "total_filter")[1]
 
-	$: orange_filter = data.filters.find((e: any[]) => e[0] == "orange_filter")[1]
-	$: red_filter = data.filters.find((e: any[]) => e[0] == "red_filter")[1]
-	$: blue_filter = data.filters.find((e: any[]) => e[0] == "blue_filter")[1]
+	$: orange_filter = dataDestructured.filters.find((e: any[]) => e[0] == "orange_filter")[1]
+	$: red_filter = dataDestructured.filters.find((e: any[]) => e[0] == "red_filter")[1]
+	$: blue_filter = dataDestructured.filters.find((e: any[]) => e[0] == "blue_filter")[1]
 
 	$: sirportlyData = [
 		{
@@ -67,7 +70,7 @@
 			</div>
 			<div class="panel-inner" />
 		</div>
-		{#each data.filters as filter}
+		{#each dataDestructured.filters as filter}
 			<section>
 				<hgroup>
 					<h3>{filter[1].filter.name} ({filter[1].filter.id})</h3>

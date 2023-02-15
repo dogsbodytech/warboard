@@ -3,32 +3,33 @@ import os from 'node:os'
 import path from 'node:path'
 // readdir, mkdir
 
-import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
+import type { RequestEvent } from '@sveltejs/kit';
 
 import { google } from "googleapis"
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/userinfo.profile'];
 
-let id = () => {
+const id = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
         .substring(1);
 }
 
-export async function saveToken(credCode: string | null, tokenCode: string) {
+export async function _saveToken(credCode: string | null, tokenCode: string) {
     // console.log(reqe.url.searchParams.get("credentials"))
     let list;
 
     try {
         list = await fs.readFile(path.join(os.homedir(), 'credentialList.json'), { encoding: 'utf8' })
+    // eslint-disable-next-line no-empty
     } catch (error) {
     }
 
 
 
-    let projectCredentialList = JSON.parse(list || "{}") as any
+    const projectCredentialList = JSON.parse(list || "{}") as any
 
-    let newList: string[] = projectCredentialList?.list || []
+    const newList: string[] = projectCredentialList?.list || []
 
 
     if (newList.find((el) => credCode == el)) {
@@ -51,7 +52,7 @@ export async function saveToken(credCode: string | null, tokenCode: string) {
 
         if (token.tokens.id_token) {
 
-            let idToken = await oAuth2Client.verifyIdToken({ idToken: token.tokens.id_token, audience: credentials.web.client_id })
+            const idToken = await oAuth2Client.verifyIdToken({ idToken: token.tokens.id_token, audience: credentials.web.client_id })
             // console.log("idToken", idToken)
             gid = idToken.getPayload()?.sub
             name = idToken.getPayload()?.name
@@ -65,9 +66,9 @@ export async function saveToken(credCode: string | null, tokenCode: string) {
                 auth: oAuth2Client
             })
             // console.log("me", res)
-            let names = res?.data?.names
+            const names = res?.data?.names
             if (names) {
-                let namel = names[0]
+                const namel = names[0]
                 gid = namel?.metadata?.source?.id
                 name = namel?.displayName
             }
@@ -78,20 +79,21 @@ export async function saveToken(credCode: string | null, tokenCode: string) {
 
         try {
             listText = await fs.readFile(path.join(os.homedir(), 'tokenList.json'), { encoding: 'utf8' })
+        // eslint-disable-next-line no-empty
         } catch (error) {
         }
 
 
         // console.log(list)
 
-        let projectToken = JSON.parse(listText || "{}") as any
+        const projectToken = JSON.parse(listText || "{}") as any
 
 
         let projectTokenList: any[] = projectToken?.list || []
 
         projectTokenList = projectTokenList
             .filter((va) => {
-                let pred = !((va.credentials == credCode) && (va.gid == gid))
+                const pred = !((va.credentials == credCode) && (va.gid == gid))
                 // console.log(pred)
                 return pred
             })
@@ -111,20 +113,21 @@ export async function saveToken(credCode: string | null, tokenCode: string) {
     }
 }
 
-export async function GET(reqe: RequestEvent) {
+export async function load(reqe: RequestEvent) {
     // console.log(reqe.url.searchParams.get("credentials"))
     let list;
 
     try {
         list = await fs.readFile(path.join(os.homedir(), 'credentialList.json'), { encoding: 'utf8' })
+    // eslint-disable-next-line no-empty
     } catch (error) {
     }
 
 
 
-    let projectCredentialList = JSON.parse(list || "{}") as any
+    const projectCredentialList = JSON.parse(list || "{}") as any
 
-    let newList: string[] = projectCredentialList?.list || []
+    const newList: string[] = projectCredentialList?.list || []
 
     const code = reqe.url.searchParams.get("credentials")
 
@@ -144,13 +147,14 @@ export async function GET(reqe: RequestEvent) {
 
         try {
             listText = await fs.readFile(path.join(os.homedir(), 'tokenList.json'), { encoding: 'utf8' })
+        // eslint-disable-next-line no-empty
         } catch (error) {
         }
 
 
         // console.log(list)
 
-        let projectTokenList = (JSON.parse(listText || "{}") as any).list
+        const projectTokenList = (JSON.parse(listText || "{}") as any).list
             .filter((ev: any) => ev.credentials == code)
             .map((ev: any) => { return { name: ev.name, gid: ev.gid, credentials: ev.credentials } })
 
@@ -174,14 +178,10 @@ export async function GET(reqe: RequestEvent) {
             prompt: "consent"
         });
 
-        return {
-            body: { projectTokenList, authUrl }
-        }
+        return { projectTokenList, authUrl }
     } else {
         console.log("E bad code", code, newList)
 
-        return {
-            body: { error: { code: "CRED_CODE_INVALID" } }
-        }
+        return { error: { code: "CRED_CODE_INVALID" } }
     }
 }

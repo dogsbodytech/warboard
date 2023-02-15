@@ -3,31 +3,30 @@ import os from 'node:os'
 import path from 'node:path'
 // readdir, mkdir
 
-let id = () => {
+const id = () => {
     return Math.floor((1 + Math.random()) * 0x10000)
         .toString(16)
         .substring(1);
 }
 
-/** @type {import('./__types/items').RequestHandler} */
-export async function GET() {
+/** @type {import('./$types').PageServerLoad} */
+export async function load() {
 
     let list;
 
     try {
         list = await fs.readFile(path.join(os.homedir(), 'credentialList.json'), { encoding: 'utf8' })
+    // eslint-disable-next-line no-empty
     } catch (error) {
     }
 
-    let projectCredentialList = JSON.parse(list || "{}") as object
+    const projectCredentialList = JSON.parse(list || "{}") as object
 
 
-    return {
-        body: { projectCredentialList }
-    }
+    return { projectCredentialList }
 }
 
-/** @type {import('./__types/items').RequestHandler} */
+/** @type {import('./$types').RequestHandler} */
 export async function POST({ request }: { request: any }) {
     // console.log(request)
 
@@ -36,18 +35,19 @@ export async function POST({ request }: { request: any }) {
 
     try {
         list = await fs.readFile(path.join(os.homedir(), 'credentialList.json'), { encoding: 'utf8' })
+    // eslint-disable-next-line no-empty
     } catch (error) {
     }
 
 
     // console.log(list)
 
-    let projectCredentialList = JSON.parse(list || "{}") as any
+    const projectCredentialList = JSON.parse(list || "{}");
 
-    const data = JSON.parse((await request.text()).toString());
+    const data = await request.json();
 
     const file = JSON.stringify(data['credentialsFile']);
-    let fileID = id()
+    const fileID = id()
 
     await fs.writeFile(path.join(os.homedir(), fileID + ".json"), file, { encoding: 'utf8' });
 
@@ -57,9 +57,5 @@ export async function POST({ request }: { request: any }) {
     fs.writeFile(path.join(os.homedir(), 'credentialList.json'), JSON.stringify(projectCredentialList), { encoding: 'utf8' })
 
     // return validation errors
-    return {
-        status: 200,
-        body: { sucess: true }
-    };
 
 }

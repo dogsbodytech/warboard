@@ -1,81 +1,74 @@
-import { createClient } from 'redis';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// import { json } from '@sveltejs/kit';
 
-const client = createClient();
+import { client } from "$lib/server/redis";
 
-client.on('error', (err) => console.log('Redis Client Error', err));
-client
-	.connect()
-	.then(() => {
-		client.select(parseInt(process.env.REDIS_DB_NUMBER || '0'));
-		const subscriber = client.duplicate();
-		subscriber.connect();
-		return subscriber;
-	})
-	.then((subscriber) => {
-		subscriber.pSubscribe(
-			'__keyspace@' + process.env.REDIS_DB_NUMBER + '__:*',
-			async (message: string, channel: string) => {
-                console.log(channel)
-				// "pmessage","__key*__:*","__keyspace@0__:foo","set"
+const subscriber = client.duplicate();
 
-				// eslint-disable-next-line no-useless-escape
-				const keyComponents =
-					new RegExp(
-						'^__keyspace@' +
-							process.env.REDIS_DB_NUMBER +
-							'__:([a-z_]+):([a-z_]+)(?:#([0-9a-z-]+))?'
-					).exec(channel) || [];
+subscriber.pSubscribe(
+	'__keyspace@' + process.env.REDIS_DB_NUMBER + '__:*',
+	async (message: string, channel: string) => {
+		console.log(channel)
+		// "pmessage","__key*__:*","__keyspace@0__:foo","set"
 
-				const returnDat: any = {};
+		// eslint-disable-next-line no-useless-escape
+		const keyComponents =
+			new RegExp(
+				'^__keyspace@' +
+					process.env.REDIS_DB_NUMBER +
+					'__:([a-z_]+):([a-z_]+)(?:#([0-9a-z-]+))?'
+			).exec(channel) || [];
 
-				returnDat[keyComponents[1]] = {};
-				switch (keyComponents[1]) {
-					case 'port_monitoring':
-						// console.log(message, channel)
-						// .map((i: any) => {i.mod = keyComponents[2]; return i});
-						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
-							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
-						)[0];
-						break;
-					case 'port_monitoring_success':
-						// console.log(message, channel)
-						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
-							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
-						)[0];
-						break;
-					case 'resources':
-						returnDat[keyComponents[1]][keyComponents[2]] = {};
-						returnDat[keyComponents[1]][keyComponents[2]][keyComponents[3]] = JSON.parse(
-							(await client.get(
-								keyComponents[1] + ':' + keyComponents[2] + '#' + keyComponents[3]
-							)) || '[]'
-						)[0];
-						break;
-					case 'resources_success':
-						// console.log(message, channel)
-						returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
-							(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
-						)[0];
-						break;
+		const returnDat: any = {};
 
-					default:
-						console.log(channel);
-						return;
-						break;
-				}
-				// console.log(returnDat)
+		returnDat[keyComponents[1]] = {};
+		switch (keyComponents[1]) {
+			case 'port_monitoring':
+				// console.log(message, channel)
+				// .map((i: any) => {i.mod = keyComponents[2]; return i});
+				returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+					(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+				)[0];
+				break;
+			case 'port_monitoring_success':
+				// console.log(message, channel)
+				returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+					(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+				)[0];
+				break;
+			case 'resources':
+				returnDat[keyComponents[1]][keyComponents[2]] = {};
+				returnDat[keyComponents[1]][keyComponents[2]][keyComponents[3]] = JSON.parse(
+					(await client.get(
+						keyComponents[1] + ':' + keyComponents[2] + '#' + keyComponents[3]
+					)) || '[]'
+				)[0];
+				break;
+			case 'resources_success':
+				// console.log(message, channel)
+				returnDat[keyComponents[1]][keyComponents[2]] = JSON.parse(
+					(await client.get(keyComponents[1] + ':' + keyComponents[2])) || '[]'
+				)[0];
+				break;
 
-				streamList.forEach((controller) => {
-					try {
-						controller.enqueue(JSON.stringify(returnDat) + '\n');
-					} catch (error) {
-						// console.log(index, error, controller)
-					}
-				});
-				// console.log(channel, message)
+			default:
+				console.log(channel);
+				return;
+				break;
+		}
+		// console.log(returnDat)
+
+		streamList.forEach((controller) => {
+			try {
+				// @ts-ignore
+				controller.enqueue(JSON.stringify(returnDat) + '\n');
+			} catch (error) {
+				// console.log(index, error, controller)
 			}
-		);
-	});
+		});
+		// console.log(channel, message)
+	}
+);
 
 const streamList: Map<string, ReadableStreamController<unknown>> = new Map();
 let streamCount = 0;
@@ -178,18 +171,29 @@ function streamSource(): UnderlyingSource {
 
 //     )
 
-/** @type {import('./__types/items').RequestHandler} */
+/** @type {import('./$types').RequestHandler} */
 export async function GET() {
 	const body = new ReadableStream(streamSource(), {
 		highWaterMark: 6,
 		size: () => 1
 	});
 
-	return {
+	// Suggestion (check for correctness before using):
+	// return json(body, {
+	// 	headers: {
+	// 		'transfer-encoding': 'chunked'
+	// 	}
+	// });
+	// return {
+	// 	headers: {
+	// 		'transfer-encoding': 'chunked'
+	// 	},
+	// 	// body: { portmon, resmon, portmon_ag_results, resmon_ag_results }
+	// 	body: body
+	// };
+	return new Response(body, {
 		headers: {
 			'transfer-encoding': 'chunked'
-		},
-		// body: { portmon, resmon, portmon_ag_results, resmon_ag_results }
-		body: body
-	};
+		}
+	})
 }

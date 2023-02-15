@@ -1,7 +1,7 @@
 <script lang=ts>
-	export let calendarList: any;
-	export let code: any;
-	export let gid: any;
+	export let data: any;
+
+	export let { calendarList, code, gid }: any = data;
 </script>
 
 {#each calendarList as calendar}
