@@ -3,6 +3,7 @@
 	import { LayerCake, Svg } from 'layercake';
 	import PercentLayer from '$lib/PercentLayer.svelte';
 	import colours from '$lib/colours';
+	import Calendar from '$lib/Calendar.svelte';
 
 	let red = colours.red[600];
 	let orange = colours.yellow[600];
@@ -12,6 +13,8 @@
 	export let data;
 	
 	let dataDestructured: any = data?.data || {};
+
+	let calendarConfig = data.calendarConfig;
 
 	$: console.log(dataDestructured);
 
@@ -80,9 +83,9 @@
 			</section>
 		{/each}
 	</div>
-	<div>calendar 1</div>
-	<div>calendar 2</div>
-	<div>calendar n</div>
+	{#each calendarConfig as calendar}
+	<div><Calendar calTitle={calendar.title} calendars={calendar.calendars}></Calendar></div>
+	{/each}
 </div>
 
 <style>

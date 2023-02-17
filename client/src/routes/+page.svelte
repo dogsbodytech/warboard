@@ -1,5 +1,5 @@
 <ul>
-	<a href="/monitoring">Monitoring dashboard</a>
-	<a href="/business">Business dashboard</a>
-	<a href="/calendar">Calendar config page</a>
+	<li><a href="/monitoring">Monitoring dashboard</a></li>
+	<li><a href="/business">Business dashboard</a></li>
+	<li><a href="/calendar">Calendar config page</a></li>
 </ul>

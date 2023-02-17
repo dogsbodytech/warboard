@@ -1,5 +1,6 @@
 <script lang="ts">
 	import '$lib/groupBy';
+	import todayDate from './todayDate';
 	// data: {
 	//     kind: 'calendar#events',
 	//     etag: '"..."',
@@ -55,6 +56,8 @@
 
 	export let calTitle: string | undefined;
 	export let calendars: { credentials: string; gid: string; calendarId: string }[];
+	export let asc = false;
+	export let filterAfter = todayDate()
 
 	let calDefaultTitle = 'Calendar';
 
@@ -70,17 +73,31 @@
 				return await res.json();
 			})
 		);
-		if (eventLists[0]?.summary) {
+		if (eventLists[0]?.eventList?.summary) {
 			calDefaultTitle = eventLists[0].eventList.summary;
 		}
-        console.log(eventLists)
-		let mergedItemList = eventLists.map((list) => list.eventList.items).flat(1)
+		let mergedItemList = eventLists
+			.map((list) => list.eventList.items).flat(1)
 
-		console.log(mergedItemList);
 
 		return Object.entries(
 			mergedItemList
-				.map((item, ind) => {
+				.sort((a, b) => {
+					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
+					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
+					if (asc) {
+						return a - b
+					} else {
+						return b - a
+					}
+				})
+				.filter((v) => {
+					let a = new Date(v?.start?.dateTime || v?.start?.date)
+					let b = filterAfter
+					console.log(v, a, b, a > b)
+					return a > b
+				})
+				.map((item) => {
 					if (item.start.dateTime) {
 						let datetime = new Date(item.start.dateTime);
 						item.start.date = datetime.toISOString().split('T')[0];
