@@ -5,7 +5,7 @@
 
 	// Access the context using the 'LayerCake' keyword
 	// Grab some helpful functions
-	const { colours, data, x, z } = getContext('LayerCake');
+	const { data, x, z } = getContext('LayerCake');
 
 	// Customizable defaults
 	export let height = 24;

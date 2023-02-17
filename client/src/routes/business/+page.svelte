@@ -1,7 +1,7 @@
 <script lang="ts">
 
 	import { LayerCake, Svg } from 'layercake';
-	import PercentLayer from '$lib/percentLayer.svelte';
+	import PercentLayer from '$lib/PercentLayer.svelte';
 	import colours from '$lib/colours';
 
 	let red = colours.red[600];

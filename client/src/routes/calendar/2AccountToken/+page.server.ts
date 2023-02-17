@@ -3,9 +3,10 @@ import os from 'node:os'
 import path from 'node:path'
 // readdir, mkdir
 
-import type { RequestEvent } from '@sveltejs/kit';
+import { fail, type RequestEvent } from '@sveltejs/kit';
 
 import { google } from "googleapis"
+import { getProjectCredentialList } from '$lib/server/credentialsList';
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly', 'https://www.googleapis.com/auth/userinfo.profile'];
 
@@ -27,12 +28,9 @@ export async function _saveToken(credCode: string | null, tokenCode: string) {
 
 
 
-    const projectCredentialList = JSON.parse(list || "{}") as any
+    const credList = await getProjectCredentialList()
 
-    const newList: string[] = projectCredentialList?.list || []
-
-
-    if (newList.find((el) => credCode == el)) {
+    if (credList.list.find((el) => credCode == el)) {
 
         const content = await fs.readFile(path.join(os.homedir(), credCode + '.json'), { encoding: 'utf8' })
 
@@ -182,6 +180,6 @@ export async function load(reqe: RequestEvent) {
     } else {
         console.log("E bad code", code, newList)
 
-        return { error: { code: "CRED_CODE_INVALID" } }
+        return fail(400, { error: { code: "CRED_CODE_INVALID" } })
     }
 }

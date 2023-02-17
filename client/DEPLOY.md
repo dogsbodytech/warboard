@@ -39,6 +39,7 @@ Environment="HOST=127.0.0.1"
 Environment="REDIS_DB_NUMBER=$N"
 Environment="SIRPORTLY_TOKEN=$TOKEN"
 Environment="SIRPORTLY_KEY=$KEY"
+Environment="ORIGIN=$ORIGIN"
 Type=simple
 User=warboard
 ExecStart=/usr/bin/node $CLIENT_DEPLOY_DIR/index.js
@@ -48,9 +49,10 @@ Restart=on-failure
 WantedBy=multi-user.target
 ```
 
-set `REDIS_DB_NUMBER` to whatever the config for the python server has it as.
-set the user to the user it should be run under.
+Set `REDIS_DB_NUMBER` to whatever the config for the python server has it as.
+Set the user to the user it should be run under.
 Set `SIRPORTLY_TOKEN` and `SIRPORTLY_key` to the values acquired from your instance.
+Set `ORIGIN` to the origin of the URL you want to serve the app from.
 
 See <https://github.com/sveltejs/kit/tree/master/packages/adapter-node#environment-variables> for additional options on the server.
 More should be set depending on configuration of the reverse proxy.

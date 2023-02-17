@@ -3,9 +3,10 @@ import os from 'node:os';
 import path from 'node:path';
 // readdir, mkdir
 
-import type { RequestEvent } from '@sveltejs/kit';
+import { fail, type RequestEvent } from '@sveltejs/kit';
 
 import { google } from 'googleapis';
+import { getProjectCredentialList } from '$lib/server/credentialsList';
 
 const SCOPES = [
 	'https://www.googleapis.com/auth/calendar.readonly',
@@ -19,22 +20,12 @@ const id = () => {
 };
 
 export async function load(reqe: RequestEvent) {
-	// console.log(reqe.url.searchParams.get("credentials"))
-	let list;
 
-	try {
-		list = await fs.readFile(path.join(os.homedir(), 'credentialList.json'), { encoding: 'utf8' });
-	} catch (error) {
-		// failed to
-	}
-
-	const projectCredentialList = JSON.parse(list || '{}') as any;
-
-	const newList: string[] = projectCredentialList?.list || [];
+	const credList = await getProjectCredentialList();
 
 	const code = reqe.url.searchParams.get('credentials');
 
-	if (newList.find((el) => code == el)) {
+	if (credList.list.find((el) => code == el)) {
 		const content = await fs.readFile(path.join(os.homedir(), code + '.json'), {
 			encoding: 'utf8'
 		});
@@ -69,14 +60,15 @@ export async function load(reqe: RequestEvent) {
 
 				return { calendarList: calendarList.data.items, code, gid };
 			} catch (error) {
-				return { error };
+				console.error(error);
+				return fail(501, { error });
 			}
 		} else {
-			return { error: { code: 'E_NO_TOKEN' } };
+			return fail(400, { error: { code: "E_NO_TOKEN" } })
 		}
 	} else {
-		console.log('E bad code', code, newList);
+		console.log('E bad code', code, credList.list);
 
-		return { error: { code: 'CRED_CODE_INVALID' } };
+        return fail(400, { error: { code: "CRED_CODE_INVALID" } })
 	}
 }

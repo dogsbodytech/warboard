@@ -3,7 +3,7 @@
 	// import ScatterChart from "@onsvisual/svelte-charts/src/charts/ScatterChart.svelte"
 
 	import { LayerCake, Svg } from 'layercake';
-	import PercentLayer from '$lib/percentLayer.svelte';
+	import PercentLayer from '$lib/PercentLayer.svelte';
 	import merge from 'lodash.merge';
 	import colours from '$lib/colours';
 
