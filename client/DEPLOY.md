@@ -11,7 +11,7 @@ Upload this to the server.
 >
 > ```
 > npm i --omit=dev
-> sudo systemctl start warboard_client
+> sudo systemctl restart warboard_client
 > ```
 
 
@@ -42,6 +42,7 @@ Environment="SIRPORTLY_KEY=$KEY"
 Environment="ORIGIN=$ORIGIN"
 Type=simple
 User=warboard
+Group=warboard
 ExecStart=/usr/bin/node $CLIENT_DEPLOY_DIR/index.js
 Restart=on-failure
 
@@ -79,3 +80,23 @@ sudo systemctl enable warboard_client
 The server should now be accessible at 127.0.0.1:3000
 
 You must now configure the reverse proxy & https per your normal processes.
+
+## Calendar
+
+https://console.cloud.google.com/welcome
+
+- Open (or create) a project
+- Ensure Google Calendar is enabled
+- Create new credential of type OAuth
+- set client type to web application
+- Download json
+
+- go to /calendar
+- click start process
+- upload json credentials
+- login with google account (bypassing the warning)
+- select calendar 
+- copy json
+
+- construct calendars file
+- upload to calendar config
