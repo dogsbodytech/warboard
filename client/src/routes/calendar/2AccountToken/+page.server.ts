@@ -150,9 +150,11 @@ export async function load(reqe: RequestEvent) {
         }
 
 
-        // console.log(list)
+        const projectToken = JSON.parse(listText || "{}") as any
+        // console.log(projectToken)
 
-        const projectTokenList = (JSON.parse(listText || "{}") as any).list
+
+        const projectTokenList: any[] = (projectToken?.list || [])
             .filter((ev: any) => ev.credentials == code)
             .map((ev: any) => { return { name: ev.name, gid: ev.gid, credentials: ev.credentials } })
 

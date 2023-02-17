@@ -57,7 +57,7 @@
 	export let calTitle: string | undefined;
 	export let calendars: { credentials: string; gid: string; calendarId: string }[];
 	export let asc = false;
-	export let filterAfter = todayDate()
+	// export let filterAfter = todayDate()
 
 	let calDefaultTitle = 'Calendar';
 
@@ -86,17 +86,17 @@
 					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
 					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
 					if (asc) {
-						return a - b
+						return aDate - bDate
 					} else {
-						return b - a
+						return bDate - aDate
 					}
 				})
-				.filter((v) => {
-					let a = new Date(v?.start?.dateTime || v?.start?.date)
-					let b = filterAfter
-					console.log(v, a, b, a > b)
-					return a > b
-				})
+				// .filter((v) => {
+				// 	let a = new Date(v?.end?.dateTime || v?.end?.date)
+				// 	let b = filterAfter
+				// 	console.log(v, a, b, a > b)
+				// 	return a > b
+				// })
 				.map((item) => {
 					if (item.start.dateTime) {
 						let datetime = new Date(item.start.dateTime);

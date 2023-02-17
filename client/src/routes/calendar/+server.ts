@@ -7,6 +7,7 @@ import { fail, json, type RequestEvent } from '@sveltejs/kit';
 
 import { google } from "googleapis"
 import { getProjectCredentialList } from '$lib/server/credentialsList';
+import todayDate from '$lib/todayDate';
 
 
 export async function GET({ url }: {url: URL}) {
@@ -50,10 +51,16 @@ export async function GET({ url }: {url: URL}) {
         if (accountToken.token && calendarId) {
             oAuth2Client.setCredentials(accountToken.token)
             const calendar = google.calendar({ version: 'v3' });
+            const today = todayDate();
+            const nextYear = todayDate();
+            nextYear.setFullYear(today.getFullYear() + 1);
 
             const eventList = await calendar.events.list({
                 calendarId,
-                auth: oAuth2Client
+                auth: oAuth2Client,
+                timeMin: today.toISOString(),
+                timeMax: nextYear.toISOString(),
+
             })
 
             // console.log(eventList)
