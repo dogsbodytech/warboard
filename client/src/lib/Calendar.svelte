@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '$lib/groupBy';
 	import todayDate from './todayDate';
-	import xss from "xss"
+	import xss from 'xss';
 	import type { ExternalCalendar } from './calendarConfigTypes';
 	// data: {
 	//     kind: 'calendar#events',
@@ -64,9 +64,8 @@
 	let calDefaultTitle = 'Calendar';
 
 	async function pipeline(calendars: ExternalCalendar[]) {
+		let filterAfter = todayDate();
 
-		let filterAfter = todayDate()
-		
 		let eventLists = await Promise.all(
 			calendars.map(async (calendar) => {
 				let params = new URLSearchParams({
@@ -77,20 +76,18 @@
 				let res = await fetch('/calendar?' + params);
 				let json = await res.json();
 				if (!calendar.showDescription) {
-				json.eventList.items.map((event: any) => {
-					event.description = undefined
-					event
-				})
+					json.eventList.items.map((event: any) => {
+						event.description = undefined;
+						event;
+					});
 				}
-				return json
+				return json;
 			})
 		);
 		if (eventLists[0]?.eventList?.summary) {
 			calDefaultTitle = eventLists[0].eventList.summary;
 		}
-		let mergedItemList = eventLists
-			.map((list) => list.eventList.items).flat(1)
-
+		let mergedItemList = eventLists.map((list) => list.eventList.items).flat(1);
 
 		return Object.entries(
 			mergedItemList
@@ -100,6 +97,7 @@
 						item.start.date = datetime.toISOString().split('T')[0];
 						let endDatetime = new Date(item.end.dateTime || item.start.dateTime);
 						item.end.date = endDatetime.toISOString().split('T')[0];
+
 						try {
 							let currentSummary = item.summary;
 							item.summary =
@@ -107,17 +105,20 @@
 									.toTimeString()
 									.slice(0, 5)}: ` + currentSummary;
 						} catch (e) {}
+					} else if (item.end.date) {
+						let date = new Date(item.end.date);
+						date.setDate(date.getDate() - 1);
+						item.end.date = date.toISOString().split('T')[0];
 					}
 					if (item.start.date == item.end.date) {
 						item.date = new Date(item.start.date).toISOString().split('T')[0];
 						return [item];
 					} else {
 						let itArray = [];
-						for (
-							var d = new Date(item.start.date);
-							d <= new Date(new Date(item.end.date).getTime() - 1000);
-							d.setDate(d.getDate() + 1)
-						) {
+						// let endDate = new Date(new Date(item.end.date).getTime() - 1 + (60 * 60 * 1000));
+						let endDate = new Date(item.end.date);
+
+						for (var d = new Date(item.start.date); d <= endDate; d.setDate(d.getDate() + 1)) {
 							let newItem: any = {};
 							Object.assign(newItem, item);
 							newItem.date = new Date(d).toISOString().split('T')[0];
@@ -128,23 +129,25 @@
 				})
 				.flat(1)
 				.filter((v) => {
-					let a = new Date(v.date)
-					let b = filterAfter
-					console.log(v, a, b, a > b)
-					return a > b
+					let a = new Date(v.date);
+					let b = filterAfter;
+					return a > b;
 				})
 				.sort((a, b) => {
 					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
 					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
 					if (!asc) {
-						return aDate - bDate
+						return aDate - bDate;
 					} else {
-						return bDate - aDate
+						return bDate - aDate;
 					}
 				})
 				// @ts-ignore
 				.groupBy((el) => el.date)
-		).sort((a, b) => asc ? -a[0].localeCompare(b[0]) : a[0].localeCompare(b[0])) as [string, any[]][];
+		).sort((a, b) => (asc ? -a[0].localeCompare(b[0]) : a[0].localeCompare(b[0]))) as [
+			string,
+			any[]
+		][];
 	}
 
 	$: calendarPromise = pipeline(calendars);
@@ -154,24 +157,24 @@
 {#await calendarPromise}
 	<p>...waiting</p>
 {:then calendar}
-{#each calendar as [date, events]}
-	{@const dateString = new Date(date).toDateString()}
-	<h2>{dateString}</h2>
-	<ul>
-		{#each events as event}
-			<li>
-				{#if event.description}
-					<a class="summary" href={event.htmlLink}>{event.summary}</a>:
-					<p class="description">
-						{@html xss(event.description)}
-					</p>
-                    {:else}
-					<a class="summary" href={event.htmlLink}>{event.summary}</a>
-				{/if}
-			</li>
-		{/each}
-	</ul>
-{/each}
+	{#each calendar as [date, events]}
+		{@const dateString = new Date(date).toDateString()}
+		<h2>{dateString}</h2>
+		<ul>
+			{#each events as event}
+				<li>
+					{#if event.description}
+						<a class="summary" href={event.htmlLink}>{event.summary}</a>:
+						<p class="description">
+							{@html xss(event.description)}
+						</p>
+					{:else}
+						<a class="summary" href={event.htmlLink}>{event.summary}</a>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	{/each}
 {:catch error}
 	<p style="color: red">{error.message}</p>
 {/await}
