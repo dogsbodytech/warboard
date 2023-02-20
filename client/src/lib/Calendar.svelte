@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '$lib/groupBy';
 	import todayDate from './todayDate';
+	import xss from "xss"
+	import type { ExternalCalendar } from './calendarConfigTypes';
 	// data: {
 	//     kind: 'calendar#events',
 	//     etag: '"..."',
@@ -55,13 +57,13 @@
 	// }
 
 	export let calTitle: string | undefined;
-	export let calendars: { credentials: string; gid: string; calendarId: string }[];
+	export let calendars: ExternalCalendar[];
 	export let asc = false;
 	// export let filterAfter = todayDate()
 
 	let calDefaultTitle = 'Calendar';
 
-	async function pipeline(calendars: { credentials: string; gid: string; calendarId: string }[]) {
+	async function pipeline(calendars: ExternalCalendar[]) {
 		let eventLists = await Promise.all(
 			calendars.map(async (calendar) => {
 				let params = new URLSearchParams({
@@ -70,7 +72,14 @@
 					calid: calendar.calendarId
 				});
 				let res = await fetch('/calendar?' + params);
-				return await res.json();
+				let json = await res.json();
+				if (!calendar.showDescription) {
+				json.eventList.items.map((event: any) => {
+					event.description = undefined
+					event
+				})
+				}
+				return json
 			})
 		);
 		if (eventLists[0]?.eventList?.summary) {
@@ -82,26 +91,11 @@
 
 		return Object.entries(
 			mergedItemList
-				.sort((a, b) => {
-					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
-					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
-					if (asc) {
-						return aDate - bDate
-					} else {
-						return bDate - aDate
-					}
-				})
-				// .filter((v) => {
-				// 	let a = new Date(v?.end?.dateTime || v?.end?.date)
-				// 	let b = filterAfter
-				// 	console.log(v, a, b, a > b)
-				// 	return a > b
-				// })
 				.map((item) => {
 					if (item.start.dateTime) {
 						let datetime = new Date(item.start.dateTime);
 						item.start.date = datetime.toISOString().split('T')[0];
-						let endDatetime = new Date(item.end.dateTime);
+						let endDatetime = new Date(item.end.dateTime || item.start.dateTime);
 						item.end.date = endDatetime.toISOString().split('T')[0];
 						try {
 							let currentSummary = item.summary;
@@ -112,7 +106,7 @@
 						} catch (e) {}
 					}
 					if (item.start.date == item.end.date) {
-						item.date = item.start.date;
+						item.date = new Date(item.start.date).toISOString().split('T')[0];
 						return [item];
 					} else {
 						let itArray = [];
@@ -129,10 +123,25 @@
 						return itArray;
 					}
 				})
+				// .filter((v) => {
+				// 	let a = new Date(v?.end?.dateTime || v?.end?.date)
+				// 	let b = filterAfter
+				// 	console.log(v, a, b, a > b)
+				// 	return a > b
+				// })
 				.flat(1)
+				.sort((a, b) => {
+					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
+					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
+					if (!asc) {
+						return aDate - bDate
+					} else {
+						return bDate - aDate
+					}
+				})
 				// @ts-ignore
 				.groupBy((el) => el.date)
-		).sort((a, b) => a[0].localeCompare(b[0])) as [string, any[]][];
+		).sort((a, b) => asc ? -a[0].localeCompare(b[0]) : a[0].localeCompare(b[0])) as [string, any[]][];
 	}
 
 	$: calendarPromise = pipeline(calendars);
@@ -151,7 +160,7 @@
 				{#if event.description}
 					<a class="summary" href={event.htmlLink}>{event.summary}</a>:
 					<p class="description">
-						{event.description}
+						{@html xss(event.description)}
 					</p>
                     {:else}
 					<a class="summary" href={event.htmlLink}>{event.summary}</a>
@@ -188,6 +197,6 @@
 
 	p.description {
 		margin: 0.75em 0 0;
-		white-space: pre;
+		white-space: pre-wrap;
 	}
 </style>

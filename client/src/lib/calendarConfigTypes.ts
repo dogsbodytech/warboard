@@ -7,4 +7,5 @@ export interface ExternalCalendar {
     credentials: string;
     gid:         string;
     calendarId:  string;
+    showDescription?: boolean;
 }
