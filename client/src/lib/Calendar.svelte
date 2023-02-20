@@ -64,6 +64,9 @@
 	let calDefaultTitle = 'Calendar';
 
 	async function pipeline(calendars: ExternalCalendar[]) {
+
+		let filterAfter = todayDate()
+		
 		let eventLists = await Promise.all(
 			calendars.map(async (calendar) => {
 				let params = new URLSearchParams({
@@ -123,13 +126,13 @@
 						return itArray;
 					}
 				})
-				// .filter((v) => {
-				// 	let a = new Date(v?.end?.dateTime || v?.end?.date)
-				// 	let b = filterAfter
-				// 	console.log(v, a, b, a > b)
-				// 	return a > b
-				// })
 				.flat(1)
+				.filter((v) => {
+					let a = new Date(v.date)
+					let b = filterAfter
+					console.log(v, a, b, a > b)
+					return a > b
+				})
 				.sort((a, b) => {
 					let aDate = new Date(a?.start?.dateTime || a?.start?.date);
 					let bDate = new Date(b?.start?.dateTime || b?.start?.date);
