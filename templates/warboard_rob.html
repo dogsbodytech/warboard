@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{ title }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="{{ refresh_time }}">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/warboard.css">
+  <link rel="icon" href="/static/images/favicon.png" type="image/png">
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6">
+    {% if port_results['failed_accounts'] > 0 %}
+      <h1>Port Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(port_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+    {% else %}
+      <h1>Port Monitoring</h1>
+    {% endif %}
+      <div class="progress">
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ port_results['down_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ port_results['paused_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ port_results['up_percent'] }}%"></div>
+      </div>
+      <table class="table wbportmon">
+        <thead>
+          <tr class="lead"><th>Name</th><th>Type</th><th>Response</th></tr>
+        </thead>
+        <tbody>
+          {% set up_checks = port_results['checks']|sort(attribute='lastresponsetime')|reverse|selectattr('status','equalto','up')|list %}
+          {% set down_checks = port_results['checks']|sort(attribute='lastresponsetime')|reverse|selectattr('status','equalto','down')|list %}
+          {% set paused_checks = port_results['checks']|sort(attribute='lastresponsetime')|reverse|selectattr('status','equalto','paused')|list %}
+	  {# forcing custom order #}
+          {% set my_check = down_checks + paused_checks + up_checks %}
+          {% for i in range(25) %}
+          {% set check = my_check[i] %}
+          <tr class="{%- if check['status'] == "down" -%}danger lead{%- elif check['status'] == "up" -%}success lead{%- else -%}info lead{%- endif-%}"><td>{{ check['name']|string()|truncate(latency_max_name_length, killwords=True) }}</td><td>{% filter upper %}{{ check['type'] }}{% endfilter %}</td><td>{{ check['lastresponsetime'] }} ms</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-6">
+    {% if resource_results['working_percentage'] != 100 %}
+      <h1>Resources Monitoring ({{ '{:0<4}'.format('{:0.3g}'.format(resource_results['working_percentage']) | float) | truncate(4, killwords=True, end='') }}%)</h1>
+    {% else %}
+      <h1>Resources Monitoring</h1>
+    {% endif %}
+      <div class="progress">
+        <div class="progress-bar progress-bar-info" role="progressbar" style="width:{{ resource_results['blue_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-danger" role="progressbar" style="width:{{ resource_results['red_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-warning" role="progressbar" style="width:{{ resource_results['orange_percent'] }}%"></div>
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width:{{ resource_results['green_percent'] }}%"></div>
+      </div>
+      <table class="table wbresources">
+        <thead>
+          <tr class="lead"><th>Name</th><th>CPU</th><th>Memory</th><th>Disk IO</th><th>Space</th></tr>
+        </thead>
+        <tbody>
+          {% set paused_resources = resource_results['checks']|sort(attribute='name')|selectattr('health_status','equalto','blue')|reverse|list %}
+          {% set danger_resources = resource_results['checks']|sort(attribute='orderby')|selectattr('health_status','equalto','red')|reverse|list %}
+          {% set warning_resources = resource_results['checks']|sort(attribute='orderby')|selectattr('health_status','equalto','orange')|reverse|list %}
+          {% set success_resources = resource_results['checks']|sort(attribute='orderby')|selectattr('health_status','equalto','green')|reverse|list %}
+          {# forcing custom order #}
+          {% set my_resources = paused_resources + danger_resources + warning_resources + success_resources %}
+          {% for i in range(25) %}
+          {% set check = my_resources[i] %}
+	  {%- if check['health_status'] == "blue" -%}
+          <tr class="info lead"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td></td><td></td><td></td><td></td></tr>
+	  {%- else -%}
+          <tr class="{%- if check['health_status'] == "red" -%}danger lead{%- elif check['health_status'] == "orange" -%}warning lead{%- elif check['health_status'] == "green" -%}success lead{%- else -%}info lead{%- endif-%}"><td>{{ check['name']|string()|truncate(resources_max_name_length) }}</td><td>{{ check['summary']['cpu']|round|int }}%</td><td>{{ check['summary']['memory']|round|int }}%</td><td>{{ check['summary']['disk_io']|round|int }}%</td><td>{{ check['summary']['fullest_disk']|round|int }}%</td></tr>
+	  {%- endif -%}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>

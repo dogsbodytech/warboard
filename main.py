@@ -92,6 +92,29 @@ def warboard_short():
         sirportly_user_order=sirportly_user_order,
         calendar_items=get_calendar_items()))
 
+@app.route('/robtest', methods=['GET'])
+def warboard_robtest():
+    logger.debug('Serving robtest warboard')
+    port_results = get_port_monitoring_results()
+    # As I don't use filters or lambda functions I feel this needs explanation.
+    # For the most part we aren't interested in checks that are up.
+    # If they are taking more than 2 seconds to return then maybe we are
+    # filter runs the function for each check in our list of checks and then
+    # returns the list of the ones that it is true for.
+    port_results['checks'] = list(filter(lambda x: x['status'] != 'up' or x['lastresponsetime'] > 1000, port_results['checks']))
+    return(render_template('warboard_rob.html',
+        title=warboard_title,
+        refresh_time=refresh_time(),
+        port_results=port_results,
+        latency_max_name_length=latency_max_name_length,
+        resource_results=get_resource_results(),
+        resources_max_name_length=resources_max_name_length,
+        sirportly_results=get_sirportly_results(),
+        sirportly_users=sirportly_users,
+        sirportly_user_order=sirportly_user_order,
+        calendar_items=get_calendar_items()))
+
+
 @app.route('/temporary', methods=['GET'])
 def warboard_temporary():
     logger.debug('Serving temporary warboard')
