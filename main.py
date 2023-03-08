@@ -54,6 +54,9 @@ logging.config.dictConfig({
 
 app = Flask(__name__)
 
+# https://blog.socratic.org/the-one-weird-trick-that-cut-our-flask-page-load-time-by-70-87145335f679
+app.jinja_env.cache = {}
+
 @app.route('/', methods=['GET'])
 def warboard():
     logger.debug('Serving warboard')
