@@ -9,11 +9,11 @@ def chain_results(results):
 def refresh_time():
     now = datetime.datetime.now()
     if now.isoweekday() in range(6, 7):
-        return(60)
+        return(120)
     elif datetime.time(hour=7) <= now.time() <= datetime.time(hour=18): # If its a working hour return a 15 second refresh rate
-        return(15)
-    else:
         return(60)
+    else:
+        return(120)
 
 def to_uuid(string):
     """
